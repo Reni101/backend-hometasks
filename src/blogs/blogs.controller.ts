@@ -1,11 +1,13 @@
 import {Request, Response, Router} from "express";
 import {blogsRepository} from "./blogs.repository";
+import {InputBlogBody} from "./types";
+import {blogInputValidation} from "./blogs.input.validation-middleware";
 
 export const blogsRouter = Router()
 
 
 const postController = {
-    getAllBlogs(req: Request, res: Response,) {
+    getAllBlogs(_: Request, res: Response,) {
         const blogs = blogsRepository.getAllBlogs()
         res.status(200).json(blogs).end()
         return
@@ -14,8 +16,26 @@ const postController = {
         const blog = blogsRepository.findBlog(req.params.id)
         blog ? res.status(200).json(blog).end() : res.status(404).end()
         return
+    },
+    createBlog(req: Request<{}, {}, InputBlogBody>, res: Response,) {
+        const newBlog = blogsRepository.createBlog(req.body)
+        res.status(201).json(newBlog).end()
+        return
+    },
+    updateBlog(req: Request<{ id: string }, {}, InputBlogBody>, res: Response,) {
+        const isUpdated = blogsRepository.updateBlog(req.body, req.params.id)
+        isUpdated ? res.status(204).end() : res.status(204).end();
+        return
+    },
+    deleteBlog(req: Request<{ id: string }>, res: Response,) {
+        const isDeleted = blogsRepository.deleteBlog(req.params.id)
+        isDeleted ? res.status(204).end() : res.status(404).end()
+        return
     }
 }
 
 blogsRouter.get('/', postController.getAllBlogs)
 blogsRouter.get('/:id', postController.getBlogById)
+blogsRouter.post('/', blogInputValidation, postController.createBlog)
+blogsRouter.put('/:id', blogInputValidation, postController.updateBlog)
+blogsRouter.delete('/:id', postController.deleteBlog)
