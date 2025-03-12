@@ -25,7 +25,7 @@ const postController = {
     },
     updateBlog(req: Request<{ id: string }, {}, InputBlogBody>, res: Response,) {
         const isUpdated = blogsRepository.updateBlog(req.body, req.params.id)
-        isUpdated ? res.status(204).end() : res.status(204).end();
+        isUpdated ? res.status(204).end() : res.status(404).end();
         return
     },
     deleteBlog(req: Request<{ id: string }>, res: Response,) {

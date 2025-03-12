@@ -1,8 +1,6 @@
-import {Request, Response, NextFunction} from "express";
+import {NextFunction, Request, Response} from "express";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-
-
     const auth = req.headers.authorization;
 
     if (!auth) {
@@ -17,7 +15,8 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         return
     }
 
-    const credentials = Buffer.from(auth.slice(6), 'base64').toString('utf8')
+    const credentials = Buffer.from(token, 'base64').toString('utf8')
+    
     const [username, password] = credentials.split(':')
 
     if (username !== 'admin' || password !== 'qwerty') {
