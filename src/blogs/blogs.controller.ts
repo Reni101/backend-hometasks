@@ -2,6 +2,7 @@ import {Request, Response, Router} from "express";
 import {blogsRepository} from "./blogs.repository";
 import {InputBlogBody} from "./types";
 import {blogInputValidation} from "./blogs.input.validation-middleware";
+import {authMiddleware} from "../middleware/authMiddleware";
 
 export const blogsRouter = Router()
 
@@ -36,6 +37,6 @@ const postController = {
 
 blogsRouter.get('/', postController.getAllBlogs)
 blogsRouter.get('/:id', postController.getBlogById)
-blogsRouter.post('/', blogInputValidation, postController.createBlog)
-blogsRouter.put('/:id', blogInputValidation, postController.updateBlog)
-blogsRouter.delete('/:id', postController.deleteBlog)
+blogsRouter.post('/', authMiddleware,blogInputValidation, postController.createBlog)
+blogsRouter.put('/:id',authMiddleware, blogInputValidation, postController.updateBlog)
+blogsRouter.delete('/:id',authMiddleware, postController.deleteBlog)
