@@ -1,8 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import {SETTINGS} from "./settings";
-import {blogsRouter} from "./blogs/blogs.controller";
-import {postRouter} from "./posts/posts.controller";
+import {blogsRouter} from "./features/blogs/blogs.controller";
+import {postRouter} from "./features/posts/posts.controller";
 import {testRouter} from "./test/testController";
 
 

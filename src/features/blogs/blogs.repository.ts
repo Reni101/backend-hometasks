@@ -1,6 +1,6 @@
-import {db} from "../db/db";
+import {db} from "../../db/db";
 import {InputBlogBody} from "./types";
-import {BlogType} from "../db/types";
+import {BlogType} from "../../db/types";
 import {uuid} from "uuidv4";
 
 export const blogsRepository = {
