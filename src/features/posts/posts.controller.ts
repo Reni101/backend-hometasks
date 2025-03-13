@@ -3,7 +3,6 @@ import {postsRepository} from "./posts.repository";
 import {InputPostBody} from "./types";
 import {authMiddleware} from "../../middleware/authMiddleware";
 import {errorsMiddleware} from "../../middleware/errorsMiddleware";
-import {blogsRouter} from "../blogs/blogs.controller";
 import {postInputValidation} from "./posts.input.validation-middleware";
 
 export const postRouter = Router()
@@ -38,8 +37,8 @@ const postsController = {
 }
 
 
-blogsRouter.get('/', postsController.getAllPosts)
-blogsRouter.get('/:id', postsController.getPostById)
-blogsRouter.post('/', authMiddleware, postInputValidation, errorsMiddleware, postsController.createPost)
-blogsRouter.put('/:id', authMiddleware, postInputValidation, errorsMiddleware, postsController.updateBlog)
-blogsRouter.delete('/:id', authMiddleware, postsController.deleteBlog)
+postRouter.get('/', postsController.getAllPosts)
+postRouter.get('/:id', postsController.getPostById)
+postRouter.post('/', authMiddleware, postInputValidation, errorsMiddleware, postsController.createPost)
+postRouter.put('/:id', authMiddleware, postInputValidation, errorsMiddleware, postsController.updateBlog)
+postRouter.delete('/:id', authMiddleware, postsController.deleteBlog)
