@@ -30,11 +30,11 @@ export const postsRepository = {
         const post = db.posts.find(el => el.id === id);
 
         if (post) {
-            post.title = dto.title;
-            post.blogId = dto.blogId;
-            post.shortDescription = dto.shortDescription;
-            post.content = dto.content;
-            post.blogName = blogsRepository.findBlog(dto.blogId)!.name,
+            post.title = dto.title
+            post.blogId = dto.blogId
+            post.shortDescription = dto.shortDescription
+            post.content = dto.content
+            post.blogName = blogsRepository.findBlog(dto.blogId)!.name
             isUpdated = true
         }
         return isUpdated

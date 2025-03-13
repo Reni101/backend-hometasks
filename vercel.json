@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "music-album",
+  "name": "backend-hometask",
   "builds": [
     {
       "src": "src/index.ts",
