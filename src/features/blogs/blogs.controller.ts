@@ -8,7 +8,7 @@ import {errorsMiddleware} from "../../middleware/errorsMiddleware";
 export const blogsRouter = Router()
 
 
-const postController = {
+const blogsController = {
     getAllBlogs(_: Request, res: Response,) {
         const blogs = blogsRepository.getAllBlogs()
         res.status(200).json(blogs).end()
@@ -36,8 +36,8 @@ const postController = {
     }
 }
 
-blogsRouter.get('/', postController.getAllBlogs)
-blogsRouter.get('/:id', postController.getBlogById)
-blogsRouter.post('/', authMiddleware,blogInputValidation,errorsMiddleware, postController.createBlog)
-blogsRouter.put('/:id',authMiddleware, blogInputValidation,errorsMiddleware, postController.updateBlog)
-blogsRouter.delete('/:id',authMiddleware, postController.deleteBlog)
+blogsRouter.get('/', blogsController.getAllBlogs)
+blogsRouter.get('/:id', blogsController.getBlogById)
+blogsRouter.post('/', authMiddleware,blogInputValidation,errorsMiddleware, blogsController.createBlog)
+blogsRouter.put('/:id',authMiddleware, blogInputValidation,errorsMiddleware, blogsController.updateBlog)
+blogsRouter.delete('/:id',authMiddleware, blogsController.deleteBlog)
