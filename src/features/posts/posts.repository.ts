@@ -12,29 +12,36 @@ export const postsRepository = {
         return db.posts.find(el => el.id === id);
     },
     createPost(dto: InputPostBody) {
-        const newPost: PostType = {
-            id: uuid(),
-            title: dto.title,
-            blogId: dto.blogId,
-            content: dto.blogId,
-            shortDescription: dto.shortDescription,
-            blogName: blogsRepository.findBlog(dto.blogId)!.name,
+
+        const blog = blogsRepository.findBlog(dto.blogId)
+        if(blog){
+            const newPost: PostType = {
+                id: uuid(),
+                title: dto.title,
+                blogId: dto.blogId,
+                content: dto.blogId,
+                shortDescription: dto.shortDescription,
+                blogName: blog.name,
+            }
+            db.posts.push(newPost);
+            return newPost
         }
-        db.posts.push(newPost);
-        return newPost
+        return
+
+
     },
 
     updatePost(dto: InputPostBody, id: string) {
         let isUpdated = false
-
+        const blog = blogsRepository.findBlog(dto.blogId)
         const post = db.posts.find(el => el.id === id);
 
-        if (post) {
+        if (blog && post) {
             post.title = dto.title
             post.blogId = dto.blogId
             post.shortDescription = dto.shortDescription
             post.content = dto.content
-            post.blogName = blogsRepository.findBlog(dto.blogId)!.name
+            post.blogName = blog.name
             isUpdated = true
         }
         return isUpdated
