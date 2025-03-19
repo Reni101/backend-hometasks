@@ -23,8 +23,10 @@ export const blogsRepository = {
             createdAt: new Date().toISOString(),
             isMembership: false
         }
-        await blogCollection.insertOne(newBlog);
-        return newBlog
+        const result = await blogCollection.insertOne(newBlog);
+        const blog = await blogCollection.findOne({_id: result.insertedId})
+        return blog ? blogMapper(blog) : undefined
+
     },
     async updateBlog(dto: InputBlogBody, id: string) {
         const res = await blogCollection.updateOne({_id: new ObjectId(id)}, {
