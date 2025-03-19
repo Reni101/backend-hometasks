@@ -2,17 +2,16 @@ import {InputBlogBody} from "./types";
 import {BlogDbType} from "../../db/types";
 import {blogCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
-import {blogMapper} from "./blogMapper";
+import {blogMap} from "./blogMap";
 
 export const blogsRepository = {
     async getAllBlogs() {
         const blogs = await blogCollection.find().toArray()
-        return blogs.map(blogMapper);
+        return blogs.map(blogMap);
     },
     async findBlog(id: string) {
         const blog = await blogCollection.findOne({_id: new ObjectId(id)})
-
-        return blog ? blogMapper(blog) : undefined
+        return blog ? blogMap(blog) : undefined
 
     },
     async createBlog(dto: InputBlogBody) {
@@ -25,7 +24,7 @@ export const blogsRepository = {
         }
         const result = await blogCollection.insertOne(newBlog);
         const blog = await blogCollection.findOne({_id: result.insertedId})
-        return blog ? blogMapper(blog) : undefined
+        return blog ? blogMap(blog) : undefined
 
     },
     async updateBlog(dto: InputBlogBody, id: string) {

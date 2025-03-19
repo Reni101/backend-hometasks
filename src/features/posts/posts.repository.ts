@@ -1,58 +1,59 @@
-import {db} from "../../db/db";
 import {InputPostBody} from "./types";
+import {postCollection} from "../../db/mongo-db";
+import {postMap} from "./postMap";
+import {ObjectId} from "mongodb";
+import {blogsRepository} from "../blogs/blogs.repository";
+import {PostDbType} from "../../db/types";
 
 export const postsRepository = {
-    getAllPosts() {
-        return db.posts;
+    async getAllPosts() {
+        const posts = await postCollection.find().toArray()
+        return posts.map(postMap);
     },
-    findPost(id: string) {
-        return db.posts.find(el => el.id === id);
+    async findPost(id: string) {
+        const post = await postCollection.findOne({_id: new ObjectId(id)})
+        return post ? postMap(post) : undefined
     },
-    createPost(dto: InputPostBody) {
-
-        // const blog = blogsRepository.findBlog(dto.blogId)
-        // if(blog){
-        //     const newPost: PostDbType = {
-        //         id: uuid(),
-        //         title: dto.title,
-        //         blogId: dto.blogId,
-        //         content: dto.blogId,
-        //         shortDescription: dto.shortDescription,
-        //         blogName: 'asd',
-        //     }
-        //     db.posts.push(newPost);
-        //     return newPost
-        //     return
-        // }
-        return undefined
-    },
-
-    updatePost(dto: InputPostBody, id: string) {
-        let isUpdated = false
-        // const blog = blogsRepository.findBlog(dto.blogId)
-        // const post = db.posts.find(el => el.id === id);
-        //
-        // if (blog && post) {
-        //     post.title = dto.title
-        //     post.blogId = dto.blogId
-        //     post.shortDescription = dto.shortDescription
-        //     post.content = dto.content
-        //     post.blogName = blog.name
-        //     isUpdated = true
-        // }
-        return isUpdated
-    }
-    ,
-
-    deletePost(id: string) {
-        let isDeleted = false
-
-        const index = db.posts.findIndex(el => el.id === id);
-        if (index > -1) {
-            db.posts.splice(index, 1);
-            isDeleted = true
+    async createPost(dto: InputPostBody) {
+        const blog = await blogsRepository.findBlog(dto.blogId)
+        if (blog) {
+            const newPost: PostDbType = {
+                title: dto.title,
+                blogId: dto.blogId,
+                content: dto.blogId,
+                shortDescription: dto.shortDescription,
+                blogName: blog.name,
+                createdAt: new Date().toISOString()
+            }
+            const result = await postCollection.insertOne(newPost);
+            const post = await postCollection.findOne({_id: result.insertedId})
+            return post ? postMap(post) : undefined
         }
-        return isDeleted
-    }
+        return
+    },
 
+    async updatePost(dto: InputPostBody, id: string) {
+        let isUpdated = false
+        const blog = await blogsRepository.findBlog(dto.blogId)
+        const post = await postsRepository.findPost(dto.blogId)
+
+        if (blog && post) {
+            const result = await postCollection.updateOne({_id: new ObjectId(id)}, {
+                $set: {
+                    title: dto.title,
+                    blogId: dto.blogId,
+                    content: dto.blogId,
+                    shortDescription: dto.shortDescription,
+                    blogName: blog.name,
+                }
+            })
+            return result.modifiedCount === 1
+        }
+        return isUpdated
+    },
+
+    async deletePost(id: string) {
+        const result = await postCollection.deleteOne({_id: new ObjectId(id)})
+        return result.deletedCount === 1
+    }
 }
