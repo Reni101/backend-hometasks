@@ -42,7 +42,7 @@ export const postsRepository = {
                 $set: {
                     title: dto.title,
                     blogId: dto.blogId,
-                    content: dto.blogId,
+                    content: dto.content,
                     shortDescription: dto.shortDescription,
                     blogName: blog.name,
                 }
