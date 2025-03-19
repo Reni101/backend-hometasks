@@ -39,6 +39,8 @@ export const blogsRepository = {
         return res.acknowledged
     },
     async deleteBlog(id: string) {
+        // const blog = await blogCollection.findOne({_id: new ObjectId(id)})
+        // if (!blog) return undefined
         return blogCollection.deleteOne({_id: new ObjectId(id)})
     }
 }

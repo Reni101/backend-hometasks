@@ -24,12 +24,12 @@ const postsController = {
         newPost ? res.status(201).json(newPost).end() : res.status(404).end()
         return
     },
-    updateBlog(req: Request<{ id: string }, {}, InputPostBody>, res: Response,) {
+    updatePost(req: Request<{ id: string }, {}, InputPostBody>, res: Response,) {
         const isUpdated = postsRepository.updatePost(req.body, req.params.id)
         isUpdated ? res.status(204).end() : res.status(404).end();
         return
     },
-    deleteBlog(req: Request<{ id: string }>, res: Response,) {
+    deletePost(req: Request<{ id: string }>, res: Response,) {
         const isDeleted = postsRepository.deletePost(req.params.id)
         isDeleted ? res.status(204).end() : res.status(404).end()
         return
@@ -40,5 +40,5 @@ const postsController = {
 postRouter.get('/', postsController.getAllPosts)
 postRouter.get('/:id', postsController.getPostById)
 postRouter.post('/', authMiddleware, postInputValidation, errorsMiddleware, postsController.createPost)
-postRouter.put('/:id', authMiddleware, postInputValidation, errorsMiddleware, postsController.updateBlog)
-postRouter.delete('/:id', authMiddleware, postsController.deleteBlog)
+postRouter.put('/:id', authMiddleware, postInputValidation, errorsMiddleware, postsController.updatePost)
+postRouter.delete('/:id', authMiddleware, postsController.deletePost)
