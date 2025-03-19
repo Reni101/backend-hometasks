@@ -14,8 +14,8 @@ const blogsController = {
         res.status(200).json(blogs).end()
         return
     },
-    getBlogById(req: Request, res: Response,) {
-        const blog = blogsRepository.findBlog(req.params.id)
+    async getBlogById(req: Request, res: Response,) {
+        const blog = await blogsRepository.findBlog(req.params.id)
         blog ? res.status(200).json(blog).end() : res.status(404).end()
         return
     },

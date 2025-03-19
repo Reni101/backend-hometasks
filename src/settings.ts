@@ -10,5 +10,5 @@ export const SETTINGS = {
         TEST: '/testing',
     },
     MONGO_URL: process.env.MONGO_URL || 'mongodb://0.0.0.0:27017',
-    DB_NAME: 'blog-platform',
+     DB_NAME: 'blog-platform',
 }

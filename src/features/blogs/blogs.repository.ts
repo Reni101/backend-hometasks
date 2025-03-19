@@ -3,14 +3,14 @@ import {InputBlogBody} from "./types";
 import {BlogDbType} from "../../db/types";
 import {uuid} from "uuidv4";
 import {blogCollection} from "../../db/mongo-db";
+import {ObjectId} from "mongodb";
 
 export const blogsRepository = {
     async getAllBlogs() {
         return await blogCollection.find().toArray();
     },
-    findBlog(id: string) {
-        return db.blogs.find(el => el.id === id
-        );
+    async findBlog(id: string) {
+        return blogCollection.findOne({_id: new ObjectId(id)});
     },
     async createBlog(dto: InputBlogBody) {
         const newBlog: BlogDbType = {
