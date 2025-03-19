@@ -30,8 +30,8 @@ const blogsController = {
         return
     },
     async deleteBlog(req: Request<{ id: string }>, res: Response,) {
-        const result = await blogsRepository.deleteBlog(req.params.id)
-        result.deletedCount === 1 ? res.status(204).end() : res.status(404).end()
+        const isDeleted = await blogsRepository.deleteBlog(req.params.id)
+        isDeleted ? res.status(204).end() : res.status(404).end()
         return
     }
 }

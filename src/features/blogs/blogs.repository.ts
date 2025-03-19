@@ -36,11 +36,10 @@ export const blogsRepository = {
                 websiteUrl: dto.websiteUrl
             }
         });
-        return res.acknowledged
+        return res.modifiedCount === 1
     },
     async deleteBlog(id: string) {
-        // const blog = await blogCollection.findOne({_id: new ObjectId(id)})
-        // if (!blog) return undefined
-        return blogCollection.deleteOne({_id: new ObjectId(id)})
+        const result = await blogCollection.deleteOne({_id: new ObjectId(id)})
+        return result.deletedCount === 1
     }
 }
