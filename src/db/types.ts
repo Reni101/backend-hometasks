@@ -8,10 +8,11 @@ export type PostDbType = {
 }
 
 export type BlogDbType = {
-    id: string,
     name: string,
     description: string,
     websiteUrl: string,
+    createdAt:string,
+    isMembership:boolean,
 }
 
 

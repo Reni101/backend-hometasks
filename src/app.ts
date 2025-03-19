@@ -3,7 +3,7 @@ import cors from 'cors'
 import {SETTINGS} from "./settings";
 import {blogsRouter} from "./features/blogs/blogs.controller";
 import {postRouter} from "./features/posts/posts.controller";
-import {testRouter} from "./test/testController";
+import {testRouter} from "./test/test.controller";
 
 
 export const app = express()

@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {db} from "../db/db";
+import {blogCollection, postCollection} from "../db/mongo-db";
 
 export const testRouter = Router()
 
@@ -7,8 +7,8 @@ export const testRouter = Router()
 export const testController = {
 
     clearAllData: (req: Request, res: Response) => {
-        db.blogs = []
-        db.posts = []
+        blogCollection.drop()
+        postCollection.drop()
         res.status(204).end()
 
     },

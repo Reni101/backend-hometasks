@@ -1,49 +1,38 @@
-import {db} from "../../db/db";
 import {InputBlogBody} from "./types";
 import {BlogDbType} from "../../db/types";
-import {uuid} from "uuidv4";
 import {blogCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
 
 export const blogsRepository = {
     async getAllBlogs() {
-        return await blogCollection.find().toArray();
+        const blogs = await blogCollection.find().toArray()
+        return blogs.map(({_id, ...rest}) => ({id: _id, ...rest}));
     },
     async findBlog(id: string) {
         return blogCollection.findOne({_id: new ObjectId(id)});
     },
     async createBlog(dto: InputBlogBody) {
         const newBlog: BlogDbType = {
-            id: uuid(),
             name: dto.name,
             description: dto.description,
-            websiteUrl: dto.websiteUrl
+            websiteUrl: dto.websiteUrl,
+            createdAt: new Date().toISOString(),
+            isMembership: false
         }
         await blogCollection.insertOne(newBlog);
-        // db.blogs.push(newBlog);
         return newBlog
     },
-    updateBlog(dto: InputBlogBody, id: string) {
-        let isUpdated = false
-
-        const blog = db.blogs.find(el => el.id === id);
-
-        if (blog) {
-            blog.name = dto.name;
-            blog.description = dto.description;
-            blog.websiteUrl = dto.websiteUrl;
-            isUpdated = true
-        }
-        return isUpdated
+    async updateBlog(dto: InputBlogBody, id: string) {
+        const res = await blogCollection.updateOne({_id: new ObjectId(id)}, {
+            $set: {
+                name: dto.name,
+                description: dto.description,
+                websiteUrl: dto.websiteUrl
+            }
+        });
+        return res.acknowledged
     },
-    deleteBlog(id: string) {
-        let isDeleted = false
-
-        const index = db.blogs.findIndex(el => el.id === id);
-        if (index > -1) {
-            db.blogs.splice(index, 1);
-            isDeleted = true
-        }
-        return isDeleted
+    async deleteBlog(id: string) {
+        return blogCollection.deleteOne({_id: new ObjectId(id)})
     }
 }

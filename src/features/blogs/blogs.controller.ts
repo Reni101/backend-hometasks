@@ -24,14 +24,14 @@ const blogsController = {
         res.status(201).json(newBlog).end()
         return
     },
-    updateBlog(req: Request<{ id: string }, {}, InputBlogBody>, res: Response,) {
-        const isUpdated = blogsRepository.updateBlog(req.body, req.params.id)
+    async updateBlog(req: Request<{ id: string }, {}, InputBlogBody>, res: Response,) {
+        const isUpdated = await blogsRepository.updateBlog(req.body, req.params.id)
         isUpdated ? res.status(204).end() : res.status(404).end();
         return
     },
-    deleteBlog(req: Request<{ id: string }>, res: Response,) {
-        const isDeleted = blogsRepository.deleteBlog(req.params.id)
-        isDeleted ? res.status(204).end() : res.status(404).end()
+    async deleteBlog(req: Request<{ id: string }>, res: Response,) {
+        const result = await blogsRepository.deleteBlog(req.params.id)
+        result.acknowledged ? res.status(204).end() : res.status(404).end()
         return
     }
 }
