@@ -1,4 +1,4 @@
-export type PostType = {
+export type PostDbType = {
     id: string,
     title: string,
     shortDescription: string,
@@ -7,7 +7,7 @@ export type PostType = {
     blogName: string
 }
 
-export type BlogType = {
+export type BlogDbType = {
     id: string,
     name: string,
     description: string,
@@ -16,6 +16,6 @@ export type BlogType = {
 
 
 export type dbType = {
-    blogs: BlogType[]
-    posts: PostType[]
+    blogs: BlogDbType[]
+    posts: PostDbType[]
 }

@@ -1,24 +1,26 @@
 import {db} from "../../db/db";
 import {InputBlogBody} from "./types";
-import {BlogType} from "../../db/types";
+import {BlogDbType} from "../../db/types";
 import {uuid} from "uuidv4";
+import {blogCollection} from "../../db/mongo-db";
 
 export const blogsRepository = {
-    getAllBlogs() {
-        return db.blogs;
+    async getAllBlogs() {
+        return await blogCollection.find().toArray();
     },
     findBlog(id: string) {
         return db.blogs.find(el => el.id === id
         );
     },
-    createBlog(dto: InputBlogBody) {
-        const newBlog: BlogType = {
+    async createBlog(dto: InputBlogBody) {
+        const newBlog: BlogDbType = {
             id: uuid(),
             name: dto.name,
             description: dto.description,
             websiteUrl: dto.websiteUrl
         }
-        db.blogs.push(newBlog);
+        await blogCollection.insertOne(newBlog);
+        // db.blogs.push(newBlog);
         return newBlog
     },
     updateBlog(dto: InputBlogBody, id: string) {

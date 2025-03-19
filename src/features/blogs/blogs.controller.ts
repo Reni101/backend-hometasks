@@ -9,8 +9,8 @@ export const blogsRouter = Router()
 
 
 const blogsController = {
-    getAllBlogs(_: Request, res: Response,) {
-        const blogs = blogsRepository.getAllBlogs()
+    async getAllBlogs(_: Request, res: Response,) {
+        const blogs = await blogsRepository.getAllBlogs()
         res.status(200).json(blogs).end()
         return
     },
@@ -19,8 +19,8 @@ const blogsController = {
         blog ? res.status(200).json(blog).end() : res.status(404).end()
         return
     },
-    createBlog(req: Request<{}, {}, InputBlogBody>, res: Response,) {
-        const newBlog = blogsRepository.createBlog(req.body)
+    async createBlog(req: Request<{}, {}, InputBlogBody>, res: Response,) {
+        const newBlog = await blogsRepository.createBlog(req.body)
         res.status(201).json(newBlog).end()
         return
     },
@@ -38,6 +38,6 @@ const blogsController = {
 
 blogsRouter.get('/', blogsController.getAllBlogs)
 blogsRouter.get('/:id', blogsController.getBlogById)
-blogsRouter.post('/', authMiddleware,blogInputValidation,errorsMiddleware, blogsController.createBlog)
-blogsRouter.put('/:id',authMiddleware, blogInputValidation,errorsMiddleware, blogsController.updateBlog)
-blogsRouter.delete('/:id',authMiddleware, blogsController.deleteBlog)
+blogsRouter.post('/', authMiddleware, blogInputValidation, errorsMiddleware, blogsController.createBlog)
+blogsRouter.put('/:id', authMiddleware, blogInputValidation, errorsMiddleware, blogsController.updateBlog)
+blogsRouter.delete('/:id', authMiddleware, blogsController.deleteBlog)

@@ -10,5 +10,4 @@ const blogId = body('blogId').isString().custom((blogId:string)=>{
     return !!blog
 })
 
-
 export const postInputValidation = [title, shortDescription, content, blogId]

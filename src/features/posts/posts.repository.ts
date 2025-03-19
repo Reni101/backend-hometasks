@@ -1,5 +1,5 @@
 import {db} from "../../db/db";
-import {PostType} from "../../db/types";
+import {PostDbType} from "../../db/types";
 import {uuid} from "uuidv4";
 import {InputPostBody} from "./types";
 import {blogsRepository} from "../blogs/blogs.repository";
@@ -15,7 +15,7 @@ export const postsRepository = {
 
         const blog = blogsRepository.findBlog(dto.blogId)
         if(blog){
-            const newPost: PostType = {
+            const newPost: PostDbType = {
                 id: uuid(),
                 title: dto.title,
                 blogId: dto.blogId,
