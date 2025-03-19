@@ -35,7 +35,7 @@ export const postsRepository = {
     async updatePost(dto: InputPostBody, id: string) {
         let isUpdated = false
         const blog = await blogsRepository.findBlog(dto.blogId)
-        const post = await postsRepository.findPost(dto.blogId)
+        const post = await postsRepository.findPost(id)
 
         if (blog && post) {
             const result = await postCollection.updateOne({_id: new ObjectId(id)}, {
