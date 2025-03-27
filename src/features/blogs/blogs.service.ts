@@ -5,9 +5,17 @@ import {WithId} from "mongodb";
 import {paginationQueries} from "../../helpers/paginationQueries";
 
 export const blogsService = {
-    async getAllBlogs(query:ReturnType<typeof paginationQueries>) {
+    async getAllBlogs(query: ReturnType<typeof paginationQueries>) {
         const blogs = await blogsRepository.getAllBlogs(query)
-        return blogs.map(this.blogMap);
+        const totalCount = await blogsRepository.getTotalCount(query)
+
+        return {
+            items: blogs.map(this.blogMap),
+            page: query.pageNumber,
+            pageSize: query.pageSize,
+            totalCount,
+            pagesCount: Math.ceil(totalCount / query.pageSize)
+        };
     },
     async getBlog(id: string) {
         const blog = await blogsRepository.findBlog(id)

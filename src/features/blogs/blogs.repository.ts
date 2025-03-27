@@ -6,7 +6,6 @@ import {paginationQueries} from "../../helpers/paginationQueries";
 
 export const blogsRepository = {
     async getAllBlogs(query: ReturnType<typeof paginationQueries>) {
-
         const filter: any = {}
         if (query.searchNameTerm) {
             filter.name = {$regex: query.searchNameTerm, $options: "i"};
@@ -16,8 +15,6 @@ export const blogsRepository = {
             .skip((query.pageNumber - 1) * query.pageSize)
             .limit(query.pageSize)
             .toArray()
-
-
     },
     async findBlog(id: string) {
         return blogCollection.findOne({_id: new ObjectId(id)})
@@ -41,5 +38,13 @@ export const blogsRepository = {
     async deleteBlog(id: string) {
         const result = await blogCollection.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
+    },
+    async getTotalCount(query: ReturnType<typeof paginationQueries>) {
+        const filter: any = {}
+        if (query.searchNameTerm) {
+            filter.name = {$regex: query.searchNameTerm, $options: "i"};
+        }
+       return  blogCollection.countDocuments(filter)
     }
+
 }
