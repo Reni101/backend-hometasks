@@ -2,29 +2,30 @@ import {InputBlogBody} from "./types";
 import {BlogDbType} from "../../db/types";
 import {blogCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
-import {blogMap} from "./blogMap";
+import {paginationQueries} from "../../helpers/paginationQueries";
 
 export const blogsRepository = {
-    async getAllBlogs() {
-        const blogs = await blogCollection.find().toArray()
-        return blogs.map(blogMap);
-    },
-    async findBlog(id: string) {
-        const blog = await blogCollection.findOne({_id: new ObjectId(id)})
-        return blog ? blogMap(blog) : undefined
+    async getAllBlogs(query: ReturnType<typeof paginationQueries>) {
+
+        const filter: any = {}
+        if (query.searchNameTerm) {
+            filter.name = {$regex: query.searchNameTerm, $options: "i"};
+        }
+        return blogCollection.find(filter)
+            .sort(query.sortBy, query.sortDirection)
+            .skip((query.pageNumber - 1) * query.pageSize)
+            .limit(query.pageSize)
+            .toArray()
+
 
     },
-    async createBlog(dto: InputBlogBody) {
-        const newBlog: BlogDbType = {
-            name: dto.name,
-            description: dto.description,
-            websiteUrl: dto.websiteUrl,
-            createdAt: new Date().toISOString(),
-            isMembership: false
-        }
+    async findBlog(id: string) {
+        return blogCollection.findOne({_id: new ObjectId(id)})
+
+    },
+    async createBlog(newBlog: BlogDbType) {
         const result = await blogCollection.insertOne(newBlog);
-        const blog = await blogCollection.findOne({_id: result.insertedId})
-        return blog ? blogMap(blog) : undefined
+        return blogCollection.findOne({_id: result.insertedId})
 
     },
     async updateBlog(dto: InputBlogBody, id: string) {

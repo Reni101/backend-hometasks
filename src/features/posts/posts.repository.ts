@@ -34,6 +34,7 @@ export const postsRepository = {
 
     async updatePost(dto: InputPostBody, id: string) {
         let isUpdated = false
+
         const blog = await blogsRepository.findBlog(dto.blogId)
         const post = await postsRepository.findPost(id)
 
