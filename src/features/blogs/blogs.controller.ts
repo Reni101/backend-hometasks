@@ -64,4 +64,4 @@ blogsRouter.post('/', authMiddleware, blogBodyValidation, errorsMiddleware, blog
 blogsRouter.put('/:id', authMiddleware, blogBodyValidation, errorsMiddleware, blogsController.updateBlog)
 blogsRouter.delete('/:id', authMiddleware, blogsController.deleteBlog)
 blogsRouter.get('/:blogId/posts',blogIdParam,postQueryValidation,errorsMiddleware, blogsController.getPostsByBlogId)
-blogsRouter.post('/:blogId/posts',blogIdParam,postBodyValidation,errorsMiddleware, blogsController.createPostByBlogId)
+blogsRouter.post('/:blogId/posts',blogIdParam,authMiddleware,postBodyValidation,errorsMiddleware, blogsController.createPostByBlogId)
