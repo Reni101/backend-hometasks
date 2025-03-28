@@ -8,7 +8,7 @@ export const postsRepository = {
     async getPosts(query: PostQueriesType, blogId?: string) {
         const filter: any = {}
         if (blogId) {
-            filter.blogId = blogId;
+            filter.blogId = new ObjectId(blogId);
         }
 
         return postCollection.find(filter).sort(query.sortBy, query.sortDirection)
