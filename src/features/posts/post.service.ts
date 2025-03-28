@@ -26,11 +26,11 @@ export const postsService = {
             const totalCount = await postsRepository.getTotalCount()
 
             return {
-                items: posts.map(this.postMap),
+                pagesCount: Math.ceil(totalCount / query.pageSize),
                 page: query.pageNumber,
                 pageSize: query.pageSize,
                 totalCount,
-                pagesCount: Math.ceil(totalCount / query.pageSize)
+                items: posts.map(this.postMap),
             }
         }
         return
