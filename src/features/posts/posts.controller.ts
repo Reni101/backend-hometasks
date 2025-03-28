@@ -17,11 +17,12 @@ const postsController = {
         res.status(200).json(posts).end()
         return
     },
-    async getPostById(req: Request, res: Response,) {
+    async getPostById(req: Request<{id:string}>, res: Response,) {
         const blog = await postsService.getPost(req.params.id)
         blog ? res.status(200).json(blog).end() : res.status(404).end()
         return
     },
+
     async createPost(req: Request<{}, {}, InputPostBody>, res: Response,) {
         const newPost = await postsService.createPost(req.body)
         newPost ? res.status(201).json(newPost).end() : res.status(404).end()

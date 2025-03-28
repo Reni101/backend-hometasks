@@ -1,4 +1,4 @@
-import {WithId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 import {PostDbType} from "../../db/types";
 import {PostQueriesType} from "../../helpers/types";
 import {postsRepository} from "./posts.repository";
@@ -19,6 +19,18 @@ export const postsService = {
             pagesCount: Math.ceil(totalCount / query.pageSize)
         };
     },
+    async getPostsByBlogId(blogId: string, query: PostQueriesType) {
+        const posts = await postsRepository.getPosts(query, blogId)
+        const totalCount = await postsRepository.getTotalCount()
+
+        return {
+            items: posts.map(this.postMap),
+            page: query.pageNumber,
+            pageSize: query.pageSize,
+            totalCount,
+            pagesCount: Math.ceil(totalCount / query.pageSize)
+        }
+    },
 
     async getPost(id: string) {
         const post = await postsRepository.findPost(id)
@@ -29,7 +41,7 @@ export const postsService = {
         if (blog) {
             const newPost: PostDbType = {
                 title: dto.title,
-                blogId: dto.blogId,
+                blogId: new ObjectId(dto.blogId),
                 content: dto.blogId,
                 shortDescription: dto.shortDescription,
                 blogName: blog.name,

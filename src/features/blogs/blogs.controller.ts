@@ -5,7 +5,10 @@ import {authMiddleware} from "../../middleware/authMiddleware";
 import {errorsMiddleware} from "../../middleware/errorsMiddleware";
 import {blogsService} from "./blogs.service";
 import {blogsQueries} from "../../helpers/blogsQueries";
-import {InputBlogQueryType} from "../../helpers/types";
+import {InputBlogQueryType, InputPostQueryType} from "../../helpers/types";
+import {postsService} from "../posts/post.service";
+import {postQueries} from "../../helpers/postQueries";
+import {postQueryValidation} from "../posts/posts.input.validation-middleware";
 
 export const blogsRouter = Router()
 
@@ -17,11 +20,19 @@ const blogsController = {
         res.status(200).json(response).end()
         return
     },
-    async getBlogById(req: Request, res: Response,) {
+    async getBlogById(req: Request<{ id: string }>, res: Response,) {
         const blog = await blogsService.getBlog(req.params.id)
         blog ? res.status(200).json(blog).end() : res.status(404).end()
         return
     },
+    async getPostsByBlogId(req: Request<{ blogId: string }, {}, InputPostQueryType>, res: Response,) {
+        const {blogId} = req.params
+        const query = postQueries(req)
+        const result = await postsService.getPostsByBlogId(blogId, query)
+        result ? res.status(200).json(result).end() : res.status(404).end()
+        return
+    },
+
     async createBlog(req: Request<{}, {}, InputBlogBody>, res: Response,) {
         const newBlog = await blogsService.createBlog(req.body)
         res.status(201).json(newBlog).end()
@@ -44,3 +55,4 @@ blogsRouter.get('/:id', blogsController.getBlogById)
 blogsRouter.post('/', authMiddleware, blogBodyValidation, errorsMiddleware, blogsController.createBlog)
 blogsRouter.put('/:id', authMiddleware, blogBodyValidation, errorsMiddleware, blogsController.updateBlog)
 blogsRouter.delete('/:id', authMiddleware, blogsController.deleteBlog)
+blogsRouter.get('/:blogId/posts',postQueryValidation,errorsMiddleware, blogsController.getPostsByBlogId)
