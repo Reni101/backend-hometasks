@@ -33,10 +33,9 @@ const blogsController = {
         result ? res.status(200).json(result).end() : res.status(404).end()
         return
     },
-    async createPostByBlogId(req: Request<{ blogId: string }, Omit<InputPostBody, 'blogId'>>, res: Response,) {
+    async createPostByBlogId(req: Request<{ blogId: string },{}, Omit<InputPostBody, 'blogId'>>, res: Response,) {
         const {blogId} = req.params
         const dto = {...req.body, blogId}
-
         const newPost = await postsService.createPost(dto)
         newPost ? res.status(201).json(newPost).end() : res.status(404).end()
         return
