@@ -20,16 +20,21 @@ export const postsService = {
         };
     },
     async getPostsByBlogId(blogId: string, query: PostQueriesType) {
-        const posts = await postsRepository.getPosts(query, blogId)
-        const totalCount = await postsRepository.getTotalCount()
+        const blog = await blogsRepository.findBlog(blogId)
+        if (blog) {
+            const posts = await postsRepository.getPosts(query, blogId)
+            const totalCount = await postsRepository.getTotalCount()
 
-        return {
-            items: posts.map(this.postMap),
-            page: query.pageNumber,
-            pageSize: query.pageSize,
-            totalCount,
-            pagesCount: Math.ceil(totalCount / query.pageSize)
+            return {
+                items: posts.map(this.postMap),
+                page: query.pageNumber,
+                pageSize: query.pageSize,
+                totalCount,
+                pagesCount: Math.ceil(totalCount / query.pageSize)
+            }
         }
+        return
+
     },
 
     async getPost(id: string) {
