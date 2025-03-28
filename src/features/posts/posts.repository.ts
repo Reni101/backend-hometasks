@@ -39,7 +39,7 @@ export const postsRepository = {
     async getTotalCount(blogId?: string) {
         const filter: any = {}
         if (blogId) {
-            filter.blogId = blogId;
+            filter.blogId = new ObjectId(blogId);
         }
         return postCollection.countDocuments(filter)
     }
