@@ -2,10 +2,10 @@ import {blogsRepository} from "./blogs.repository";
 import {InputBlogBody} from "./types";
 import {BlogDbType} from "../../db/types";
 import {WithId} from "mongodb";
-import {paginationQueries} from "../../helpers/paginationQueries";
+import {BlogQueriesType} from "../../helpers/types";
 
 export const blogsService = {
-    async getAllBlogs(query: ReturnType<typeof paginationQueries>) {
+    async getAllBlogs(query: BlogQueriesType) {
         const blogs = await blogsRepository.getAllBlogs(query)
         const totalCount = await blogsRepository.getTotalCount(query)
 
@@ -36,10 +36,12 @@ export const blogsService = {
     },
 
     async updateBlog(dto: InputBlogBody, id: string) {
-        return blogsRepository.updateBlog(dto, id)
+        const result = await blogsRepository.updateBlog(dto, id)
+        return result.modifiedCount === 1
     },
     async deleteBlog(id: string) {
-        return blogsRepository.deleteBlog(id)
+        const result = await blogsRepository.deleteBlog(id)
+        return result.deletedCount === 1
     },
     blogMap({_id, ...rest}: WithId<BlogDbType>) {
         return {id: _id, ...rest}

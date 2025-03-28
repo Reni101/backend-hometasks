@@ -4,15 +4,15 @@ import {blogBodyValidation, blogQueryValidation} from "./blogs.input.validation-
 import {authMiddleware} from "../../middleware/authMiddleware";
 import {errorsMiddleware} from "../../middleware/errorsMiddleware";
 import {blogsService} from "./blogs.service";
-import {paginationQueries} from "../../helpers/paginationQueries";
+import {blogsQueries} from "../../helpers/blogsQueries";
+import {InputBlogQueryType} from "../../helpers/types";
 
 export const blogsRouter = Router()
 
 
 const blogsController = {
-    async getAllBlogs(req: Request, res: Response,) {
-        const query= paginationQueries(req)
-
+    async getAllBlogs(req: Request<{}, {}, {}, InputBlogQueryType>, res: Response,) {
+        const query = blogsQueries(req)
         const response = await blogsService.getAllBlogs(query)
         res.status(200).json(response).end()
         return
@@ -39,7 +39,7 @@ const blogsController = {
     }
 }
 
-blogsRouter.get('/',blogQueryValidation, blogsController.getAllBlogs)
+blogsRouter.get('/', blogQueryValidation, errorsMiddleware, blogsController.getAllBlogs)
 blogsRouter.get('/:id', blogsController.getBlogById)
 blogsRouter.post('/', authMiddleware, blogBodyValidation, errorsMiddleware, blogsController.createBlog)
 blogsRouter.put('/:id', authMiddleware, blogBodyValidation, errorsMiddleware, blogsController.updateBlog)

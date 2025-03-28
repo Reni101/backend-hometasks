@@ -2,11 +2,12 @@ import {InputBlogBody} from "./types";
 import {BlogDbType} from "../../db/types";
 import {blogCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
-import {paginationQueries} from "../../helpers/paginationQueries";
+import {BlogQueriesType} from "../../helpers/types";
 
 export const blogsRepository = {
-    async getAllBlogs(query: ReturnType<typeof paginationQueries>) {
+    async getAllBlogs(query: BlogQueriesType) {
         const filter: any = {}
+
         if (query.searchNameTerm) {
             filter.name = {$regex: query.searchNameTerm, $options: "i"};
         }
@@ -26,25 +27,20 @@ export const blogsRepository = {
 
     },
     async updateBlog(dto: InputBlogBody, id: string) {
-        const res = await blogCollection.updateOne({_id: new ObjectId(id)}, {
-            $set: {
-                name: dto.name,
-                description: dto.description,
-                websiteUrl: dto.websiteUrl
-            }
+        return blogCollection.updateOne({_id: new ObjectId(id)}, {
+            $set: {...dto}
         });
-        return res.modifiedCount === 1
+
     },
     async deleteBlog(id: string) {
-        const result = await blogCollection.deleteOne({_id: new ObjectId(id)})
-        return result.deletedCount === 1
+        return blogCollection.deleteOne({_id: new ObjectId(id)})
+
     },
-    async getTotalCount(query: ReturnType<typeof paginationQueries>) {
+    async getTotalCount(query: BlogQueriesType) {
         const filter: any = {}
         if (query.searchNameTerm) {
             filter.name = {$regex: query.searchNameTerm, $options: "i"};
         }
-       return  blogCollection.countDocuments(filter)
+        return blogCollection.countDocuments(filter)
     }
-
 }
