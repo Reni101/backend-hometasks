@@ -23,7 +23,7 @@ export const postsService = {
         const blog = await blogsRepository.findBlog(blogId)
         if (blog) {
             const posts = await postsRepository.getPosts(query, blogId)
-            const totalCount = await postsRepository.getTotalCount()
+            const totalCount = await postsRepository.getTotalCount(blogId)
 
             return {
                 pagesCount: Math.ceil(totalCount / query.pageSize),
