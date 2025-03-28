@@ -10,5 +10,5 @@ const sortDirection = query('sortDirection').optional().isString().isIn(['asc', 
 const pageNumber = query('pageNumber').optional().toInt().isInt({min: 1})
 const pageSize = query('pageSize').optional().toInt().isInt({min: 1})
 
-export const postBodyValidation = [title, shortDescription, content,]
+export const postBodyValidation = [title, shortDescription, content]
 export const postQueryValidation = [sortBy, sortDirection, pageNumber, pageSize]

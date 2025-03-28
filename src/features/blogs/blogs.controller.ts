@@ -1,6 +1,6 @@
 import {Request, Response, Router} from "express";
 import {InputBlogBody} from "./types";
-import {blogBodyValidation, blogQueryValidation} from "./blogs.input.validation-middleware";
+import {blogBodyValidation, blogIdParam, blogQueryValidation} from "./blogs.input.validation-middleware";
 import {authMiddleware} from "../../middleware/authMiddleware";
 import {errorsMiddleware} from "../../middleware/errorsMiddleware";
 import {blogsService} from "./blogs.service";
@@ -8,7 +8,8 @@ import {blogsQueries} from "../../helpers/blogsQueries";
 import {InputBlogQueryType, InputPostQueryType} from "../../helpers/types";
 import {postsService} from "../posts/post.service";
 import {postQueries} from "../../helpers/postQueries";
-import {postQueryValidation} from "../posts/posts.input.validation-middleware";
+import {postBodyValidation, postQueryValidation} from "../posts/posts.input.validation-middleware";
+import {InputPostBody} from "../posts/types";
 
 export const blogsRouter = Router()
 
@@ -30,6 +31,14 @@ const blogsController = {
         const query = postQueries(req)
         const result = await postsService.getPostsByBlogId(blogId, query)
         result ? res.status(200).json(result).end() : res.status(404).end()
+        return
+    },
+    async createPostByBlogId(req: Request<{ blogId: string }, Omit<InputPostBody, 'blogId'>>, res: Response,) {
+        const {blogId} = req.params
+        const dto = {...req.body, blogId}
+
+        const newPost = await postsService.createPost(dto)
+        newPost ? res.status(201).json(newPost).end() : res.status(404).end()
         return
     },
 
@@ -55,4 +64,5 @@ blogsRouter.get('/:id', blogsController.getBlogById)
 blogsRouter.post('/', authMiddleware, blogBodyValidation, errorsMiddleware, blogsController.createBlog)
 blogsRouter.put('/:id', authMiddleware, blogBodyValidation, errorsMiddleware, blogsController.updateBlog)
 blogsRouter.delete('/:id', authMiddleware, blogsController.deleteBlog)
-blogsRouter.get('/:blogId/posts',postQueryValidation,errorsMiddleware, blogsController.getPostsByBlogId)
+blogsRouter.get('/:blogId/posts',blogIdParam,postQueryValidation,errorsMiddleware, blogsController.getPostsByBlogId)
+blogsRouter.post('/:blogId/posts',blogIdParam,postBodyValidation,errorsMiddleware, blogsController.createPostByBlogId)
