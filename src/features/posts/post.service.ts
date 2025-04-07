@@ -2,7 +2,7 @@ import {ObjectId, WithId} from "mongodb";
 import {PostDbType} from "../../db/types";
 import {PostQueriesType} from "../../helpers/types";
 import {postsRepository} from "./posts.repository";
-import {blogsRepository} from "../blogs/blogs.repository";
+import {blogsRepository} from "../blogs/repository/blogs.repository";
 import {InputPostBody} from "./types";
 
 
