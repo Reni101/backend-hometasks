@@ -6,11 +6,12 @@ import {errorsMiddleware} from "../../../middleware/errorsMiddleware";
 import {blogsService} from "../service/blogs.service";
 import {blogsQueries} from "../../../helpers/blogsQueries";
 import {InputBlogQueryType, InputPostQueryType} from "../../../helpers/types";
-import {postsService} from "../../posts/post.service";
+import {postsService} from "../../posts/service/post.service";
 import {postQueries} from "../../../helpers/postQueries";
-import {postBodyValidation, postQueryValidation} from "../../posts/posts.input.validation-middleware";
+import {postBodyValidation, postQueryValidation} from "../../posts/middleware/posts.input.validation-middleware";
 import {InputPostBody} from "../../posts/types";
-import {blogsQueryRepository} from "../repository/blogsQueryRepository";
+import {blogsQueryRepository} from "../repository/blogs.query.repository";
+import {postsQueryRepository} from "../../posts/repository/posts.query.repository";
 
 export const blogsRouter = Router()
 
@@ -18,7 +19,7 @@ export const blogsRouter = Router()
 const blogsController = {
     async getAllBlogs(req: Request<{}, {}, {}, InputBlogQueryType>, res: Response,) {
         const query = blogsQueries(req)
-        const response = await blogsQueryRepository.getAllBlogs(query)
+        const response = await blogsQueryRepository.getBlogs(query)
         res.status(200).json(response).end()
         return
     },
@@ -30,7 +31,7 @@ const blogsController = {
     async getPostsByBlogId(req: Request<{ blogId: string }, {}, InputPostQueryType>, res: Response,) {
         const {blogId} = req.params
         const query = postQueries(req)
-        const result = await postsService.getPostsByBlogId(blogId, query)
+        const result = await postsQueryRepository.getPosts(query,blogId)
         result ? res.status(200).json(result).end() : res.status(404).end()
         return
     },

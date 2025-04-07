@@ -4,7 +4,7 @@ import {ObjectId, WithId} from "mongodb";
 import {BlogDbType} from "../../../db/types";
 
 export const blogsQueryRepository = {
-    async getAllBlogs(query: BlogQueriesType) {
+    async getBlogs(query: BlogQueriesType) {
         const filter: any = {}
 
         if (query.searchNameTerm) {
@@ -16,7 +16,7 @@ export const blogsQueryRepository = {
             .limit(query.pageSize)
             .toArray()
 
-        const totalCount = await this.getTotalCount(query)
+        const totalCount = await blogCollection.countDocuments(filter)
 
         return {
             items: blogs.map(this._blogMap),
@@ -30,14 +30,6 @@ export const blogsQueryRepository = {
         const blog = await blogCollection.findOne({_id: new ObjectId(id)})
         return blog ? this._blogMap(blog) : undefined
 
-    },
-
-    async getTotalCount(query: BlogQueriesType) {
-        const filter: any = {}
-        if (query.searchNameTerm) {
-            filter.name = {$regex: query.searchNameTerm, $options: "i"};
-        }
-        return blogCollection.countDocuments(filter)
     },
 
     _blogMap(blog: WithId<BlogDbType>) {
