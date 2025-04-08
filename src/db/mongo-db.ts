@@ -1,12 +1,13 @@
 import {Collection, Db, MongoClient} from "mongodb";
 import {SETTINGS} from "../settings";
-import {BlogDbType, PostDbType} from "./types";
+import {BlogDbType, PostDbType, UserDbType} from "./types";
 
 const client: MongoClient = new MongoClient(SETTINGS.MONGO_URL);
 export const db: Db = client.db(SETTINGS.DB_NAME);
 
 export const blogCollection: Collection<BlogDbType> = db.collection<BlogDbType>('blogs')
 export const postCollection: Collection<PostDbType> = db.collection<PostDbType>('posts')
+export const userCollection: Collection<UserDbType> = db.collection<UserDbType>('users')
 
 
 export const connectToDB = async () => {
