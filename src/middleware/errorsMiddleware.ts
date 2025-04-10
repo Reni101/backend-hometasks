@@ -9,7 +9,6 @@ export const errorsMiddleware = (req: Request, res: Response, next: NextFunction
         res.status(400).json({
             errorsMessages: eArray.map(x => ({field: x.path, message: x.msg}))
         })
-
         return
     }
 

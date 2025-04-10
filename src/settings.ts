@@ -8,6 +8,7 @@ export const SETTINGS = {
         BLOGS: '/blogs',
         POSTS: '/posts',
         TEST: '/testing',
+        USERS: '/users',
     },
     MONGO_URL: process.env.MONGO_URL || 'mongodb://0.0.0.0:27017',
      DB_NAME: 'blog-platform',

@@ -1,5 +1,5 @@
 import {sortDirectionType} from "./sortDirectionType";
-import {blogsQueries} from "./blogsQueries";
+import {blogQueries} from "./blogQueries";
 import {postQueries} from "./postQueries";
 import {userQueries} from "./userQueries";
 
@@ -26,6 +26,6 @@ export type InputUsersQueryType = {
 }
 
 
-export type BlogQueriesType = ReturnType<typeof blogsQueries>
+export type BlogQueriesType = ReturnType<typeof blogQueries>
 export type PostQueriesType = ReturnType<typeof postQueries>
 export type UserQueriesType = ReturnType<typeof userQueries>

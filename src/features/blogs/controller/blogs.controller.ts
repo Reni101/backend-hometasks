@@ -4,7 +4,7 @@ import {blogBodyValidation, blogIdParam, blogQueryValidation} from "../middlewar
 import {authMiddleware} from "../../../middleware/authMiddleware";
 import {errorsMiddleware} from "../../../middleware/errorsMiddleware";
 import {blogsService} from "../service/blogs.service";
-import {blogsQueries} from "../../../helpers/blogsQueries";
+import {blogQueries} from "../../../helpers/blogQueries";
 import {InputBlogQueryType, InputPostQueryType} from "../../../helpers/types";
 import {postsService} from "../../posts/service/post.service";
 import {postQueries} from "../../../helpers/postQueries";
@@ -18,7 +18,7 @@ export const blogsRouter = Router()
 
 const blogsController = {
     async getAllBlogs(req: Request<{}, {}, {}, InputBlogQueryType>, res: Response,) {
-        const query = blogsQueries(req)
+        const query = blogQueries(req)
         const response = await blogsQueryRepository.getBlogs(query)
         res.status(200).json(response).end()
         return
@@ -31,15 +31,19 @@ const blogsController = {
     async getPostsByBlogId(req: Request<{ blogId: string }, {}, InputPostQueryType>, res: Response,) {
         const {blogId} = req.params
         const query = postQueries(req)
-        const result = await postsQueryRepository.getPosts(query,blogId)
+        const result = await postsQueryRepository.getPosts(query, blogId)
         result ? res.status(200).json(result).end() : res.status(404).end()
         return
     },
     async createPostByBlogId(req: Request<{ blogId: string }, {}, Omit<InputPostBody, 'blogId'>>, res: Response,) {
         const {blogId} = req.params
         const dto = {...req.body, blogId}
-        const newPost = await postsService.createPost(dto)
-        newPost ? res.status(201).json(newPost).end() : res.status(404).end()
+        const blog = await blogsQueryRepository.findBlog(blogId)
+        if (blog) {
+            const newPost = await postsService.createPost(dto, blog)
+            newPost ? res.status(201).json(newPost).end() : res.status(404).end()
+        }
+        res.status(404).end()
         return
     },
 

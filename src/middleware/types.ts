@@ -1,3 +1,5 @@
 export type ErrorsType = {
-    errorsMessages: { message: string, field: string }[]
+    errorsMessages: ErrorType[]
 }
+
+export type ErrorType = { message: string, field: string }

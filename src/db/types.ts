@@ -20,6 +20,5 @@ export type UserDbType = {
     login: string,
     email: string,
     passHash: string,
-    salt: string
     createdAt: string
 }
