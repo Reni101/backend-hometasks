@@ -1,5 +1,5 @@
 import {UserDbType} from "../../../db/types";
-import {blogCollection, userCollection} from "../../../db/mongo-db";
+import {userCollection} from "../../../db/mongo-db";
 import {ObjectId} from "mongodb";
 
 export const usersRepository = {
@@ -15,6 +15,6 @@ export const usersRepository = {
         });
     },
     async deleteUser(id: string) {
-        return blogCollection.deleteOne({_id: new ObjectId(id)})
+        return userCollection.deleteOne({_id: new ObjectId(id)})
     },
 }
