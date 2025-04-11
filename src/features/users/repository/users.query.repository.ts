@@ -5,14 +5,14 @@ import {UserDbType} from "../../../db/types";
 
 export const usersQueryRepository = {
     async getUsers(query: UserQueriesType) {
-        const filter: any = {}
+        const filter: any = {$or: []}
+
         if (query.searchEmailTerm) {
-            filter.email = {$regex: query.searchEmailTerm, $options: "i"};
+            filter.$or.push({email: {$regex: query.searchEmailTerm, $options: 'i'}})
         }
         if (query.searchLoginTerm) {
-            filter.login = {$regex: query.searchLoginTerm, $options: "i"};
+            filter.$or.push({login: {$regex: query.searchLoginTerm, $options: 'i'}})
         }
-
 
         const users = await userCollection.find(filter)
             .sort(query.sortBy, query.sortDirection)
