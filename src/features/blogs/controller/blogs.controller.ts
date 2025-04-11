@@ -31,6 +31,12 @@ const blogsController = {
     async getPostsByBlogId(req: Request<{ blogId: string }, {}, InputPostQueryType>, res: Response,) {
         const {blogId} = req.params
         const query = postQueries(req)
+        const blog = await blogsQueryRepository.findBlog(blogId)
+        if(!blog) {
+             res.status(404).end()
+            return
+        }
+
         const result = await postsQueryRepository.getPosts(query, blogId)
         result ? res.status(200).json(result).end() : res.status(404).end()
         return
