@@ -33,8 +33,12 @@ export const usersService = {
 
     },
 
+    async deleteUser(id: string) {
+        const result = await usersRepository.deleteUser(id)
+        return result.deletedCount ===1
+    },
+
     async _generateHash(password: string, salt: string) {
         return bcrypt.hash(password, salt);
     }
-    // bcrypt.compare(password, hash);
 }

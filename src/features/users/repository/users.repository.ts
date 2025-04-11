@@ -9,6 +9,11 @@ export const usersRepository = {
     async findUniqueUser(dto: { login: string, email: string }) {
         return userCollection.findOne({$or: [{login: dto.login}, {email: dto.email}]});
     },
+    async findByLoginOrEmail(loginOrEmail: string,) {
+        return userCollection.findOne({
+            $or: [{email: loginOrEmail}, {login: loginOrEmail}],
+        });
+    },
     async deleteUser(id: string) {
         return blogCollection.deleteOne({_id: new ObjectId(id)})
     },

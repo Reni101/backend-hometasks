@@ -4,7 +4,7 @@ import {userQueries} from "../../../helpers/userQueries";
 import {usersQueryRepository} from "../repository/users.query.repository";
 import {authMiddleware} from "../../../middleware/authMiddleware";
 import {errorsMiddleware} from "../../../middleware/errorsMiddleware";
-import {userBodyValidation, userQueryValidation} from "../middleware/users.input.validation-middleware";
+import {idParam, userBodyValidation, userQueryValidation} from "../middleware/users.input.validation-middleware";
 import {InputUserBody} from "../types";
 import {usersService} from "../service/users.service";
 
@@ -27,10 +27,15 @@ const usersController = {
         res.status(201).json(user).end()
         return
 
+    },
+    async deleteUser(req: Request< {id:string}>, res: Response) {
+        const isDeleted = await usersService.deleteUser(req.params.id)
+        isDeleted ? res.status(204).end() : res.status(404).end()
+        return
     }
 }
 
 
 usersRouter.get('/', userQueryValidation, authMiddleware, errorsMiddleware, usersController.getUsers)
 usersRouter.post('/', userBodyValidation, authMiddleware, errorsMiddleware, usersController.createUser)
-usersRouter.delete('/:id',)
+usersRouter.delete('/:id',idParam,authMiddleware,errorsMiddleware,usersController.deleteUser)

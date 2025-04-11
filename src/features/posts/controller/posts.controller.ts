@@ -13,19 +13,19 @@ export const postRouter = Router()
 
 
 const postsController = {
-    async getAllPosts(req: Request<{}, {}, {}, InputPostQueryType>, res: Response,) {
+    async getAllPosts(req: Request<{}, {}, {}, InputPostQueryType>, res: Response) {
         const query = postQueries(req)
         const posts = await postsQueryRepository.getPosts(query);
         res.status(200).json(posts).end()
         return
     },
-    async getPostById(req: Request<{ id: string }>, res: Response,) {
+    async getPostById(req: Request<{ id: string }>, res: Response) {
         const blog = await postsQueryRepository.findPost(req.params.id)
         blog ? res.status(200).json(blog).end() : res.status(404).end()
         return
     },
 
-    async createPost(req: Request<{}, {}, InputPostBody>, res: Response,) {
+    async createPost(req: Request<{}, {}, InputPostBody>, res: Response) {
         const blog = await blogsQueryRepository.findBlog(req.body.blogId)
         if (blog) {
             const result = await postsService.createPost(req.body, blog)
