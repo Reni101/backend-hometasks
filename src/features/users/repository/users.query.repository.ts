@@ -5,14 +5,21 @@ import {UserDbType} from "../../../db/types";
 
 export const usersQueryRepository = {
     async getUsers(query: UserQueriesType) {
-        const filter: any = {$or: []}
 
-        if (query.searchEmailTerm) {
-            filter.$or.push({email: {$regex: query.searchEmailTerm, $options: 'i'}})
+        const filter: any = {
+            $or: [
+                {login: {$regex: query.searchLoginTerm, $options: 'i'}},  // Поиск по логину (нечувствительный к регистру)
+                {email: {$regex: query.searchEmailTerm, $options: 'i'}}    // Поиск по email (нечувствительный к регистру)
+            ]
         }
-        if (query.searchLoginTerm) {
-            filter.$or.push({login: {$regex: query.searchLoginTerm, $options: 'i'}})
-        }
+
+
+        // if (query.searchEmailTerm) {
+        //     filter.$or.push({email: {$regex: query.searchEmailTerm, $options: 'i'}})
+        // }
+        // if (query.searchLoginTerm) {
+        //     filter.$or.push({login: {$regex: query.searchLoginTerm, $options: 'i'}})
+        // }
 
         const users = await userCollection.find(filter)
             .sort(query.sortBy, query.sortDirection)
@@ -31,13 +38,20 @@ export const usersQueryRepository = {
         };
     },
 
-    async findUser(id: string) {
+    async findUser(id
+                   :
+                   string
+    ) {
         const user = await userCollection.findOne({_id: new ObjectId(id)})
         return user ? this._userMap(user) : undefined
 
-    },
+    }
+    ,
 
-    _userMap(user: WithId<UserDbType>) {
+    _userMap(user
+             :
+             WithId<UserDbType>
+    ) {
         return {
             id: user._id,
             login: user.login,
