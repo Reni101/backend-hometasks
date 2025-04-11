@@ -6,7 +6,7 @@ const email = body('websiteUrl').isString().trim().isEmail()
 
 const searchLoginTerm = query('searchLoginTerm').optional().isString().trim().isLength({min: 1})
 const searchEmailTerm = query('searchEmailTerm').optional().isString().trim().isLength({min: 1})
-const sortBy = query('sortBy').optional().isString().isIn(['name', 'description', 'websiteUrl', 'createdAt', 'isMembership'])
+const sortBy = query('sortBy').optional().isString().isIn(['login', 'email', 'createdAt',])
 const sortDirection = query('sortDirection').optional().isString().isIn(['asc', 'desc'])
 const pageNumber = query('pageNumber').optional().toInt().isInt({min: 1})
 const pageSize = query('pageSize').optional().toInt().isInt({min: 1})
