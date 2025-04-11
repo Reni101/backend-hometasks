@@ -40,7 +40,8 @@ const blogsController = {
         const dto = {...req.body, blogId}
         const blog = await blogsQueryRepository.findBlog(blogId)
         if (blog) {
-            const newPost = await postsService.createPost(dto, blog)
+            const result = await postsService.createPost(dto, blog)
+            const newPost = await postsQueryRepository.findPost(result.insertedId.toString())
             newPost ? res.status(201).json(newPost).end() : res.status(404).end()
         }
         res.status(404).end()
