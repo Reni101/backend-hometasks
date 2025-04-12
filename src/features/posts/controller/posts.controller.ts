@@ -3,7 +3,7 @@ import {InputPostBody} from "../types";
 import {authMiddleware} from "../../../middleware/authMiddleware";
 import {errorsMiddleware} from "../../../middleware/errorsMiddleware";
 import {postBodyValidation, postQueryValidation} from "../middleware/posts.input.validation-middleware";
-import {InputPostQueryType} from "../../../helpers/types";
+import {IInputPostQuery} from "../../../helpers/queryTypes";
 import {postQueries} from "../../../helpers/postQueries";
 import {postsService} from "../service/post.service";
 import {postsQueryRepository} from "../repository/posts.query.repository";
@@ -13,7 +13,7 @@ export const postRouter = Router()
 
 
 const postsController = {
-    async getAllPosts(req: Request<{}, {}, {}, InputPostQueryType>, res: Response) {
+    async getAllPosts(req: Request<{}, {}, {}, IInputPostQuery>, res: Response) {
         const query = postQueries(req)
         const posts = await postsQueryRepository.getPosts(query);
         res.status(200).json(posts).end()

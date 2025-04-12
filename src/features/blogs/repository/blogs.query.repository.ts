@@ -1,4 +1,4 @@
-import {BlogQueriesType} from "../../../helpers/types";
+import {BlogQueriesType} from "../../../helpers/queryTypes";
 import {blogCollection} from "../../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {BlogDbType} from "../../../db/types";

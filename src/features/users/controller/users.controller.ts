@@ -1,5 +1,5 @@
 import {Request, Response, Router} from "express";
-import {InputUsersQueryType} from "../../../helpers/types";
+import {IInputUsersQuery} from "../../../helpers/queryTypes";
 import {userQueries} from "../../../helpers/userQueries";
 import {usersQueryRepository} from "../repository/users.query.repository";
 import {authMiddleware} from "../../../middleware/authMiddleware";
@@ -11,7 +11,7 @@ import {usersService} from "../service/users.service";
 export const usersRouter = Router()
 
 const usersController = {
-    async getUsers(req: Request<{}, {}, {}, InputUsersQueryType>, res: Response,) {
+    async getUsers(req: Request<{}, {}, {}, IInputUsersQuery>, res: Response,) {
         const query = userQueries(req)
         const response = await usersQueryRepository.getUsers(query)
         res.status(200).json(response).end()

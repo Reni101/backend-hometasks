@@ -1,39 +1,62 @@
 import {Request, Response, Router} from "express";
-import {InputBlogBody} from "../types";
+import {InputBlogBody, InputPostByBlogBody} from "../types";
 import {blogBodyValidation, blogIdParam, blogQueryValidation} from "../middleware/blogs.input.validation-middleware";
 import {authMiddleware} from "../../../middleware/authMiddleware";
 import {errorsMiddleware} from "../../../middleware/errorsMiddleware";
 import {blogsService} from "../service/blogs.service";
 import {blogQueries} from "../../../helpers/blogQueries";
-import {InputBlogQueryType, InputPostQueryType} from "../../../helpers/types";
+import {IInputBlogQuery, IInputPostQuery} from "../../../helpers/queryTypes";
 import {postsService} from "../../posts/service/post.service";
 import {postQueries} from "../../../helpers/postQueries";
 import {postBodyValidation, postQueryValidation} from "../../posts/middleware/posts.input.validation-middleware";
-import {InputPostBody} from "../../posts/types";
 import {blogsQueryRepository} from "../repository/blogs.query.repository";
 import {postsQueryRepository} from "../../posts/repository/posts.query.repository";
+import {
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParAndBody,
+    RequestWithQuery
+} from "../../../common/types/requests";
 
 export const blogsRouter = Router()
 
 
 const blogsController = {
-    async getAllBlogs(req: Request<{}, {}, {}, InputBlogQueryType>, res: Response,) {
+    async getAllBlogs(req: RequestWithQuery<IInputBlogQuery>, res: Response,) {
         const query = blogQueries(req)
         const response = await blogsQueryRepository.getBlogs(query)
         res.status(200).json(response).end()
         return
     },
-    async getBlogById(req: Request<{ id: string }>, res: Response,) {
+    async getBlogById(req: RequestWithParams<{ id: string }>, res: Response,) {
         const blog = await blogsQueryRepository.findBlog(req.params.id)
         blog ? res.status(200).json(blog).end() : res.status(404).end()
         return
     },
-    async getPostsByBlogId(req: Request<{ blogId: string }, {}, InputPostQueryType>, res: Response,) {
+
+    async createBlog(req: RequestWithBody<InputBlogBody>, res: Response,) {
+        const result = await blogsService.createBlog(req.body)
+        const newBlog = await blogsQueryRepository.findBlog(result.insertedId.toString())
+        res.status(201).json(newBlog).end()
+        return
+    },
+
+    async updateBlog(req: RequestWithParAndBody<{ id: string }, InputBlogBody>, res: Response,) {
+        const isUpdated = await blogsService.updateBlog(req.body, req.params.id)
+        isUpdated ? res.status(204).end() : res.status(404).end();
+        return
+    },
+    async deleteBlog(req: Request<{ id: string }>, res: Response,) {
+        const isDeleted = await blogsService.deleteBlog(req.params.id)
+        isDeleted ? res.status(204).end() : res.status(404).end()
+        return
+    },
+    async getPostsByBlogId(req: RequestWithParAndBody<{ blogId: string }, IInputPostQuery>, res: Response,) {
         const {blogId} = req.params
         const query = postQueries(req)
         const blog = await blogsQueryRepository.findBlog(blogId)
-        if(!blog) {
-             res.status(404).end()
+        if (!blog) {
+            res.status(404).end()
             return
         }
 
@@ -41,7 +64,8 @@ const blogsController = {
         result ? res.status(200).json(result).end() : res.status(404).end()
         return
     },
-    async createPostByBlogId(req: Request<{ blogId: string }, {}, Omit<InputPostBody, 'blogId'>>, res: Response,) {
+
+    async createPostByBlogId(req: RequestWithParAndBody<{ blogId: string }, InputPostByBlogBody>, res: Response,) {
         const {blogId} = req.params
         const dto = {...req.body, blogId}
         const blog = await blogsQueryRepository.findBlog(blogId)
@@ -53,23 +77,6 @@ const blogsController = {
         res.status(404).end()
         return
     },
-
-    async createBlog(req: Request<{}, {}, InputBlogBody>, res: Response,) {
-        const result = await blogsService.createBlog(req.body)
-        const newBlog = await blogsQueryRepository.findBlog(result.insertedId.toString())
-        res.status(201).json(newBlog).end()
-        return
-    },
-    async updateBlog(req: Request<{ id: string }, {}, InputBlogBody>, res: Response,) {
-        const isUpdated = await blogsService.updateBlog(req.body, req.params.id)
-        isUpdated ? res.status(204).end() : res.status(404).end();
-        return
-    },
-    async deleteBlog(req: Request<{ id: string }>, res: Response,) {
-        const isDeleted = await blogsService.deleteBlog(req.params.id)
-        isDeleted ? res.status(204).end() : res.status(404).end()
-        return
-    }
 }
 
 blogsRouter.get('/', blogQueryValidation, errorsMiddleware, blogsController.getAllBlogs)
