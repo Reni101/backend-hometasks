@@ -12,36 +12,36 @@ import {postBodyValidation, postQueryValidation} from "../../posts/middleware/po
 import {blogsQueryRepository} from "../repository/blogs.query.repository";
 import {postsQueryRepository} from "../../posts/repository/posts.query.repository";
 import {
-    RequestWithBody,
-    RequestWithParams,
-    RequestWithParAndBody,
-    RequestWithQuery
+    ReqWithBody,
+    ReqWithParams,
+    ReqWithParAndBody,
+    ReqWithQuery
 } from "../../../common/types/requests";
 
 export const blogsRouter = Router()
 
 
 const blogsController = {
-    async getAllBlogs(req: RequestWithQuery<IInputBlogQuery>, res: Response,) {
+    async getAllBlogs(req: ReqWithQuery<IInputBlogQuery>, res: Response,) {
         const query = blogQueries(req)
         const response = await blogsQueryRepository.getBlogs(query)
         res.status(200).json(response).end()
         return
     },
-    async getBlogById(req: RequestWithParams<{ id: string }>, res: Response,) {
+    async getBlogById(req: ReqWithParams<{ id: string }>, res: Response,) {
         const blog = await blogsQueryRepository.findBlog(req.params.id)
         blog ? res.status(200).json(blog).end() : res.status(404).end()
         return
     },
 
-    async createBlog(req: RequestWithBody<InputBlogBody>, res: Response,) {
+    async createBlog(req: ReqWithBody<InputBlogBody>, res: Response,) {
         const result = await blogsService.createBlog(req.body)
         const newBlog = await blogsQueryRepository.findBlog(result.insertedId.toString())
         res.status(201).json(newBlog).end()
         return
     },
 
-    async updateBlog(req: RequestWithParAndBody<{ id: string }, InputBlogBody>, res: Response,) {
+    async updateBlog(req: ReqWithParAndBody<{ id: string }, InputBlogBody>, res: Response,) {
         const isUpdated = await blogsService.updateBlog(req.body, req.params.id)
         isUpdated ? res.status(204).end() : res.status(404).end();
         return
@@ -51,7 +51,7 @@ const blogsController = {
         isDeleted ? res.status(204).end() : res.status(404).end()
         return
     },
-    async getPostsByBlogId(req: RequestWithParAndBody<{ blogId: string }, IInputPostQuery>, res: Response,) {
+    async getPostsByBlogId(req: ReqWithParAndBody<{ blogId: string }, IInputPostQuery>, res: Response,) {
         const {blogId} = req.params
         const query = postQueries(req)
         const blog = await blogsQueryRepository.findBlog(blogId)
@@ -65,7 +65,7 @@ const blogsController = {
         return
     },
 
-    async createPostByBlogId(req: RequestWithParAndBody<{ blogId: string }, InputPostByBlogBody>, res: Response,) {
+    async createPostByBlogId(req: ReqWithParAndBody<{ blogId: string }, InputPostByBlogBody>, res: Response,) {
         const {blogId} = req.params
         const dto = {...req.body, blogId}
         const blog = await blogsQueryRepository.findBlog(blogId)

@@ -1,8 +1,8 @@
-import {Request} from "express";
 import {IInputPostQuery} from "./queryTypes";
 import {SortDirection} from "mongodb";
+import {ReqWithQuery} from "../common/types/requests";
 
-export const postQueries = (req: Request<{}, {}, {}, IInputPostQuery>) => {
+export const postQueries = (req: ReqWithQuery<IInputPostQuery>) => {
     const query = req.query;
     return {
         pageNumber: query.pageNumber ? +query.pageNumber : 1,
