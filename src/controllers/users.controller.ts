@@ -1,13 +1,13 @@
 import {Response, Router} from "express";
-import {IInputUsersQuery} from "../../../helpers/queryTypes";
-import {userQueries} from "../../../helpers/userQueries";
-import {usersQueryRepository} from "../repository/users.query.repository";
-import {authMiddleware} from "../../../middleware/authMiddleware";
-import {errorsMiddleware} from "../../../middleware/errorsMiddleware";
+import {IInputUsersQuery} from "../helpers/queryTypes";
+import {userQueries} from "../helpers/userQueries";
+import {usersQueryRepository} from "../repositories/users/users.query.repository";
+import {authMiddleware} from "../middleware/authMiddleware";
+import {errorsMiddleware} from "../middleware/errorsMiddleware";
 import {idParam, userBodyValidation, userQueryValidation} from "../middleware/users.input.validation-middleware";
-import {InputUserBody} from "../types";
-import {usersService} from "../service/users.service";
-import {ReqWithBody, ReqWithParams, ReqWithQuery} from "../../../common/types/requests";
+import {InputUserBody} from "../common/types/users.types";
+import {usersService} from "../services/users.service";
+import {ReqWithBody, ReqWithParams, ReqWithQuery} from "../common/types/requests";
 
 export const usersRouter = Router()
 

@@ -1,9 +1,9 @@
 import {ObjectId} from "mongodb";
-import {BlogDbType, PostDbType} from "../../../db/types";
-import {postsRepository} from "../repository/posts.repository";
-import {InputPostBody} from "../types";
-import {blogsQueryRepository} from "../../blogs/repository/blogs.query.repository";
-import {postsQueryRepository} from "../repository/posts.query.repository";
+import {BlogDbType, PostDbType} from "../db/types";
+import {postsRepository} from "../repositories/posts/posts.repository";
+import {InputPostBody} from "../common/types/posts.types";
+import {blogsQueryRepository} from "../repositories/blogs/blogs.query.repository";
+import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
 
 
 export const postsService = {

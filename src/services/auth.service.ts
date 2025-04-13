@@ -1,5 +1,5 @@
-import {loginInputBody} from "../types";
-import {usersRepository} from "../../users/repository/users.repository";
+import {loginInputBody} from "../common/types/auth.types";
+import {usersRepository} from "../repositories/users/users.repository";
 import bcrypt from "bcrypt";
 
 export const authService = {

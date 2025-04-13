@@ -1,22 +1,22 @@
 import {Request, Response, Router} from "express";
-import {InputBlogBody, InputPostByBlogBody} from "../types";
+import {InputBlogBody, InputPostByBlogBody} from "../common/types/blogs.types";
 import {blogBodyValidation, blogIdParam, blogQueryValidation} from "../middleware/blogs.input.validation-middleware";
-import {authMiddleware} from "../../../middleware/authMiddleware";
-import {errorsMiddleware} from "../../../middleware/errorsMiddleware";
-import {blogsService} from "../service/blogs.service";
-import {blogQueries} from "../../../helpers/blogQueries";
-import {IInputBlogQuery, IInputPostQuery} from "../../../helpers/queryTypes";
-import {postsService} from "../../posts/service/post.service";
-import {postQueries} from "../../../helpers/postQueries";
-import {postBodyValidation, postQueryValidation} from "../../posts/middleware/posts.input.validation-middleware";
-import {blogsQueryRepository} from "../repository/blogs.query.repository";
-import {postsQueryRepository} from "../../posts/repository/posts.query.repository";
+import {authMiddleware} from "../middleware/authMiddleware";
+import {errorsMiddleware} from "../middleware/errorsMiddleware";
+import {blogsService} from "../services/blogs.service";
+import {blogQueries} from "../helpers/blogQueries";
+import {IInputBlogQuery, IInputPostQuery} from "../helpers/queryTypes";
+import {postsService} from "../services/post.service";
+import {postQueries} from "../helpers/postQueries";
+import {postBodyValidation, postQueryValidation} from "../middleware/posts.input.validation-middleware";
+import {blogsQueryRepository} from "../repositories/blogs/blogs.query.repository";
+import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
 import {
     ReqWithBody,
     ReqWithParams,
     ReqWithParAndBody,
     ReqWithQuery
-} from "../../../common/types/requests";
+} from "../common/types/requests";
 
 export const blogsRouter = Router()
 

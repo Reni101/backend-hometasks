@@ -1,11 +1,11 @@
 import express from 'express'
 import cors from 'cors'
 import {SETTINGS} from "./settings";
-import {blogsRouter} from "./features/blogs/controller/blogs.controller";
-import {postRouter} from "./features/posts/controller/posts.controller";
-import {testRouter} from "./test/test.controller";
-import {usersRouter} from "./features/users/controller/users.controller";
-import {authRouter} from "./features/auth/controller/auth.controller";
+import {blogsRouter} from "./controllers/blogs.controller";
+import {postRouter} from "./controllers/posts.controller";
+import {testRouter} from "./controllers/test.controller";
+import {usersRouter} from "./controllers/users.controller";
+import {authRouter} from "./controllers/auth.controller";
 
 
 export const app = express()

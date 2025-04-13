@@ -1,6 +1,6 @@
-import {InputBlogBody} from "../types";
-import {BlogDbType} from "../../../db/types";
-import {blogCollection} from "../../../db/mongo-db";
+import {InputBlogBody} from "../../common/types/blogs.types";
+import {BlogDbType} from "../../db/types";
+import {blogCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
 
 export const blogsRepository = {

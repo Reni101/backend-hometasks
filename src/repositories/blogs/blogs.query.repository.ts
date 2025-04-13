@@ -1,7 +1,7 @@
-import {BlogQueriesType} from "../../../helpers/queryTypes";
-import {blogCollection} from "../../../db/mongo-db";
+import {BlogQueriesType} from "../../helpers/queryTypes";
+import {blogCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
-import {BlogDbType} from "../../../db/types";
+import {BlogDbType} from "../../db/types";
 
 export const blogsQueryRepository = {
     async getBlogs(query: BlogQueriesType) {

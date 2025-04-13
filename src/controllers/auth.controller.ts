@@ -1,8 +1,8 @@
 import {Request, Response, Router} from "express";
-import {loginInputBody} from "../types";
-import {authService} from "../service/auth.service";
+import {loginInputBody} from "../common/types/auth.types";
+import {authService} from "../services/auth.service";
 import {loginBodyValidation} from "../middleware/auth.input.validation-middleware";
-import {errorsMiddleware} from "../../../middleware/errorsMiddleware";
+import {errorsMiddleware} from "../middleware/errorsMiddleware";
 
 
 export const authRouter = Router()

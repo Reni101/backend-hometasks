@@ -1,7 +1,7 @@
-import {InputPostBody} from "../types";
-import {postCollection} from "../../../db/mongo-db";
+import {InputPostBody} from "../../common/types/posts.types";
+import {postCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
-import {PostDbType} from "../../../db/types";
+import {PostDbType} from "../../db/types";
 
 export const postsRepository = {
     async createPost(newPost: PostDbType) {

@@ -1,14 +1,14 @@
 import {Response, Router} from "express";
-import {InputPostBody} from "../types";
-import {authMiddleware} from "../../../middleware/authMiddleware";
-import {errorsMiddleware} from "../../../middleware/errorsMiddleware";
+import {InputPostBody} from "../common/types/posts.types";
+import {authMiddleware} from "../middleware/authMiddleware";
+import {errorsMiddleware} from "../middleware/errorsMiddleware";
 import {postBodyValidation, postQueryValidation} from "../middleware/posts.input.validation-middleware";
-import {IInputPostQuery} from "../../../helpers/queryTypes";
-import {postQueries} from "../../../helpers/postQueries";
-import {postsService} from "../service/post.service";
-import {postsQueryRepository} from "../repository/posts.query.repository";
-import {blogsQueryRepository} from "../../blogs/repository/blogs.query.repository";
-import {ReqWithBody, ReqWithParams, ReqWithParAndBody, ReqWithQuery} from "../../../common/types/requests";
+import {IInputPostQuery} from "../helpers/queryTypes";
+import {postQueries} from "../helpers/postQueries";
+import {postsService} from "../services/post.service";
+import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
+import {blogsQueryRepository} from "../repositories/blogs/blogs.query.repository";
+import {ReqWithBody, ReqWithParams, ReqWithParAndBody, ReqWithQuery} from "../common/types/requests";
 
 export const postRouter = Router()
 

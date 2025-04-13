@@ -16,6 +16,7 @@
   "scripts": {
     "watch": "tsc -w",
     "dev": "nodemon --inspect dist/index.js",
+    "dev -ts": "yarn nodemon --inspect src/index.ts",
     "jest": "jest -i",
     "jest:coverage": "jest -i --coverage"
   },
