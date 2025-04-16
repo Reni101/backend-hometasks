@@ -37,20 +37,18 @@ export const usersQueryRepository = {
         };
     },
 
-    async findUser(id
-                   :
-                   string
-    ) {
+    async findUser(id: string) {
         const user = await userCollection.findOne({_id: new ObjectId(id)})
         return user ? this._userMap(user) : undefined
 
-    }
-    ,
+    },
+    async findMeUser(id: string) {
+        const user = await userCollection.findOne({_id: new ObjectId(id)})
+        return user ? this._userMeMap(user) : undefined
 
-    _userMap(user
-             :
-             WithId<UserDbType>
-    ) {
+    },
+
+    _userMap(user: WithId<UserDbType>) {
         return {
             id: user._id,
             login: user.login,
@@ -58,6 +56,12 @@ export const usersQueryRepository = {
             createdAt: user.createdAt,
 
         }
-
+    },
+    _userMeMap(user: WithId<UserDbType>) {
+        return {
+            userId: user._id,
+            login: user.login,
+            email: user.email,
+        }
     }
 }
