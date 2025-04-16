@@ -1,29 +1,28 @@
-import {blogQueries} from "./blogQueries";
-import {postQueries} from "./postQueries";
-import {userQueries} from "./userQueries";
+import {blogQueries} from "../../helpers/blogQueries";
+import {postQueries} from "../../helpers/postQueries";
+import {userQueries} from "../../helpers/userQueries";
 
 
 export type sortDirectionType = 'asc' | 'desc';
 
-export interface IPaging {
+export type PagingSortType = {
     sortBy?: string,
     sortDirection?: sortDirectionType
     pageNumber?: number,
     pageSize?: number,
 }
 
-export interface IInputBlogQuery extends IPaging {
+
+export type InputBlogsQueryType = {
     searchNameTerm?: string | null,
-}
+} & PagingSortType
 
-export interface IInputPostQuery extends IPaging {
+export type InputPostsQueryType = PagingSortType
 
-}
-
-export interface IInputUsersQuery extends IPaging {
+export type InputUsersQueryType = {
     searchLoginTerm?: string | null,
     searchEmailTerm?: string | null,
-}
+} & PagingSortType
 
 
 export type BlogQueriesType = ReturnType<typeof blogQueries>

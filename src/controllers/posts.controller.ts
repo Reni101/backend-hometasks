@@ -1,9 +1,9 @@
 import {Response, Router} from "express";
-import {InputPostBody} from "../common/types/posts.types";
-import {authMiddleware} from "../middleware/authMiddleware";
+import {InputPostBody} from "../common/types/input/posts.type";
+import {authBasicMiddleware} from "../middleware/auth.basic.middleware";
 import {errorsMiddleware} from "../middleware/errorsMiddleware";
-import {postBodyValidation, postQueryValidation} from "../middleware/posts.input.validation-middleware";
-import {IInputPostQuery} from "../helpers/queryTypes";
+import {postBodyValidation, postQueryValidation} from "../middleware/validations/posts.input.validation-middleware";
+import {InputPostsQueryType} from "../common/types/query.types";
 import {postQueries} from "../helpers/postQueries";
 import {postsService} from "../services/post.service";
 import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
@@ -14,7 +14,7 @@ export const postRouter = Router()
 
 
 const postsController = {
-    async getAllPosts(req: ReqWithQuery<IInputPostQuery>, res: Response) {
+    async getAllPosts(req: ReqWithQuery<InputPostsQueryType>, res: Response) {
         const query = postQueries(req)
         const posts = await postsQueryRepository.getPosts(query);
         res.status(200).json(posts).end()
@@ -53,6 +53,6 @@ const postsController = {
 
 postRouter.get('/', postQueryValidation, errorsMiddleware, postsController.getAllPosts)
 postRouter.get('/:id', postsController.getPostById)
-postRouter.post('/', authMiddleware, postBodyValidation, errorsMiddleware, postsController.createPost)
-postRouter.put('/:id', authMiddleware, postBodyValidation, errorsMiddleware, postsController.updatePost)
-postRouter.delete('/:id', authMiddleware, postsController.deletePost)
+postRouter.post('/', authBasicMiddleware, postBodyValidation, errorsMiddleware, postsController.createPost)
+postRouter.put('/:id', authBasicMiddleware, postBodyValidation, errorsMiddleware, postsController.updatePost)
+postRouter.delete('/:id', authBasicMiddleware, postsController.deletePost)

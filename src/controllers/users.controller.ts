@@ -1,18 +1,18 @@
 import {Response, Router} from "express";
-import {IInputUsersQuery} from "../helpers/queryTypes";
+import {InputUsersQueryType} from "../common/types/query.types";
 import {userQueries} from "../helpers/userQueries";
 import {usersQueryRepository} from "../repositories/users/users.query.repository";
-import {authMiddleware} from "../middleware/authMiddleware";
+import {authBasicMiddleware} from "../middleware/auth.basic.middleware";
 import {errorsMiddleware} from "../middleware/errorsMiddleware";
-import {idParam, userBodyValidation, userQueryValidation} from "../middleware/users.input.validation-middleware";
-import {InputUserBody} from "../common/types/users.types";
+import {idParam, userBodyValidation, userQueryValidation} from "../middleware/validations/users.input.validation-middleware";
+import {InputUserBody} from "../common/types/input/users.type";
 import {usersService} from "../services/users.service";
 import {ReqWithBody, ReqWithParams, ReqWithQuery} from "../common/types/requests";
 
 export const usersRouter = Router()
 
 const usersController = {
-    async getUsers(req: ReqWithQuery<IInputUsersQuery>, res: Response,) {
+    async getUsers(req: ReqWithQuery<InputUsersQueryType>, res: Response,) {
         const query = userQueries(req)
         const response = await usersQueryRepository.getUsers(query)
         res.status(200).json(response).end()
@@ -37,6 +37,6 @@ const usersController = {
 }
 
 
-usersRouter.get('/', userQueryValidation, authMiddleware, errorsMiddleware, usersController.getUsers)
-usersRouter.post('/', userBodyValidation, authMiddleware, errorsMiddleware, usersController.createUser)
-usersRouter.delete('/:id', idParam, authMiddleware, errorsMiddleware, usersController.deleteUser)
+usersRouter.get('/', userQueryValidation, authBasicMiddleware, errorsMiddleware, usersController.getUsers)
+usersRouter.post('/', userBodyValidation, authBasicMiddleware, errorsMiddleware, usersController.createUser)
+usersRouter.delete('/:id', idParam, authBasicMiddleware, errorsMiddleware, usersController.deleteUser)

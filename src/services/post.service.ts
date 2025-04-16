@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
 import {BlogDbType, PostDbType} from "../db/types";
 import {postsRepository} from "../repositories/posts/posts.repository";
-import {InputPostBody} from "../common/types/posts.types";
+import {InputPostBody} from "../common/types/input/posts.type";
 import {blogsQueryRepository} from "../repositories/blogs/blogs.query.repository";
 import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
 
@@ -20,11 +20,11 @@ export const postsService = {
             return postsRepository.createPost(newPost)
     },
 
-    async updatePost(dto: InputPostBody, id: string) {
+    async updatePost(dto: InputPostBody, postId: string) {
         const blog = await blogsQueryRepository.findBlog(dto.blogId)
-        const post = await postsQueryRepository.findPost(id)
+        const post = await postsQueryRepository.findPost(postId)
         if (blog && post) {
-            const result = await postsRepository.updatePost(dto, id)
+            const result = await postsRepository.updatePost(dto, postId)
             return result.modifiedCount === 1
         }
         return false

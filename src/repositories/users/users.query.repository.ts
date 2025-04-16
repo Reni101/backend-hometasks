@@ -1,4 +1,4 @@
-import {UserQueriesType} from "../../helpers/queryTypes";
+import {UserQueriesType} from "../../common/types/query.types";
 import {userCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {UserDbType} from "../../db/types";

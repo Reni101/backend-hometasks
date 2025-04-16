@@ -1,4 +1,4 @@
-import {InputPostBody} from "../../common/types/posts.types";
+import {InputPostBody} from "../../common/types/input/posts.type";
 import {postCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {PostDbType} from "../../db/types";
@@ -8,9 +8,14 @@ export const postsRepository = {
         return postCollection.insertOne(newPost);
     },
 
-    async updatePost(dto: InputPostBody, id: string) {
-        return postCollection.updateOne({_id: new ObjectId(id)}, {
-            $set: {...dto, blogId: new ObjectId(dto.blogId)},
+    async updatePost(dto: InputPostBody, postId: string) {
+        return postCollection.updateOne({_id: new ObjectId(postId)}, {
+            $set: {
+                title: dto.title,
+                shortDescription: dto.shortDescription,
+                content: dto.content,
+                blogId: new ObjectId(dto.blogId)
+            },
         })
     },
 

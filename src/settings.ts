@@ -12,5 +12,6 @@ export const SETTINGS = {
         AUTH: '/auth',
     },
     MONGO_URL: process.env.MONGO_URL || 'mongodb://0.0.0.0:27017',
-     DB_NAME: 'blog-platform',
+    DB_NAME: 'blog-platform',
+    SECRET_KEY: process.env.SEKRETY_KEY || '123',
 }

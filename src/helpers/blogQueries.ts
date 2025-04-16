@@ -1,8 +1,8 @@
-import {IInputBlogQuery} from "./queryTypes";
+import {InputBlogsQueryType} from "../common/types/query.types";
 import {SortDirection} from "mongodb";
 import {ReqWithQuery} from "../common/types/requests";
 
-export const blogQueries = (req: ReqWithQuery< IInputBlogQuery>) => {
+export const blogQueries = (req: ReqWithQuery< InputBlogsQueryType>) => {
     const query = req.query;
     return {
         pageNumber: query.pageNumber ? +query.pageNumber : 1,

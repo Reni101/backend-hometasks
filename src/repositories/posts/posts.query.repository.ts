@@ -1,6 +1,6 @@
 import {postCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
-import {PostQueriesType} from "../../helpers/queryTypes";
+import {PostQueriesType} from "../../common/types/query.types";
 import {PostDbType} from "../../db/types";
 
 export const postsQueryRepository = {

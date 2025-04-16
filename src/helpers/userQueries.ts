@@ -1,8 +1,8 @@
-import {IInputUsersQuery} from "./queryTypes";
+import {InputUsersQueryType} from "../common/types/query.types";
 import {SortDirection} from "mongodb";
 import {ReqWithQuery} from "../common/types/requests";
 
-export const userQueries = (req: ReqWithQuery<IInputUsersQuery>) => {
+export const userQueries = (req: ReqWithQuery<InputUsersQueryType>) => {
     const query = req.query;
     return {
         pageNumber: query.pageNumber ? +query.pageNumber : 1,

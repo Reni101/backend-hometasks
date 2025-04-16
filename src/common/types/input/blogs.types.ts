@@ -1,4 +1,4 @@
-import {InputPostBody} from "./posts.types";
+import {InputPostBody} from "./posts.type";
 
 export type InputBlogBody = {
     name: string,
