@@ -1,7 +1,10 @@
+import {CommentsDbType} from "../../db/types";
+import {commentsCollection} from "../../db/mongo-db";
+
 export const commentsRepository = {
-    // async createPost(newPost: PostDbType) {
-    //     return postCollection.insertOne(newPost);
-    // },
+    async createPost(newComment: CommentsDbType) {
+        return commentsCollection.insertOne(newComment);
+    },
     //
     // async updatePost(dto: InputPostBody, postId: string) {
     //     return postCollection.updateOne({_id: new ObjectId(postId)}, {

@@ -4,7 +4,8 @@ import {authBasicMiddleware} from "../middleware/auth.basic.middleware";
 import {errorsMiddleware} from "../middleware/errorsMiddleware";
 import {
     commentsQueryValidation,
-    postBodyValidation, postContent,
+    postBodyValidation,
+    postContent,
     postQueryValidation
 } from "../middleware/validations/posts.input.validation-middleware";
 import {InputPostsQueryType} from "../common/types/query.types";
@@ -16,6 +17,7 @@ import {ReqWithBody, ReqWithParams, ReqWithParAndBody, ReqWithQuery} from "../co
 import {commentQueries} from "../helpers/commentQueries";
 import {commentsQueryRepository} from "../repositories/comments/comments.query.repository";
 import {authBearerMiddleware} from "../middleware/auth.bearer.middleware";
+import {commentsService} from "../services/comments.service";
 
 export const postRouter = Router()
 
@@ -69,7 +71,16 @@ const postsController = {
     },
 
     async createCommentByPostId(req: ReqWithParAndBody<{ postId: string }, { content: string }>, res: Response) {
-        req.userId
+        const post = await postsQueryRepository.findPost(req.params.postId)
+        if (!post) {
+            res.status(404).end()
+            return
+        }
+
+        const payload = {postId: post.id.toString(), content: req.body.content, userId: req.userId!}
+        const result = await commentsService.createComments(payload)
+
+        // userId content postId/ мне ещё нужен userLogin
     }
 }
 
