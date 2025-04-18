@@ -22,3 +22,9 @@ export type UserDbType = {
     passHash: string,
     createdAt: string
 }
+export type CommentsDbType = {
+    content: string,
+    commentatorInfo: { userId: string, userLogin: string },
+    createdAt: string,
+    postId:ObjectId
+}

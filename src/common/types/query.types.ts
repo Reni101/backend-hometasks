@@ -1,6 +1,7 @@
 import {blogQueries} from "../../helpers/blogQueries";
 import {postQueries} from "../../helpers/postQueries";
 import {userQueries} from "../../helpers/userQueries";
+import {commentQueries} from "../../helpers/commentQueries";
 
 
 export type sortDirectionType = 'asc' | 'desc';
@@ -18,6 +19,7 @@ export type InputBlogsQueryType = {
 } & PagingSortType
 
 export type InputPostsQueryType = PagingSortType
+export type InputCommentsQueryType = PagingSortType
 
 export type InputUsersQueryType = {
     searchLoginTerm?: string | null,
@@ -28,3 +30,4 @@ export type InputUsersQueryType = {
 export type BlogQueriesType = ReturnType<typeof blogQueries>
 export type PostQueriesType = ReturnType<typeof postQueries>
 export type UserQueriesType = ReturnType<typeof userQueries>
+export type CommentQueriesType = ReturnType<typeof commentQueries>
