@@ -2,7 +2,7 @@ import {InputUserBody} from "../common/types/input/users.type";
 import bcrypt from "bcrypt";
 import {UserDbType} from "../db/types";
 import {usersRepository} from "../repositories/users/users.repository";
-import {ErrorType} from "../controllers/errors.types";
+import {ErrorType} from "../common/types/errors.types";
 
 export const usersService = {
     async createUser(dto: InputUserBody) {

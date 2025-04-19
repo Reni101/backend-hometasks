@@ -60,7 +60,7 @@ const postsController = {
 
     async getCommentsByPostId(req: ReqWithParams<{ postId: string }>, res: Response) {
         const query = commentQueries(req)
-        const post = postsQueryRepository.findPost(req.params.postId)
+        const post = await postsQueryRepository.findPost(req.params.postId)
         if (!post) {
             res.status(404).end()
             return
