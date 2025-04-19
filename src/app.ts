@@ -6,6 +6,7 @@ import {postRouter} from "./controllers/posts.controller";
 import {testRouter} from "./controllers/test.controller";
 import {usersRouter} from "./controllers/users.controller";
 import {authRouter} from "./controllers/auth.controller";
+import {commentsRouter} from "./controllers/comments.controller";
 
 
 export const app = express()
@@ -18,3 +19,4 @@ app.use( SETTINGS.PATH.POSTS, postRouter)
 app.use( SETTINGS.PATH.USERS, usersRouter)
 app.use( SETTINGS.PATH.AUTH, authRouter)
 app.use( SETTINGS.PATH.TEST, testRouter)
+app.use( SETTINGS.PATH.COMMENTS, commentsRouter)

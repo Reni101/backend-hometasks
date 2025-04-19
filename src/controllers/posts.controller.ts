@@ -78,7 +78,7 @@ const postsController = {
         }
 
         const payload = {postId: post.id.toString(), content: req.body.content, userId: req.userId!}
-        const result = await commentsService.createComments(payload)
+        const result = await commentsService.createComment(payload)
         if(result){
             const newComment = await commentsQueryRepository.findComment(result.insertedId.toString())
             newComment ? res.status(201).json(newComment).end() : res.status(404).end()

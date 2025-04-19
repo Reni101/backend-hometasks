@@ -11,7 +11,9 @@ const pageNumber = query('pageNumber').optional().toInt().isInt({min: 1})
 const pageSize = query('pageSize').optional().toInt().isInt({min: 1})
 
 const sortByComment = query('sortBy').optional().isString().isIn(['content', 'userLogin' , 'createdAt'])
+
 export const postContent = body('content').isString().trim().isLength({min: 20, max: 300})
+export const commentId = query('commentId').isMongoId()
 
 export const postBodyValidation = [title, shortDescription, content]
 export const postQueryValidation = [sortByPost, sortDirection, pageNumber, pageSize]

@@ -1,21 +1,18 @@
 import {CommentsDbType} from "../../db/types";
 import {commentsCollection} from "../../db/mongo-db";
+import {ObjectId} from "mongodb";
+import {InputCommentBody} from "../../common/types/input/comments.types";
 
 export const commentsRepository = {
-    async createPost(newComment: CommentsDbType) {
+    async createComment(newComment: CommentsDbType) {
         return commentsCollection.insertOne(newComment);
     },
-    //
-    // async updatePost(dto: InputPostBody, postId: string) {
-    //     return postCollection.updateOne({_id: new ObjectId(postId)}, {
-    //         $set: {
-    //             title: dto.title,
-    //             shortDescription: dto.shortDescription,
-    //             content: dto.content,
-    //             blogId: new ObjectId(dto.blogId)
-    //         },
-    //     })
-    // },
+
+    async updateComment(dto: InputCommentBody, commentId: string) {
+        return commentsCollection.updateOne({_id: new ObjectId(commentId)}, {
+            $set: {content: dto.content,},
+        })
+    },
     //
     // async deletePost(id: string) {
     //     return postCollection.deleteOne({_id: new ObjectId(id)})

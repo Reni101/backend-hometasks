@@ -10,6 +10,7 @@ export const SETTINGS = {
         TEST: '/testing',
         USERS: '/users',
         AUTH: '/auth',
+        COMMENTS: '/comments',
     },
     MONGO_URL: process.env.MONGO_URL || 'mongodb://0.0.0.0:27017',
     DB_NAME: 'blog-platform',
