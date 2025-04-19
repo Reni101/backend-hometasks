@@ -4,7 +4,7 @@ import {commentsQueryRepository} from "../repositories/comments/comments.query.r
 import {authBearerMiddleware} from "../middleware/auth.bearer.middleware";
 import {errorsMiddleware} from "../middleware/errorsMiddleware";
 import {InputCommentBody} from "../common/types/input/comments.types";
-import {id, postContent} from "../middleware/validations/posts.input.validation-middleware";
+import {postContent} from "../middleware/validations/posts.input.validation-middleware";
 import {commentsService} from "../services/comments.service";
 import {ResultStatus} from "../common/result/resultCode";
 import {HttpStatuses} from "../common/types/httpStatuses";
@@ -50,5 +50,5 @@ export const commentsController = {
     },
 }
 commentsRouter.get('/:id', commentsController.getCommentById)
-commentsRouter.put('/:id', authBearerMiddleware, postContent, id, errorsMiddleware, commentsController.updateComment)
-commentsRouter.delete('/:id', authBearerMiddleware, id, errorsMiddleware, commentsController.deleteComment)
+commentsRouter.put('/:id', authBearerMiddleware, postContent, errorsMiddleware, commentsController.updateComment)
+commentsRouter.delete('/:id', authBearerMiddleware, errorsMiddleware, commentsController.deleteComment)
