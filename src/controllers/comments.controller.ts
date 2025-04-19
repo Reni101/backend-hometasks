@@ -51,4 +51,4 @@ export const commentsController = {
 }
 commentsRouter.get('/:id', commentsController.getCommentById)
 commentsRouter.put('/:id', authBearerMiddleware, postContent, id, errorsMiddleware, commentsController.updateComment)
-commentsRouter.delete('/:id', authBearerMiddleware, postContent, id, errorsMiddleware, commentsController.deleteComment)
+commentsRouter.delete('/:id', authBearerMiddleware, id, errorsMiddleware, commentsController.deleteComment)
