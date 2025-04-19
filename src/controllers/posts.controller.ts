@@ -79,8 +79,15 @@ const postsController = {
 
         const payload = {postId: post.id.toString(), content: req.body.content, userId: req.userId!}
         const result = await commentsService.createComments(payload)
+        if(result){
+            const newComment = await commentsQueryRepository.findComment(result.insertedId.toString())
+            newComment ? res.status(201).json(newComment).end() : res.status(404).end()
+            return
+        }
+        res.status(404).end()
+        return
 
-        // userId content postId/ мне ещё нужен userLogin
+
     }
 }
 

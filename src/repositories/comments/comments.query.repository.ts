@@ -22,17 +22,17 @@ export const commentsQueryRepository = {
             page: query.pageNumber,
             pageSize: query.pageSize,
             totalCount,
-            items: posts.map(this._postMap),
+            items: posts.map(this._commentMap),
         }
 
     },
-    //
-    // async findPost(id: string) {
-    //     const post = await postCollection.findOne({_id: new ObjectId(id)})
-    //     return post ? this._postMap(post) : undefined
-    // },
-    //
-    _postMap(comment: WithId<CommentsDbType>) {
+
+    async findComment(id: string) {
+        const post = await commentsCollection.findOne({_id: new ObjectId(id)})
+        return post ? this._commentMap(post) : undefined
+    },
+
+    _commentMap(comment: WithId<CommentsDbType>) {
         return {
             id:comment._id,
             content:comment.content,
