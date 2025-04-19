@@ -27,7 +27,6 @@ export const commentsService = {
     },
     async updateComment(dto: InputCommentBody, commentId: string, userId: string): Promise<Result> {
         const comment = await commentsQueryRepository.findComment(commentId)
-        debugger
         if (comment) {
             if (comment.commentatorInfo.userId !== userId) {
                 return {
@@ -51,11 +50,40 @@ export const commentsService = {
             }
         }
         return {
-            status: ResultStatus.BadRequest,
+            status: ResultStatus.NotFound,
             data: null,
-            errorMessage: 'Success',
+            errorMessage: 'NotFound',
             extensions: [],
         }
+    },
+    async deleteComment(commentId: string, userId: string): Promise<Result> {
 
+        const comment = await commentsQueryRepository.findComment(commentId)
+        if (comment) {
+            if (comment.commentatorInfo.userId !== userId) {
+                return {
+                    status: ResultStatus.Forbidden,
+                    data: null,
+                    errorMessage: 'The comment does not belong to the user',
+                    extensions: [],
+                }
+            }
+        }
+        const result = await commentsRepository.deleteComment(commentId)
+        if (result.deletedCount === 1) {
+            return {
+                status: ResultStatus.Success,
+                data: null,
+                errorMessage: 'Success',
+                extensions: [],
+            }
+        }
+
+        return {
+            status: ResultStatus.BadRequest,
+            data: null,
+            errorMessage: 'BadRequest',
+            extensions: [],
+        }
     }
 }

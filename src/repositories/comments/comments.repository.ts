@@ -13,9 +13,9 @@ export const commentsRepository = {
             $set: {content: dto.content,},
         })
     },
-    //
-    // async deletePost(id: string) {
-    //     return postCollection.deleteOne({_id: new ObjectId(id)})
-    //
-    // },
+
+    async deleteComment(id: string) {
+        return commentsCollection.deleteOne({_id: new ObjectId(id)})
+
+    },
 }
