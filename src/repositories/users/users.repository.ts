@@ -21,7 +21,7 @@ export const usersRepository = {
         return userCollection.findOne({email});
     },
     async confirmEmail(userId: string) {
-        return userCollection.updateOne({_id: new ObjectId(userId)}, {'emailConfirmation.isConfirmed': true});
+        return userCollection.updateOne({_id: new ObjectId(userId)}, {$set: {'emailConfirmation.isConfirmed': true}});
     },
     async updateEmailConfirmation(userId: string, newConfirmationCode: string, newDate: string) {
 
