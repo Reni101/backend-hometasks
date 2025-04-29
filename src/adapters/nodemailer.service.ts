@@ -6,8 +6,9 @@ export const nodemailerService = {
         email: string,
         code: string,
     ): Promise<boolean> {
+        debugger;
         let transporter = nodemailer.createTransport({
-            service: 'gmail',
+            service: 'Mail.ru',
             auth: {
                 user: process.env.EMAIL,
                 pass: process.env.PASS,
@@ -21,9 +22,9 @@ export const nodemailerService = {
         </p>`
 
         let info = await transporter.sendMail({
-            from: 'Backend',
+            from: `${process.env.EMAIL}`,
             to: email,
-            subject: 'Your code is here',
+            subject: 'Registration',
             html,
         });
 
