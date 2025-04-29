@@ -1,4 +1,5 @@
 import {ObjectId} from "mongodb";
+import {User} from "../entity/user.entity";
 
 export type PostDbType = {
     title: string,
@@ -16,12 +17,15 @@ export type BlogDbType = {
     createdAt: string,
     isMembership: boolean,
 }
-export type UserDbType = {
-    login: string,
-    email: string,
-    passHash: string,
-    createdAt: string
-}
+// export type UserDbType = {
+//     login: string,
+//     email: string,
+//     passHash: string,
+//     createdAt: string
+// }
+
+export interface IUserDB extends User {}
+
 export type CommentsDbType = {
     content: string,
     commentatorInfo: { userId: string, userLogin: string },

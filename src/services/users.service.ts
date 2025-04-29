@@ -1,8 +1,8 @@
 import {InputUserBody} from "../common/types/input/users.type";
-import bcrypt from "bcrypt";
-import {UserDbType} from "../db/types";
 import {usersRepository} from "../repositories/users/users.repository";
 import {ErrorType} from "../common/types/errors.types";
+import {bcryptService} from "../adapters/bcrypt.service";
+import {User} from "../entity/user.entity";
 
 export const usersService = {
     async createUser(dto: InputUserBody) {
@@ -19,15 +19,9 @@ export const usersService = {
             return errorsMessages;
         }
 
-        const salt = await bcrypt.genSalt(10);
-        const passwordHash = await this._generateHash(dto.password, salt);
+        const passwordHash = await bcryptService.generateHash(dto.password)
 
-        const newUser: UserDbType = {
-            login: dto.login,
-            createdAt: new Date().toISOString(),
-            email: dto.email,
-            passHash: passwordHash,
-        }
+        const newUser = new User(dto.login, dto.email, passwordHash)
 
         return usersRepository.createUser(newUser);
 
@@ -35,10 +29,6 @@ export const usersService = {
 
     async deleteUser(id: string) {
         const result = await usersRepository.deleteUser(id)
-        return result.deletedCount ===1
+        return result.deletedCount === 1
     },
-
-    async _generateHash(password: string, salt: string) {
-        return bcrypt.hash(password, salt);
-    }
 }

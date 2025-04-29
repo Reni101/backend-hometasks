@@ -1,7 +1,8 @@
 import {UserQueriesType} from "../../common/types/query.types";
 import {userCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
-import {UserDbType} from "../../db/types";
+import {User} from "../../entity/user.entity";
+
 
 export const usersQueryRepository = {
     async getUsers(query: UserQueriesType) {
@@ -48,7 +49,7 @@ export const usersQueryRepository = {
 
     },
 
-    _userMap(user: WithId<UserDbType>) {
+    _userMap(user: WithId<User>) {
         return {
             id: user._id,
             login: user.login,
@@ -57,7 +58,7 @@ export const usersQueryRepository = {
 
         }
     },
-    _userMeMap(user: WithId<UserDbType>) {
+    _userMeMap(user: WithId<User>) {
         return {
             userId: user._id,
             login: user.login,
