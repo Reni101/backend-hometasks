@@ -5,6 +5,7 @@ export const nodemailerService = {
     async sendEmail(
         email: string,
         code: string,
+        subject: string
     ): Promise<boolean> {
         let transporter = nodemailer.createTransport({
             service: 'Mail.ru',
@@ -23,7 +24,7 @@ export const nodemailerService = {
         let info = await transporter.sendMail({
             from: `${process.env.EMAIL}`,
             to: email,
-            subject: 'Registration',
+            subject,
             html,
         });
 
