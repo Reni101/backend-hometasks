@@ -21,11 +21,22 @@ export const authService = {
     },
     async registration(dto: RegInputBody): Promise<Result> {
         const user = await usersRepository.findUniqueUser({email: dto.email, login: dto.login})
-        if (user) return {
-            status: ResultStatus.BadRequest,
-            errorMessage: 'Bad Request',
-            data: null,
-            extensions: [{field: 'loginOrEmail', message: 'Already Registered'}],
+        if (user) {
+
+            let field = ''
+
+            if (user.login === dto.login) {
+                field = 'login'
+            } if (user.email === dto.email) {
+                field = 'email'
+            }
+
+            return {
+                status: ResultStatus.BadRequest,
+                errorMessage: 'Bad Request',
+                data: null,
+                extensions: [{field:field, message: 'Already Registered'}],
+            }
         }
         const passwordHash = await bcryptService.generateHash(dto.password)
         const newUser = new User(dto.login, dto.email, passwordHash)
@@ -58,7 +69,6 @@ export const authService = {
 
         if (!user) return
         if (user.emailConfirmation.isConfirmed) return
-        if (new Date(user.emailConfirmation.expirationDate) > new Date()) return
 
         const newCode = randomUUID()
         await usersRepository.updateEmailConfirmation(user._id.toString(), newCode)
