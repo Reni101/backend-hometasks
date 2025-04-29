@@ -6,7 +6,6 @@ export const nodemailerService = {
         email: string,
         code: string,
     ): Promise<boolean> {
-        debugger;
         let transporter = nodemailer.createTransport({
             service: 'Mail.ru',
             auth: {
