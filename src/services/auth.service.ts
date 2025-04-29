@@ -6,6 +6,7 @@ import {Result} from "../common/result/result.types";
 import {User} from "../entity/user.entity";
 import {ResultStatus} from "../common/result/resultCode";
 import {nodemailerService} from "../adapters/nodemailer.service";
+import {randomUUID} from "crypto";
 
 export const authService = {
     async checkCredentials(dto: loginInputBody) {
@@ -18,7 +19,7 @@ export const authService = {
         }
         return isCompare;
     },
-    async registration(dto: RegInputBody): Promise<Result<User | null>> {
+    async registration(dto: RegInputBody): Promise<Result> {
         const user = await usersRepository.findUniqueUser({email: dto.email, login: dto.login})
         if (user) return {
             status: ResultStatus.BadRequest,
@@ -41,5 +42,32 @@ export const authService = {
             data: null,
             extensions: [],
         }
+    },
+    async registrationConfirmation(code: string) {
+        const user = await usersRepository.findUserByConfirmationCode(code)
+
+        if (!user) return
+        if (user.emailConfirmation.isConfirmed) return
+        if (new Date(user.emailConfirmation.expirationDate) > new Date()) return
+
+        const result = await usersRepository.confirmEmail(user._id.toString())
+        return result.modifiedCount === 1
+    },
+    async emailResending(email: string) {
+        const user = await usersRepository.findUserByEmail(email)
+
+        if (!user) return
+        if (user.emailConfirmation.isConfirmed) return
+        if (new Date(user.emailConfirmation.expirationDate) > new Date()) return
+
+        const newCode = randomUUID()
+        await usersRepository.updateEmailConfirmation(user._id.toString(), newCode)
+
+        try {
+            await nodemailerService.sendEmail(user.email, newCode)
+        } catch (e: unknown) {
+            console.error('Send email error', e)
+        }
+        return true
     },
 }

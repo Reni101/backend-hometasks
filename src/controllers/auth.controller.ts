@@ -5,7 +5,7 @@ import {loginBodyValidation} from "../middleware/validations/auth.input.validati
 import {errorsMiddleware} from "../middleware/errorsMiddleware";
 import {authBearerMiddleware} from "../middleware/auth.bearer.middleware";
 import {usersQueryRepository} from "../repositories/users/users.query.repository";
-import {userBodyValidation} from "../middleware/validations/users.input.validation-middleware";
+import {code, email, userBodyValidation} from "../middleware/validations/users.input.validation-middleware";
 import {ReqWithBody} from "../common/types/requests";
 import {ResultStatus} from "../common/result/resultCode";
 import {HttpStatuses} from "../common/types/httpStatuses";
@@ -35,10 +35,19 @@ export const authController = {
     async registration(req: ReqWithBody<RegInputBody>, res: Response) {
         const result = await authService.registration(req.body)
         if (result.status === ResultStatus.BadRequest) {
-            res.status(HttpStatuses.BadRequest).json({errorsMessages:result.extensions}).end()
+            res.status(HttpStatuses.BadRequest).json({errorsMessages: result.extensions}).end()
             return
         }
         res.status(HttpStatuses.NoContent).end()
+        return
+    },
+    async registrationConfirmation(req: ReqWithBody<{ code: string }>, res: Response) {
+        const result = await authService.registrationConfirmation(req.body.code)
+        result ? res.status(HttpStatuses.NoContent).end() : res.status(HttpStatuses.BadRequest).end()
+        return
+    }, async registrationEmailResending(req: ReqWithBody<{ email: string }>, res: Response) {
+        const result = await authService.emailResending(req.body.email)
+        result ? res.status(HttpStatuses.NoContent).end() : res.status(HttpStatuses.BadRequest).end()
         return
     },
 }
@@ -46,3 +55,5 @@ export const authController = {
 authRouter.post('/login', loginBodyValidation, errorsMiddleware, authController.login)
 authRouter.get('/me', authBearerMiddleware, errorsMiddleware, authController.me)
 authRouter.post('/registration', userBodyValidation, errorsMiddleware, authController.registration)
+authRouter.post('/registration-confirmation', code, errorsMiddleware, authController.registrationConfirmation)
+authRouter.post('/registration-email-resending', email, errorsMiddleware, authController.registrationEmailResending)
