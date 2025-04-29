@@ -45,7 +45,7 @@ export const authService = {
 
         await usersRepository.createUser(newUser)
         try {
-            await nodemailerService.sendEmail(newUser.email, newUser.emailConfirmation.confirmationCode)
+            nodemailerService.sendEmail(newUser.email, newUser.emailConfirmation.confirmationCode)
         } catch (e: unknown) {
             console.error('Send email error', e)
         }
@@ -94,13 +94,13 @@ export const authService = {
             days: 1
         }).toISOString()
 
-        const res = await usersRepository.updateEmailConfirmation(user._id.toString(), newCode, newDate)
+        await usersRepository.updateEmailConfirmation(user._id.toString(), newCode, newDate)
 
         try {
-            await nodemailerService.sendEmail(user.email, newCode)
+            nodemailerService.sendEmail(user.email, newCode)
         } catch (e: unknown) {
             console.error('Send email error', e)
         }
-        return res.modifiedCount === 1
+        return true
     },
 }
