@@ -74,8 +74,7 @@ export const authService = {
 
         const newCode = randomUUID()
         const newDate = add(new Date(), {
-            hours: 1,
-            minutes: 30,
+            days: 1
         }).toISOString()
 
         await usersRepository.updateEmailConfirmation(user._id.toString(), newCode, newDate)

@@ -45,7 +45,9 @@ export const authController = {
         const result = await authService.registrationConfirmation(req.body.code)
         result ? res.status(HttpStatuses.NoContent).end() : res.status(HttpStatuses.BadRequest).end()
         return
-    }, async registrationEmailResending(req: ReqWithBody<{ email: string }>, res: Response) {
+    },
+
+    async registrationEmailResending(req: ReqWithBody<{ email: string }>, res: Response) {
         const result = await authService.emailResending(req.body.email)
         result ? res.status(HttpStatuses.NoContent).end() : res.status(HttpStatuses.BadRequest).end()
         return

@@ -20,8 +20,7 @@ export class User {
         this.createdAt = new Date().toISOString()
         this.emailConfirmation = {
             expirationDate: add(new Date(), {
-                hours: 1,
-                minutes: 30,
+                days: 1
             }).toISOString(),
             confirmationCode: randomUUID(),
             isConfirmed: false
