@@ -56,14 +56,32 @@ export const authService = {
             extensions: [],
         }
     },
-    async registrationConfirmation(code: string) {
+    async confirmation(code: string): Promise<Result> {
         const user = await usersRepository.findUserByConfirmationCode(code)
-        if (!user) return
-        if (user.emailConfirmation.isConfirmed) return
+        if (!user) {
+            return {
+                status: ResultStatus.BadRequest,
+                errorMessage: 'Bad Request',
+                data: null,
+                extensions: [],
+            }
+        }
+        if (user.emailConfirmation.isConfirmed) {
+            return {
+                status: ResultStatus.BadRequest,
+                errorMessage: 'Bad Request',
+                data: null,
+                extensions: [{field: 'code', message: 'Already Confirmed'}],
+            }
+        }
 
-        const result = await usersRepository.confirmEmail(user._id.toString())
+        await usersRepository.confirmEmail(user._id.toString())
 
-        return result.modifiedCount === 1
+        return {
+            status: ResultStatus.Success,
+            data: null,
+            extensions: [],
+        }
     },
     async emailResending(email: string) {
         const user = await usersRepository.findUserByEmail(email)

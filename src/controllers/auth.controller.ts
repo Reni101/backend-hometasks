@@ -41,13 +41,20 @@ export const authController = {
         res.status(HttpStatuses.NoContent).end()
         return
     },
-    async registrationConfirmation(req: ReqWithBody<{ code: string }>, res: Response) {
-        const result = await authService.registrationConfirmation(req.body.code)
-        result ? res.status(HttpStatuses.NoContent).end() : res.status(HttpStatuses.BadRequest).end()
+    async confirmation(req: ReqWithBody<{ code: string }>, res: Response) {
+        const result = await authService.confirmation(req.body.code)
+
+        if (result.status === ResultStatus.BadRequest) {
+            res.status(HttpStatuses.BadRequest).json({errorsMessages: result.extensions})
+            return
+        }
+
+
+        res.status(HttpStatuses.NoContent).end()
         return
     },
 
-    async registrationEmailResending(req: ReqWithBody<{ email: string }>, res: Response) {
+    async emailResending(req: ReqWithBody<{ email: string }>, res: Response) {
         const result = await authService.emailResending(req.body.email)
         result ? res.status(HttpStatuses.NoContent).end() : res.status(HttpStatuses.BadRequest).end()
         return
@@ -57,5 +64,5 @@ export const authController = {
 authRouter.post('/login', loginBodyValidation, errorsMiddleware, authController.login)
 authRouter.get('/me', authBearerMiddleware, errorsMiddleware, authController.me)
 authRouter.post('/registration', userBodyValidation, errorsMiddleware, authController.registration)
-authRouter.post('/registration-confirmation', code, errorsMiddleware, authController.registrationConfirmation)
-authRouter.post('/registration-email-resending', email, errorsMiddleware, authController.registrationEmailResending)
+authRouter.post('/registration-confirmation', code, errorsMiddleware, authController.confirmation)
+authRouter.post('/registration-email-resending', email, errorsMiddleware, authController.emailResending)
