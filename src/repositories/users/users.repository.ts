@@ -1,7 +1,6 @@
 import {userCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {User} from "../../entity/user.entity";
-import {add} from "date-fns";
 
 export const usersRepository = {
     async createUser(newUser: User) {
@@ -24,14 +23,15 @@ export const usersRepository = {
     async confirmEmail(userId: string) {
         return userCollection.updateOne({_id: new ObjectId(userId)}, {'emailConfirmation.isConfirmed': true});
     },
-    async updateEmailConfirmation(userId: string, newConfirmationCode: string) {
+    async updateEmailConfirmation(userId: string, newConfirmationCode: string, newDate: string) {
+
+
         return userCollection.updateOne({_id: new ObjectId(userId)},
             {
-                'emailConfirmation.expirationDate': add(new Date(), {
-                    hours: 1,
-                    minutes: 30,
-                }).toISOString(),
-                'emailConfirmation.confirmationCode': newConfirmationCode,
+                $set: {
+                    'emailConfirmation.expirationDate': newDate,
+                    'emailConfirmation.confirmationCode': newConfirmationCode,
+                }
             });
     },
     async deleteUser(id: string) {

@@ -7,6 +7,7 @@ import {User} from "../entity/user.entity";
 import {ResultStatus} from "../common/result/resultCode";
 import {nodemailerService} from "../adapters/nodemailer.service";
 import {randomUUID} from "crypto";
+import {add} from "date-fns";
 
 export const authService = {
     async checkCredentials(dto: loginInputBody) {
@@ -27,7 +28,8 @@ export const authService = {
 
             if (user.login === dto.login) {
                 field = 'login'
-            } if (user.email === dto.email) {
+            }
+            if (user.email === dto.email) {
                 field = 'email'
             }
 
@@ -35,7 +37,7 @@ export const authService = {
                 status: ResultStatus.BadRequest,
                 errorMessage: 'Bad Request',
                 data: null,
-                extensions: [{field:field, message: 'Already Registered'}],
+                extensions: [{field: field, message: 'Already Registered'}],
             }
         }
         const passwordHash = await bcryptService.generateHash(dto.password)
@@ -71,13 +73,18 @@ export const authService = {
         if (user.emailConfirmation.isConfirmed) return
 
         const newCode = randomUUID()
-        await usersRepository.updateEmailConfirmation(user._id.toString(), newCode)
+        const newDate = add(new Date(), {
+            hours: 1,
+            minutes: 30,
+        }).toISOString()
+
+        const res = await usersRepository.updateEmailConfirmation(user._id.toString(), newCode, newDate)
 
         try {
             await nodemailerService.sendEmail(user.email, newCode)
         } catch (e: unknown) {
             console.error('Send email error', e)
         }
-        return true
+        return res.modifiedCount === 1
     },
 }
