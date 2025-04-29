@@ -78,13 +78,13 @@ export const authService = {
             minutes: 30,
         }).toISOString()
 
-        const res = await usersRepository.updateEmailConfirmation(user._id.toString(), newCode, newDate)
+        await usersRepository.updateEmailConfirmation(user._id.toString(), newCode, newDate)
 
         try {
             await nodemailerService.sendEmail(user.email, newCode)
         } catch (e: unknown) {
             console.error('Send email error', e)
         }
-        return res.modifiedCount === 1
+        return true
     },
 }
