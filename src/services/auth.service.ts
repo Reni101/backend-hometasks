@@ -58,12 +58,11 @@ export const authService = {
     },
     async registrationConfirmation(code: string) {
         const user = await usersRepository.findUserByConfirmationCode(code)
-
         if (!user) return
         if (user.emailConfirmation.isConfirmed) return
-        if (new Date(user.emailConfirmation.expirationDate) > new Date()) return
 
         const result = await usersRepository.confirmEmail(user._id.toString())
+
         return result.modifiedCount === 1
     },
     async emailResending(email: string) {
