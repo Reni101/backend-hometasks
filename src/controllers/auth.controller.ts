@@ -56,7 +56,10 @@ export const authController = {
 
     async emailResending(req: ReqWithBody<{ email: string }>, res: Response) {
         const result = await authService.emailResending(req.body.email)
-        result ? res.status(HttpStatuses.NoContent).end() : res.status(HttpStatuses.BadRequest).end()
+        if (result.status === ResultStatus.BadRequest) {
+            res.status(HttpStatuses.BadRequest).json({errorsMessages: result.extensions})
+        }
+        res.status(HttpStatuses.NoContent).end()
         return
     },
 }

@@ -83,11 +83,25 @@ export const authService = {
             extensions: [],
         }
     },
-    async emailResending(email: string) {
+    async emailResending(email: string): Promise<Result> {
         const user = await usersRepository.findUserByEmail(email)
 
-        if (!user) return
-        if (user.emailConfirmation.isConfirmed) return
+        if (!user) {
+            return {
+                status: ResultStatus.BadRequest,
+                errorMessage: 'Bad Request',
+                data: null,
+                extensions: [{message: 'email does not exist', field: 'email'}],
+            }
+        }
+        if (user.emailConfirmation.isConfirmed) {
+            return {
+                status: ResultStatus.BadRequest,
+                errorMessage: 'Bad Request',
+                data: null,
+                extensions: [{message: 'email confirmed', field: 'email'}],
+            }
+        }
 
         const newCode = randomUUID()
         const newDate = add(new Date(), {
@@ -101,6 +115,10 @@ export const authService = {
         } catch (e: unknown) {
             console.error('Send email error', e)
         }
-        return true
+        return {
+            status: ResultStatus.Success,
+            data: null,
+            extensions: [],
+        }
     },
 }
