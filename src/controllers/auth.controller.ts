@@ -18,7 +18,7 @@ export const authController = {
 
         const result = await authService.checkCredentials(req.body)
         if (result) {
-            res.cookie('refreshToken', result.refreshToken, {httpOnly: false, secure: false})
+            res.cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true})
             res.status(200).json({accessToken: result.accessToken}).end()
         }
 
@@ -78,7 +78,7 @@ export const authController = {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
-        res.cookie('refreshToken', result.refreshToken, {httpOnly: false, secure: false})
+        res.cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true})
         res.status(HttpStatuses.Success).end().json({accessToken: result.accessToken})
         return
     },
