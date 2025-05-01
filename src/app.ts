@@ -7,12 +7,13 @@ import {testRouter} from "./controllers/test.controller";
 import {usersRouter} from "./controllers/users.controller";
 import {authRouter} from "./controllers/auth.controller";
 import {commentsRouter} from "./controllers/comments.controller";
+import cookieParser from 'cookie-parser';
 
 
 export const app = express()
 app.use(express.json())
 app.use(cors())
-
+app.use(cookieParser())
 
 app.use(SETTINGS.PATH.BLOGS, blogsRouter)
 app.use( SETTINGS.PATH.POSTS, postRouter)

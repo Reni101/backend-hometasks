@@ -8,7 +8,7 @@ export const blogsService = {
             name: dto.name,
             description: dto.description,
             websiteUrl: dto.websiteUrl,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date(),
             isMembership: false
         }
         return blogsRepository.createBlog(newBlog)

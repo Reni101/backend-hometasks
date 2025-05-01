@@ -14,7 +14,7 @@ export const postsService = {
                 content: dto.blogId,
                 shortDescription: dto.shortDescription,
                 blogName: blog.name,
-                createdAt: new Date().toISOString()
+                createdAt: new Date()
             }
 
             return postsRepository.createPost(newPost)

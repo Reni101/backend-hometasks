@@ -1,6 +1,10 @@
 import {Request, Response, Router} from "express";
 import {InputBlogBody, InputPostByBlogBody} from "../common/types/input/blogs.types";
-import {blogBodyValidation, blogIdParam, blogQueryValidation} from "../middleware/validations/blogs.input.validation-middleware";
+import {
+    blogBodyValidation,
+    blogIdParam,
+    blogQueryValidation
+} from "../middleware/validations/blogs.input.validation-middleware";
 import {authBasicMiddleware} from "../middleware/auth.basic.middleware";
 import {errorsMiddleware} from "../middleware/errorsMiddleware";
 import {blogsService} from "../services/blogs.service";
@@ -11,12 +15,8 @@ import {postQueries} from "../helpers/postQueries";
 import {postBodyValidation, postQueryValidation} from "../middleware/validations/posts.input.validation-middleware";
 import {blogsQueryRepository} from "../repositories/blogs/blogs.query.repository";
 import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
-import {
-    ReqWithBody,
-    ReqWithParams,
-    ReqWithParAndBody,
-    ReqWithQuery
-} from "../common/types/requests";
+import {ReqWithBody, ReqWithParams, ReqWithParAndBody, ReqWithQuery} from "../common/types/requests";
+import {blogsRepository} from "../repositories/blogs/blogs.repository";
 
 export const blogsRouter = Router()
 
@@ -68,7 +68,7 @@ const blogsController = {
     async createPostByBlogId(req: ReqWithParAndBody<{ blogId: string }, InputPostByBlogBody>, res: Response,) {
         const {blogId} = req.params
         const dto = {...req.body, blogId}
-        const blog = await blogsQueryRepository.findBlog(blogId)
+        const blog = await blogsRepository.findBlog(blogId)
         if (blog) {
             const result = await postsService.createPost(dto, blog)
             const newPost = await postsQueryRepository.findPost(result.insertedId.toString())

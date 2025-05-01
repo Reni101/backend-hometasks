@@ -54,7 +54,7 @@ export const usersQueryRepository = {
             id: user._id,
             login: user.login,
             email: user.email,
-            createdAt: user.createdAt,
+            createdAt: user.createdAt.toISOString(),
 
         }
     },

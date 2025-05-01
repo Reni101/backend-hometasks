@@ -16,8 +16,13 @@ export const authRouter = Router()
 export const authController = {
     async login(req: ReqWithBody<loginInputBody>, res: Response) {
 
-        const token = await authService.checkCredentials(req.body)
-        token ? res.status(200).json({accessToken: token}).end() : res.status(401).end()
+        const result = await authService.checkCredentials(req.body)
+        if (result) {
+            res.cookie('refreshToken', result.refreshToken, {httpOnly: false, secure: false})
+            res.status(200).json({accessToken: result.accessToken}).end()
+        }
+
+        res.status(401).end()
 
         return
     },
@@ -62,6 +67,33 @@ export const authController = {
         res.status(HttpStatuses.NoContent).end()
         return
     },
+    async refreshToken(req: Request, res: Response) {
+        const refreshToken = req.cookies.refreshToken as string | undefined
+        if (!refreshToken) {
+            res.status(HttpStatuses.Unauthorized).end()
+            return
+        }
+        const result = await authService.refreshToken(refreshToken)
+        if (!result) {
+            res.status(HttpStatuses.Unauthorized).end()
+            return
+        }
+        res.cookie('refreshToken', result.refreshToken, {httpOnly: false, secure: false})
+        res.status(HttpStatuses.Success).end().json({accessToken: result.accessToken})
+        return
+    },
+    async logOut(req: Request, res: Response) {
+        const refreshToken = req.cookies.refreshToken as string | undefined
+        if (!refreshToken) {
+            res.status(HttpStatuses.Unauthorized).end()
+            return
+        }
+
+        const result = await authService.logout(req.body.code)
+        result ? res.status(HttpStatuses.Success).end() : res.status(HttpStatuses.Unauthorized).end()
+
+        return
+    },
 }
 
 authRouter.post('/login', loginBodyValidation, errorsMiddleware, authController.login)
@@ -69,3 +101,5 @@ authRouter.get('/me', authBearerMiddleware, errorsMiddleware, authController.me)
 authRouter.post('/registration', userBodyValidation, errorsMiddleware, authController.registration)
 authRouter.post('/registration-confirmation', code, errorsMiddleware, authController.confirmation)
 authRouter.post('/registration-email-resending', email, errorsMiddleware, authController.emailResending)
+authRouter.post('/refresh-token', authController.refreshToken)
+authRouter.post('/logout', authController.logOut)

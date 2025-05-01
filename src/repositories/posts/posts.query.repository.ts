@@ -40,7 +40,7 @@ export const postsQueryRepository = {
             content: post.content,
             blogId: post.blogId,
             blogName: post.blogName,
-            createdAt: post.createdAt,
+            createdAt: post.createdAt.toISOString(),
             id: post._id
         }
     }

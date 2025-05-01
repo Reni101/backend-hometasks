@@ -17,7 +17,7 @@ export const commentsService = {
         const newComment: CommentsDbType = {
             content: dto.content,
             postId: new ObjectId(dto.postId),
-            createdAt: new Date().toISOString(),
+            createdAt: new Date(),
             commentatorInfo: {
                 userId: user?.id.toString(),
                 userLogin: user.login,

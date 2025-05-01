@@ -7,28 +7,25 @@ export type PostDbType = {
     content: string,
     blogId: ObjectId,
     blogName: string
-    createdAt: string,
+    createdAt: Date,
 }
 
 export type BlogDbType = {
     name: string,
     description: string,
     websiteUrl: string,
-    createdAt: string,
+    createdAt: Date,
     isMembership: boolean,
 }
-// export type UserDbType = {
-//     login: string,
-//     email: string,
-//     passHash: string,
-//     createdAt: string
-// }
 
 export interface IUserDB extends User {}
 
 export type CommentsDbType = {
     content: string,
     commentatorInfo: { userId: string, userLogin: string },
-    createdAt: string,
+    createdAt: Date,
     postId:ObjectId
+}
+export type RefreshTokenDbType = {
+    token: string,
 }

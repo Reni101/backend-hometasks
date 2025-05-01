@@ -37,7 +37,7 @@ export const commentsQueryRepository = {
             id:comment._id,
             content:comment.content,
             commentatorInfo:comment.commentatorInfo,
-            createdAt: comment.createdAt,
+            createdAt: comment.createdAt.toISOString(),
         }
     }
 }

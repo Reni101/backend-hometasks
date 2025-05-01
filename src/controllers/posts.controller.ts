@@ -12,12 +12,12 @@ import {InputPostsQueryType} from "../common/types/query.types";
 import {postQueries} from "../helpers/postQueries";
 import {postsService} from "../services/post.service";
 import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
-import {blogsQueryRepository} from "../repositories/blogs/blogs.query.repository";
 import {ReqWithBody, ReqWithParams, ReqWithParAndBody, ReqWithQuery} from "../common/types/requests";
 import {commentQueries} from "../helpers/commentQueries";
 import {commentsQueryRepository} from "../repositories/comments/comments.query.repository";
 import {authBearerMiddleware} from "../middleware/auth.bearer.middleware";
 import {commentsService} from "../services/comments.service";
+import {blogsRepository} from "../repositories/blogs/blogs.repository";
 
 export const postRouter = Router()
 
@@ -36,7 +36,7 @@ const postsController = {
     },
 
     async createPost(req: ReqWithBody<InputPostBody>, res: Response) {
-        const blog = await blogsQueryRepository.findBlog(req.body.blogId)
+        const blog = await blogsRepository.findBlog(req.body.blogId)
         if (blog) {
             const result = await postsService.createPost(req.body, blog)
             const newPost = await postsQueryRepository.findPost(result.insertedId.toString())

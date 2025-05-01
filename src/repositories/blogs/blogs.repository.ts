@@ -7,6 +7,10 @@ export const blogsRepository = {
     async createBlog(newBlog: BlogDbType) {
         return blogCollection.insertOne(newBlog);
     },
+    async findBlog(id: string) {
+        return  await blogCollection.findOne({_id: new ObjectId(id)})
+
+    },
 
     async updateBlog(dto: InputBlogBody, id: string) {
         return blogCollection.updateOne({_id: new ObjectId(id)}, {

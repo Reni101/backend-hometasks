@@ -21,6 +21,5 @@ export const postsRepository = {
 
     async deletePost(id: string) {
         return postCollection.deleteOne({_id: new ObjectId(id)})
-
     },
 }

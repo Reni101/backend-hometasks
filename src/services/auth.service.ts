@@ -8,6 +8,7 @@ import {ResultStatus} from "../common/result/resultCode";
 import {nodemailerService} from "../adapters/nodemailer.service";
 import {randomUUID} from "crypto";
 import {add} from "date-fns";
+import {tokensRepository} from "../repositories/tokens/tokens.repository";
 
 export const authService = {
     async checkCredentials(dto: loginInputBody) {
@@ -16,7 +17,10 @@ export const authService = {
         const isCompare = await bcryptService.checkPassword(dto.password, user.passwordHash)
 
         if (isCompare) {
-            return jwtService.createToken(user._id.toString())
+            const accessToken = await jwtService.createToken(user._id.toString(), '10s')
+            const refreshToken = await jwtService.createToken(user._id.toString(), '20s')
+            await tokensRepository.saveToken({token: refreshToken})
+            return {accessToken, refreshToken}
         }
         return isCompare;
     },
@@ -26,12 +30,8 @@ export const authService = {
 
             let field = ''
 
-            if (user.login === dto.login) {
-                field = 'login'
-            }
-            if (user.email === dto.email) {
-                field = 'email'
-            }
+            if (user.login === dto.login) field = 'login'
+            if (user.email === dto.email) field = 'email'
 
             return {
                 status: ResultStatus.BadRequest,
@@ -120,5 +120,34 @@ export const authService = {
             data: null,
             extensions: [],
         }
+    },
+
+    async refreshToken(refreshToken: string) {
+        const token = await tokensRepository.findToken(refreshToken)
+
+        if (!token) return
+        const payload = await jwtService.decodeToken(token.token) // iat exp
+        if (!payload) return
+
+        await tokensRepository.deleteToken(token._id.toString())
+        const currentTime = Math.floor(Date.now() / 1000)
+
+        if (currentTime > (payload?.exp ?? 0)) return
+
+        const newAccessToken = await jwtService.createToken(payload.userId, '10s')
+        const newRefreshToken = await jwtService.createToken(payload.userId, '20s')
+        await tokensRepository.saveToken({token: newRefreshToken})
+
+        return {
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken,
+        }
+    },
+    async logout(refreshToken: string) {
+        const token = await tokensRepository.findToken(refreshToken)
+        if (!token) return
+        await tokensRepository.deleteToken(token._id.toString())
+        return true
+
     },
 }
