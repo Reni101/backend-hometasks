@@ -79,7 +79,7 @@ export const authController = {
             return
         }
         res.cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true})
-        res.status(HttpStatuses.Success).end().json({accessToken: result.accessToken})
+        res.status(HttpStatuses.Success).json({accessToken: result.accessToken}).end()
         return
     },
     async logOut(req: Request, res: Response) {
