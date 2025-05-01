@@ -145,6 +145,7 @@ export const authService = {
     },
     async logout(refreshToken: string) {
         const token = await tokensRepository.findToken(refreshToken)
+        debugger
         if (!token) return
         await tokensRepository.deleteToken(token._id.toString())
         return true
