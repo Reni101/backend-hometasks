@@ -91,7 +91,7 @@ export const authController = {
         }
 
         const result = await authService.logout(refreshToken)
-        result ? res.status(HttpStatuses.Success).end() : res.status(HttpStatuses.Unauthorized).end()
+        result ? res.status(HttpStatuses.NoContent).end() : res.status(HttpStatuses.Unauthorized).end()
         return
     },
 }
