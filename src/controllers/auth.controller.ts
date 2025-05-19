@@ -13,7 +13,7 @@ import {HttpStatuses} from "../common/types/httpStatuses";
 
 export const authRouter = Router()
 
-export const authController = {
+const authController = {
     async login(req: ReqWithBody<loginInputBody>, res: Response) {
         const ip = req.socket.remoteAddress ?? '';
         const userAgent = req.headers['user-agent'] ?? '';
