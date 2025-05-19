@@ -1,7 +1,8 @@
 import {Collection, Db, MongoClient} from "mongodb";
 import {SETTINGS} from "../settings";
-import {BlogDbType, CommentsDbType, IUserDB, PostDbType, RefreshTokenDbType} from "./types";
+import {BlogDbType, CommentsDbType, IUserDB, PostDbType} from "./types";
 import {Session} from "../entity/session.entity";
+import {RateLimit} from "../entity/rateLimit.entity";
 
 const client: MongoClient = new MongoClient(SETTINGS.MONGO_URL);
 export const db: Db = client.db(SETTINGS.DB_NAME);
@@ -10,8 +11,8 @@ export const blogCollection: Collection<BlogDbType> = db.collection<BlogDbType>(
 export const postCollection: Collection<PostDbType> = db.collection<PostDbType>('posts')
 export const userCollection: Collection<IUserDB> = db.collection<IUserDB>('users')
 export const commentsCollection: Collection<CommentsDbType> = db.collection<CommentsDbType>('comments')
-export const tokensCollection: Collection<RefreshTokenDbType> = db.collection<RefreshTokenDbType>('tokens')
-export const sessionCollection: Collection<Session> = db.collection<Session>('sessions')
+export const sessionsCollection: Collection<Session> = db.collection<Session>('sessions')
+export const rateLimitsCollection: Collection<RateLimit> = db.collection<RateLimit>('rateLimit')
 
 
 export const connectToDB = async () => {

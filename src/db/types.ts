@@ -27,16 +27,3 @@ export type CommentsDbType = {
     createdAt: Date,
     postId: ObjectId
 }
-
-export type RefreshTokenDbType = {
-    token: string,
-}
-
-export type SessionDbType = {
-    user_id: string,
-    device_id: string,
-    iat: number,
-    device_name: string,
-    ip: string,
-    exp: string,
-}

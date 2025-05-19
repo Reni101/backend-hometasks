@@ -1,5 +1,12 @@
 import {Request, Response, Router} from "express";
-import {blogCollection, postCollection, tokensCollection, userCollection} from "../db/mongo-db";
+import {
+    blogCollection,
+    postCollection,
+    sessionsCollection,
+    userCollection,
+    commentsCollection,
+    rateLimitsCollection
+} from "../db/mongo-db";
 
 export const testRouter = Router()
 
@@ -10,7 +17,9 @@ export const testController = {
         blogCollection.drop()
         postCollection.drop()
         userCollection.drop()
-        tokensCollection.drop()
+        commentsCollection.drop()
+        sessionsCollection.drop()
+        rateLimitsCollection.drop()
         res.status(204).end()
 
     },

@@ -1,10 +1,10 @@
-import {sessionCollection} from "../../db/mongo-db";
+import {sessionsCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {Session} from "../../entity/session.entity";
 
 export const sessionsQueryRepository = {
     async getDevices(userId: string) {
-        const devices = await sessionCollection.find({user_id: new ObjectId(userId)})
+        const devices = await sessionsCollection.find({user_id: new ObjectId(userId)})
             .toArray();
         return devices.map(this._sessionsMap);
 
