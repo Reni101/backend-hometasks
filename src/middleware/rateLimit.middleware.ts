@@ -11,8 +11,7 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
 
 
     const limits = await rateLimitRepository.getRequests(req.originalUrl);
-    if (limits.length >= 5) {
-        debugger
+    if (limits.length > 4) {
         res.status(429).end()
         return
     }
