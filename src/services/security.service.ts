@@ -14,7 +14,7 @@ export const securityService = {
 
         if (!session) {
             return {
-                status: ResultStatus.NotFound,
+                status: ResultStatus.BadRequest,
                 data: null,
                 errorMessage: 'NotFound',
                 extensions: [],

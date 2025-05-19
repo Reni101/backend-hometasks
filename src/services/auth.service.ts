@@ -18,11 +18,11 @@ export const authService = {
         const isCompare = await bcryptService.checkPassword(dto.password, user.passwordHash)
 
         if (isCompare) {
-            const accessToken = await jwtService.createToken({userId: user._id.toString(), expiresIn: '10000s'})
+            const accessToken = await jwtService.createToken({userId: user._id.toString(), expiresIn: '10s'})
 
             const deviceId = randomUUID()
             const refreshToken = await jwtService.createToken({
-                userId: user._id.toString(), expiresIn: '20000s', deviceId
+                userId: user._id.toString(), expiresIn: '20s', deviceId
             })
             const token = await jwtService.decodeToken(refreshToken)
 
@@ -153,8 +153,8 @@ export const authService = {
             return
         }
 
-        const newAccessToken = await jwtService.createToken({userId, expiresIn: '10000s'})
-        const newRefreshToken = await jwtService.createToken({userId, expiresIn: '200000s', deviceId})
+        const newAccessToken = await jwtService.createToken({userId, expiresIn: '10s'})
+        const newRefreshToken = await jwtService.createToken({userId, expiresIn: '20s', deviceId})
 
         const newToken = await jwtService.decodeToken(newRefreshToken)
 

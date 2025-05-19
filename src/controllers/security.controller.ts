@@ -64,6 +64,10 @@ const securityController = {
             res.status(HttpStatuses.NotFound).end()
             return
         }
+        if (result.status === ResultStatus.BadRequest) {
+            res.status(HttpStatuses.BadRequest).end()
+            return
+        }
         res.status(HttpStatuses.NoContent).end()
         return
     }
