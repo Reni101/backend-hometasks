@@ -8,7 +8,7 @@ import {ResultStatus} from "../common/result/resultCode";
 import {nodemailerService} from "../adapters/nodemailer.service";
 import {randomUUID} from "crypto";
 import {add} from "date-fns";
-import {sessionsRepository} from "../repositories/tokens/sessions.repository";
+import {sessionsRepository} from "../repositories/sessions/sessions.repository";
 import {Session} from "../entity/session.entity";
 
 export const authService = {

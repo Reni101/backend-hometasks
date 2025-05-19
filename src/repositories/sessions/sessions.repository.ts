@@ -15,7 +15,14 @@ export const sessionsRepository = {
         });
     },
 
+
+    async getAllSessionsByUserId(userId: string) {
+        return sessionCollection.find({userId: new ObjectId(userId)}).toArray();
+    },
     async deleteSession(id: ObjectId) {
         return sessionCollection.deleteOne({_id: id})
+    },
+    async deleteOtherSession(ids: string[]) {
+        return sessionCollection.deleteMany({deviceId: {$in: ids}})
     },
 }
