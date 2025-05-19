@@ -7,7 +7,7 @@ export const rateLimitRepository = {
     },
 
     async getRequests(url: string, ip: string) {
-        const tenSecondsAgo = new Date(Date.now() - 10000);
+        const tenSecondsAgo = new Date(Date.now() - 9000);
         return rateLimitsCollection.find({date: {$gt: tenSecondsAgo}, URL: url, ip}).toArray();
     },
 
