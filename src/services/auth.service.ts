@@ -8,18 +8,35 @@ import {ResultStatus} from "../common/result/resultCode";
 import {nodemailerService} from "../adapters/nodemailer.service";
 import {randomUUID} from "crypto";
 import {add} from "date-fns";
-import {tokensRepository} from "../repositories/tokens/tokens.repository";
+import {sessionsRepository} from "../repositories/tokens/sessions.repository";
+import {Session} from "../entity/session.entity";
 
 export const authService = {
-    async checkCredentials(dto: loginInputBody) {
+    async checkCredentials(dto: loginInputBody, ip: string, userAgent: string) {
         const user = await usersRepository.findByLoginOrEmail(dto.loginOrEmail)
         if (!user) return
         const isCompare = await bcryptService.checkPassword(dto.password, user.passwordHash)
 
         if (isCompare) {
-            const accessToken = await jwtService.createToken(user._id.toString(), '10s')
-            const refreshToken = await jwtService.createToken(user._id.toString(), '20s')
-            await tokensRepository.saveToken({token: refreshToken})
+            const accessToken = await jwtService.createToken({userId: user._id.toString(), expiresIn: '10000s'})
+
+            const deviceId = randomUUID()
+            const refreshToken = await jwtService.createToken({
+                userId: user._id.toString(), expiresIn: '20000s', deviceId
+            })
+            const token = await jwtService.decodeToken(refreshToken)
+
+            if (token) {
+                const session = new Session({
+                    iat: token.iat!,
+                    exp: token.exp!,
+                    user_id: user._id.toString(),
+                    deviceId: token.deviceId,
+                    device_name: userAgent,
+                    ip
+                })
+                await sessionsRepository.addSession(session)
+            }
             return {accessToken, refreshToken}
         }
         return isCompare;
@@ -123,20 +140,25 @@ export const authService = {
     },
 
     async refreshToken(refreshToken: string) {
-        const token = await tokensRepository.findToken(refreshToken)
-
-        if (!token) return
-        const payload = await jwtService.decodeToken(token.token) // iat exp
+        const payload = await jwtService.decodeToken(refreshToken) // iat exp
         if (!payload) return
+        const {userId, deviceId} = payload
+        const session = await sessionsRepository.findSession(payload.iat!)
 
-        await tokensRepository.deleteToken(token._id.toString())
+        if (!session) return
+
         const currentTime = Math.floor(Date.now() / 1000)
+        if (currentTime > (session.exp)) {
+            await sessionsRepository.deleteSession(session._id)
+            return
+        }
 
-        if (currentTime > (payload?.exp ?? 0)) return
+        const newAccessToken = await jwtService.createToken({userId, expiresIn: '10000s'})
+        const newRefreshToken = await jwtService.createToken({userId, expiresIn: '200000s', deviceId})
 
-        const newAccessToken = await jwtService.createToken(payload.userId, '10s')
-        const newRefreshToken = await jwtService.createToken(payload.userId, '20s')
-        await tokensRepository.saveToken({token: newRefreshToken})
+        const newToken = await jwtService.decodeToken(newRefreshToken)
+
+        await sessionsRepository.updateSession({id: session._id, iat: newToken?.iat!, exp: newToken?.exp!})
 
         return {
             accessToken: newAccessToken,
@@ -144,10 +166,10 @@ export const authService = {
         }
     },
     async logout(refreshToken: string) {
-        const token = await tokensRepository.findToken(refreshToken)
-        debugger
-        if (!token) return
-        await tokensRepository.deleteToken(token._id.toString())
+        const token = await jwtService.decodeToken(refreshToken)
+        const session = await sessionsRepository.findSession(token?.iat!)
+        if (!session) return
+        await sessionsRepository.deleteSession(session._id)
         return true
 
     },

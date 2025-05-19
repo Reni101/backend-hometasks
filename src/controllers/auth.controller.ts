@@ -15,8 +15,10 @@ export const authRouter = Router()
 
 export const authController = {
     async login(req: ReqWithBody<loginInputBody>, res: Response) {
+        const ip = req.socket.remoteAddress ?? '';
+        const userAgent = req.headers['user-agent'] ?? '';
 
-        const result = await authService.checkCredentials(req.body)
+        const result = await authService.checkCredentials(req.body, ip, userAgent);
         if (result) {
             res.cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true})
             res.status(200).json({accessToken: result.accessToken}).end()
@@ -91,6 +93,7 @@ export const authController = {
         }
 
         const result = await authService.logout(refreshToken)
+        res.clearCookie('refreshToken', {path: '/'});
         result ? res.status(HttpStatuses.NoContent).end() : res.status(HttpStatuses.Unauthorized).end()
         return
     },

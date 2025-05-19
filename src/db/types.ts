@@ -18,14 +18,25 @@ export type BlogDbType = {
     isMembership: boolean,
 }
 
-export interface IUserDB extends User {}
+export interface IUserDB extends User {
+}
 
 export type CommentsDbType = {
     content: string,
     commentatorInfo: { userId: string, userLogin: string },
     createdAt: Date,
-    postId:ObjectId
+    postId: ObjectId
 }
+
 export type RefreshTokenDbType = {
     token: string,
+}
+
+export type SessionDbType = {
+    user_id: string,
+    device_id: string,
+    iat: number,
+    device_name: string,
+    ip: string,
+    exp: string,
 }
