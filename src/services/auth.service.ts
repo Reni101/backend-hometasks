@@ -62,7 +62,7 @@ export const authService = {
 
         await usersRepository.createUser(newUser)
         try {
-            await nodemailerService.sendEmail(newUser.email, newUser.emailConfirmation.confirmationCode, 'Registration')
+            nodemailerService.sendEmail(newUser.email, newUser.emailConfirmation.confirmationCode, 'Registration')
         } catch (e: unknown) {
             console.error('Send email error', e)
         }
