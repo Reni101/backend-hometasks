@@ -10,7 +10,7 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
     await rateLimitRepository.addRequest(rateLimit)
 
 
-    const limits = await rateLimitRepository.getRequests(req.originalUrl);
+    const limits = await rateLimitRepository.getRequests(req.originalUrl, ip);
     if (limits.length > 4) {
         res.status(429).end()
         return

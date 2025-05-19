@@ -143,7 +143,6 @@ export const authService = {
 
         const payload = await jwtService.decodeToken(refreshToken) // iat exp
         if (!payload) return
-        const {userId, deviceId} = payload
         const session = await sessionsRepository.findSessionByIat(payload.iat!)
 
         if (!session) return
@@ -154,7 +153,7 @@ export const authService = {
             await sessionsRepository.deleteSession(session._id)
             return
         }
-
+        const {userId, deviceId} = payload
         const newAccessToken = await jwtService.createToken({userId, expiresIn: '10s'})
         const newRefreshToken = await jwtService.createToken({userId, expiresIn: '20s', deviceId})
 
