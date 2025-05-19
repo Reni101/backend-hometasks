@@ -9,12 +9,14 @@ import {authRouter} from "./controllers/auth.controller";
 import {commentsRouter} from "./controllers/comments.controller";
 import cookieParser from 'cookie-parser';
 import {securityRouter} from "./controllers/security.controller";
+import {rateLimitMiddleware} from "./middleware/rateLimit.middleware";
 
 
 export const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(cookieParser())
+app.use(rateLimitMiddleware)
 
 app.use(SETTINGS.PATH.BLOGS, blogsRouter)
 app.use(SETTINGS.PATH.POSTS, postRouter)
