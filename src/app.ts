@@ -13,11 +13,12 @@ import {securityRouter} from "./controllers/security.controller";
 
 export const app = express()
 app.use(express.json())
-app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true
-}))
+app.use(cors())
 app.use(cookieParser())
+// {
+//     origin: 'http://localhost:5173',
+//     credentials: true
+// }
 
 app.use(SETTINGS.PATH.BLOGS, blogsRouter)
 app.use(SETTINGS.PATH.POSTS, postRouter)
