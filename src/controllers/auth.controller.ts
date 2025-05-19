@@ -98,12 +98,12 @@ const authController = {
 
         res.clearCookie('refreshToken', {path: '/'});
         res.status(HttpStatuses.NoContent).end()
-        // if (result) {
-        //     res.clearCookie('refreshToken', {path: '/'});
-        //     res.status(HttpStatuses.NoContent).end()
-        // } else {
-        //     res.status(HttpStatuses.Unauthorized).end()
-        // }
+        if (result) {
+            res.clearCookie('refreshToken', {path: '/'});
+            res.status(HttpStatuses.NoContent).end()
+        } else {
+            res.status(HttpStatuses.Unauthorized).end()
+        }
 
         return
     },
