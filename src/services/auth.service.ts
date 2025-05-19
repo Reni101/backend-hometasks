@@ -5,7 +5,6 @@ import {bcryptService} from "../adapters/bcrypt.service";
 import {Result} from "../common/result/result.types";
 import {User} from "../entity/user.entity";
 import {ResultStatus} from "../common/result/resultCode";
-import {nodemailerService} from "../adapters/nodemailer.service";
 import {randomUUID} from "crypto";
 import {add} from "date-fns";
 import {sessionsRepository} from "../repositories/sessions/sessions.repository";
@@ -143,7 +142,7 @@ export const authService = {
 
         const payload = await jwtService.decodeToken(refreshToken) // iat exp
         if (!payload) return
-        const session = await sessionsRepository.findSessionByIat(payload.iat!)
+        const session = await sessionsRepository.findSessionByIat(payload.iat!, payload.userId!)
 
         if (!session) return
 
@@ -168,7 +167,7 @@ export const authService = {
     },
     async logout(refreshToken: string) {
         const token = await jwtService.decodeToken(refreshToken)
-        const session = await sessionsRepository.findSessionByIat(token?.iat!)
+        const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.userId!)
         if (!session) return
         await sessionsRepository.deleteSession(session._id)
         return true

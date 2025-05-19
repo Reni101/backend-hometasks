@@ -7,6 +7,7 @@ import {deviceId} from "../middleware/validations/devices.input.validation-middl
 import {errorsMiddleware} from "../middleware/errorsMiddleware";
 import {ReqWithParams} from "../common/types/requests";
 import {ResultStatus} from "../common/result/resultCode";
+import {sessionsRepository} from "../repositories/sessions/sessions.repository";
 
 export const securityRouter = Router()
 
@@ -23,11 +24,6 @@ const securityController = {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
-        // const session = await sessionsRepository.findSessionByIat(payload.iat!)
-        // if (!session) {
-        //     res.status(HttpStatuses.Unauthorized).end()
-        //     return
-        // }
 
         const devices = await sessionsQueryRepository.getDevices(payload.userId)
 
@@ -40,13 +36,26 @@ const securityController = {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
-        const payload = await jwtService.decodeToken(refreshToken);
-        if (!payload) {
+        const token = await jwtService.decodeToken(refreshToken);
+        if (!token) {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
 
-        await securityService.terminateOtherDevices({userId: payload.userId, deviceId: payload.deviceId})
+        const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.userId!)
+        if (!session) {
+            res.status(HttpStatuses.Unauthorized).end()
+            return
+        }
+
+        const currentTime = Math.floor(Date.now() / 1000)
+        if (currentTime > (session.exp!)) {
+            await sessionsRepository.deleteSession(session._id)
+            res.status(HttpStatuses.Unauthorized).end()
+            return
+        }
+
+        await securityService.terminateOtherDevices({userId: token.userId, deviceId: token.deviceId})
         res.status(HttpStatuses.NoContent).end()
         return
     },
@@ -61,9 +70,20 @@ const securityController = {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
+        const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.userId!)
+        if (!session) {
+            res.status(HttpStatuses.Unauthorized).end()
+            return
+        }
+
+        const currentTime = Math.floor(Date.now() / 1000)
+        if (currentTime > (session.exp!)) {
+            await sessionsRepository.deleteSession(session._id)
+            res.status(HttpStatuses.Unauthorized).end()
+            return
+        }
+
         const result = await securityService.terminateDevice({deviceId: req.params.deviceId, userId: token.userId})
-
-
         if (result.status === ResultStatus.Forbidden) {
             res.status(HttpStatuses.Forbidden).end()
             return

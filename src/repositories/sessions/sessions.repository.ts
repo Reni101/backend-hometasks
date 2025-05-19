@@ -6,8 +6,8 @@ export const sessionsRepository = {
     async addSession(newSession: Session) {
         return sessionsCollection.insertOne(newSession);
     },
-    async findSessionByIat(iat: number) {
-        return sessionsCollection.findOne({iat: iat,});
+    async findSessionByIat(iat: number, userId: string) {
+        return sessionsCollection.findOne({iat: iat, user_id: new ObjectId(userId)});
     },
     async findSessionByDeviceId(deviceId: string) {
         return sessionsCollection.findOne({device_id: deviceId});
@@ -17,8 +17,6 @@ export const sessionsRepository = {
             $set: {iat: dto.iat, exp: dto.exp,}
         });
     },
-
-
     async getAllSessionsByUserId(userId: string) {
         return sessionsCollection.find({user_id: new ObjectId(userId)}).toArray();
     },
