@@ -96,16 +96,15 @@ const authController = {
 
         const result = await authService.logout(refreshToken)
 
-        res.clearCookie('refreshToken', {path: '/'});
-        res.status(HttpStatuses.NoContent).end()
         if (result) {
             res.clearCookie('refreshToken', {path: '/'});
             res.status(HttpStatuses.NoContent).end()
+            return
         } else {
             res.status(HttpStatuses.Unauthorized).end()
+            return
         }
 
-        return
     },
 }
 
