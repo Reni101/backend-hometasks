@@ -9,6 +9,7 @@ import {code, email, userBodyValidation} from "../middleware/validations/users.i
 import {ReqWithBody} from "../common/types/requests";
 import {ResultStatus} from "../common/result/resultCode";
 import {HttpStatuses} from "../common/types/httpStatuses";
+import {rateLimitMiddleware} from "../middleware/rateLimit.middleware";
 
 
 export const authRouter = Router()
@@ -99,10 +100,10 @@ const authController = {
     },
 }
 
-authRouter.post('/login', loginBodyValidation, errorsMiddleware, authController.login)
+authRouter.post('/login', rateLimitMiddleware, loginBodyValidation, errorsMiddleware, authController.login)
 authRouter.get('/me', authBearerMiddleware, errorsMiddleware, authController.me)
-authRouter.post('/registration', userBodyValidation, errorsMiddleware, authController.registration)
-authRouter.post('/registration-confirmation', code, errorsMiddleware, authController.confirmation)
-authRouter.post('/registration-email-resending', email, errorsMiddleware, authController.emailResending)
+authRouter.post('/registration', rateLimitMiddleware, userBodyValidation, errorsMiddleware, authController.registration)
+authRouter.post('/registration-confirmation', rateLimitMiddleware, code, errorsMiddleware, authController.confirmation)
+authRouter.post('/registration-email-resending', rateLimitMiddleware, email, errorsMiddleware, authController.emailResending)
 authRouter.post('/refresh-token', authController.refreshToken)
 authRouter.post('/logout', authController.logOut)
