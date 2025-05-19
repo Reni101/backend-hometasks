@@ -7,7 +7,6 @@ const startApp = async () => {
 
     if (!res) process.exit(1)
     console.log(process.env.NODE_ENV)
-    app.set('trust proxy', true)
     app.listen(SETTINGS.PORT, () => {
         console.log('...server started in port ' + SETTINGS.PORT)
     })
