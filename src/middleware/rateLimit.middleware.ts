@@ -6,9 +6,6 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
     const url = req.originalUrl;
     const ip = req.socket.remoteAddress ?? '';
 
-    const rateLimit = new RateLimit({ip, URL: url})
-    await rateLimitRepository.addRequest(rateLimit)
-
 
     const limits = await rateLimitRepository.getRequests(req.originalUrl, ip);
     if (limits.length > 4) {
@@ -16,5 +13,7 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
         return
     }
 
+    const rateLimit = new RateLimit({ip, URL: url})
+    await rateLimitRepository.addRequest(rateLimit)
     next()
 }
