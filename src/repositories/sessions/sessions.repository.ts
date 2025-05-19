@@ -9,6 +9,9 @@ export const sessionsRepository = {
     async findSession(iat: number) {
         return sessionCollection.findOne({iat: iat,});
     },
+    async findSessionByDeviceId(deviceId: string) {
+        return sessionCollection.findOne({device_id: deviceId});
+    },
     async updateSession(dto: { iat: number, exp: number, id: ObjectId }) {
         return sessionCollection.updateOne({_id: dto.id}, {
             $set: {iat: dto.iat, exp: dto.exp,}
@@ -17,12 +20,12 @@ export const sessionsRepository = {
 
 
     async getAllSessionsByUserId(userId: string) {
-        return sessionCollection.find({userId: new ObjectId(userId)}).toArray();
+        return sessionCollection.find({user_id: new ObjectId(userId)}).toArray();
     },
     async deleteSession(id: ObjectId) {
         return sessionCollection.deleteOne({_id: id})
     },
-    async deleteOtherSession(ids: string[]) {
-        return sessionCollection.deleteMany({deviceId: {$in: ids}})
+    async deleteOtherSession(ids: ObjectId[]) {
+        return sessionCollection.deleteMany({_id: {$in: ids}})
     },
 }

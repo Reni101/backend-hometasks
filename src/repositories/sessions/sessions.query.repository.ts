@@ -6,7 +6,6 @@ export const sessionsQueryRepository = {
     async getDevices(userId: string) {
         const devices = await sessionCollection.find({user_id: new ObjectId(userId)})
             .toArray();
-
         return devices.map(this._sessionsMap);
 
     },
