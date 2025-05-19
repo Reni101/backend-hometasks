@@ -10,7 +10,17 @@ export const securityService = {
         return result.deletedCount > 1;
     },
     async terminateDevice(dto: { deviceId: string, userId: string }): Promise<Result> {
-        const session = await sessionsRepository.findSessionByDeviceId(dto.userId);
+        const session = await sessionsRepository.findSessionByDeviceId(dto.deviceId);
+
+        if (!session) {
+            return {
+                status: ResultStatus.NotFound,
+                data: null,
+                errorMessage: 'NotFound',
+                extensions: [],
+            }
+        }
+
         if (session?.user_id.toString() !== dto.userId) {
             return {
                 status: ResultStatus.Forbidden,
@@ -22,7 +32,8 @@ export const securityService = {
 
         const result = await sessionsRepository.deleteSession(session._id)
 
-        if (result?.deletedCount > 1) {
+
+        if (result?.deletedCount > 0) {
             return {
                 status: ResultStatus.Success,
                 data: null,
