@@ -7,6 +7,7 @@ import {deviceId} from "../middleware/validations/devices.input.validation-middl
 import {errorsMiddleware} from "../middleware/errorsMiddleware";
 import {ReqWithParams} from "../common/types/requests";
 import {ResultStatus} from "../common/result/resultCode";
+import {sessionsRepository} from "../repositories/sessions/sessions.repository";
 
 export const securityRouter = Router()
 
@@ -23,7 +24,14 @@ const securityController = {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
+        const session = await sessionsRepository.findSessionByIat(payload.iat!)
+        if (!session) {
+            res.status(HttpStatuses.Unauthorized).end()
+            return
+        }
+
         const devices = await sessionsQueryRepository.getDevices(payload.userId)
+
         res.status(HttpStatuses.Success).json(devices).end()
         return
     },
@@ -38,6 +46,7 @@ const securityController = {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
+
         await securityService.terminateOtherDevices({userId: payload.userId, deviceId: payload.deviceId})
         res.status(HttpStatuses.NoContent).end()
         return

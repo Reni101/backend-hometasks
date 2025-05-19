@@ -6,7 +6,7 @@ export const sessionsRepository = {
     async addSession(newSession: Session) {
         return sessionsCollection.insertOne(newSession);
     },
-    async findSession(iat: number) {
+    async findSessionByIat(iat: number) {
         return sessionsCollection.findOne({iat: iat,});
     },
     async findSessionByDeviceId(deviceId: string) {
