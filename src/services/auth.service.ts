@@ -170,6 +170,13 @@ export const authService = {
         const token = await jwtService.decodeToken(refreshToken)
         const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.deviceId!)
         if (!session) return
+
+        const currentTime = Math.floor(Date.now() / 1000)
+        if (currentTime > (session.exp!)) {
+            await sessionsRepository.deleteSession(session._id)
+            return
+        }
+
         await sessionsRepository.deleteSession(session._id)
         return true
 

@@ -10,8 +10,8 @@ export const securityService = {
         return result.deletedCount > 1;
     },
     async terminateDevice(dto: { deviceId: string, userId: string, iat: number }): Promise<Result> {
-        const session = await sessionsRepository.findSessionByIat(dto.iat, dto.deviceId);
-
+        const session = await sessionsRepository.findSessionDeviceId(dto.deviceId);
+        debugger
         if (!session) {
             return {
                 status: ResultStatus.NotFound,

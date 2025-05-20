@@ -9,6 +9,9 @@ export const sessionsRepository = {
     async findSessionByIat(iat: number, deviceId: string) {
         return sessionsCollection.findOne({iat: iat, device_id: deviceId});
     },
+    async findSessionDeviceId(deviceId: string) {
+        return sessionsCollection.findOne({device_id: deviceId});
+    },
 
     async updateSession(dto: { iat: number, exp: number, id: ObjectId }) {
         return sessionsCollection.updateOne({_id: dto.id}, {
