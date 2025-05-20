@@ -6,12 +6,10 @@ export const sessionsRepository = {
     async addSession(newSession: Session) {
         return sessionsCollection.insertOne(newSession);
     },
-    async findSessionByIat(iat: number, userId: string) {
-        return sessionsCollection.findOne({iat: iat, user_id: new ObjectId(userId)});
+    async findSessionByIat(iat: number, deviceId: string) {
+        return sessionsCollection.findOne({iat: iat, device_id: deviceId});
     },
-    async findSessionByDeviceId(deviceId: string) {
-        return sessionsCollection.findOne({device_id: deviceId});
-    },
+
     async updateSession(dto: { iat: number, exp: number, id: ObjectId }) {
         return sessionsCollection.updateOne({_id: dto.id}, {
             $set: {iat: dto.iat, exp: dto.exp,}

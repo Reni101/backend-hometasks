@@ -77,14 +77,18 @@ const authController = {
             return
         }
         const result = await authService.refreshToken(refreshToken)
-        if (!result) {
+
+        if (result) {
+            res.cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true})
+            res.status(HttpStatuses.Success).json({accessToken: result.accessToken}).end()
+            return
+        } else {
             res.clearCookie('refreshToken', {path: '/'});
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
-        res.cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true})
-        res.status(HttpStatuses.Success).json({accessToken: result.accessToken}).end()
-        return
+
+
     },
     async logOut(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken as string | undefined

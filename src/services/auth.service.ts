@@ -139,10 +139,11 @@ export const authService = {
     },
 
     async refreshToken(refreshToken: string) {
+        const payload = await jwtService.decodeToken(refreshToken)
 
-        const payload = await jwtService.decodeToken(refreshToken) // iat exp
         if (!payload) return
-        const session = await sessionsRepository.findSessionByIat(payload.iat!, payload.userId!)
+
+        const session = await sessionsRepository.findSessionByIat(payload.iat!, payload.deviceId!)
 
         if (!session) return
 
@@ -167,7 +168,7 @@ export const authService = {
     },
     async logout(refreshToken: string) {
         const token = await jwtService.decodeToken(refreshToken)
-        const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.userId!)
+        const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.deviceId!)
         if (!session) return
         await sessionsRepository.deleteSession(session._id)
         return true

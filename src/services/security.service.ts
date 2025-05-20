@@ -9,8 +9,8 @@ export const securityService = {
         const result = await sessionsRepository.deleteOtherSession(sessionForDelete);
         return result.deletedCount > 1;
     },
-    async terminateDevice(dto: { deviceId: string, userId: string }): Promise<Result> {
-        const session = await sessionsRepository.findSessionByDeviceId(dto.deviceId);
+    async terminateDevice(dto: { deviceId: string, userId: string, iat: number }): Promise<Result> {
+        const session = await sessionsRepository.findSessionByIat(dto.iat, dto.deviceId);
 
         if (!session) {
             return {

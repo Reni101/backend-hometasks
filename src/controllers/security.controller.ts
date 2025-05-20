@@ -42,7 +42,7 @@ const securityController = {
             return
         }
 
-        const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.userId!)
+        const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.deviceId!)
         if (!session) {
             res.status(HttpStatuses.Unauthorized).end()
             return
@@ -70,7 +70,7 @@ const securityController = {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
-        const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.userId!)
+        const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.deviceId!)
         if (!session) {
             res.status(HttpStatuses.Unauthorized).end()
             return
@@ -83,7 +83,11 @@ const securityController = {
             return
         }
 
-        const result = await securityService.terminateDevice({deviceId: req.params.deviceId, userId: token.userId})
+        const result = await securityService.terminateDevice({
+            deviceId: req.params.deviceId,
+            userId: token.userId,
+            iat: token.iat!
+        })
         if (result.status === ResultStatus.Forbidden) {
             res.status(HttpStatuses.Forbidden).end()
             return
