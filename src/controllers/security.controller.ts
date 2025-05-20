@@ -19,13 +19,26 @@ const securityController = {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
-        const payload = await jwtService.decodeToken(refreshToken);
-        if (!payload) {
+        const token = await jwtService.decodeToken(refreshToken);
+        if (!token) {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
 
-        const devices = await sessionsQueryRepository.getDevices(payload.userId)
+        const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.deviceId!)
+        if (!session) {
+            res.status(HttpStatuses.Unauthorized).end()
+            return
+        }
+
+        const currentTime = Math.floor(Date.now() / 1000)
+        if (currentTime > (session.exp!)) {
+            await sessionsRepository.deleteSession(session._id)
+            res.status(HttpStatuses.Unauthorized).end()
+            return
+        }
+
+        const devices = await sessionsQueryRepository.getDevices(token.userId)
 
         res.status(HttpStatuses.Success).json(devices).end()
         return
