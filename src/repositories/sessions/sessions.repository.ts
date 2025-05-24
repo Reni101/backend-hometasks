@@ -35,4 +35,4 @@ class SessionsRepository {
     }
 }
 
-export const sessionsRepository = new SessionsRepository();
+export const sessionsRepository = new SessionsRepository()

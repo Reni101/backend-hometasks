@@ -21,4 +21,4 @@ class SessionsQueryRepository {
     }
 }
 
-export const sessionsQueryRepository = new SessionsQueryRepository();
+export const sessionsQueryRepository = new SessionsQueryRepository()

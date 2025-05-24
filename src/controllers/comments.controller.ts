@@ -53,6 +53,6 @@ class CommentsController {
 
 const commentsController = new CommentsController()
 
-commentsRouter.get('/:id', commentsController.getCommentById)
-commentsRouter.put('/:id', authBearerMiddleware, postContent, errorsMiddleware, commentsController.updateComment)
-commentsRouter.delete('/:id', authBearerMiddleware, errorsMiddleware, commentsController.deleteComment)
+commentsRouter.get('/:id', commentsController.getCommentById.bind(commentsController))
+commentsRouter.put('/:id', authBearerMiddleware, postContent, errorsMiddleware, commentsController.updateComment.bind(commentsController))
+commentsRouter.delete('/:id', authBearerMiddleware, errorsMiddleware, commentsController.deleteComment.bind(commentsController))

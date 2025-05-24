@@ -11,8 +11,7 @@ import {sessionsRepository} from "../repositories/sessions/sessions.repository";
 
 export const securityRouter = Router()
 
-
-const securityController = {
+class SecurityController {
     async getDevices(req: Request, res: Response,) {
         const refreshToken = req.cookies.refreshToken as string | undefined
         if (!refreshToken) {
@@ -42,7 +41,8 @@ const securityController = {
 
         res.status(HttpStatuses.Success).json(devices).end()
         return
-    },
+    }
+
     async terminateOtherDevices(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken as string | undefined
         if (!refreshToken) {
@@ -71,7 +71,8 @@ const securityController = {
         await securityService.terminateOtherDevices({userId: token.userId, deviceId: token.deviceId})
         res.status(HttpStatuses.NoContent).end()
         return
-    },
+    }
+
     async deleteDevice(req: ReqWithParams<{ deviceId: string }>, res: Response) {
         const refreshToken = req.cookies.refreshToken as string | undefined
         if (!refreshToken) {
@@ -118,6 +119,8 @@ const securityController = {
     }
 }
 
-securityRouter.get('/devices', securityController.getDevices)
-securityRouter.delete('/devices', securityController.terminateOtherDevices)
-securityRouter.delete('/devices/:deviceId', deviceId, errorsMiddleware, securityController.deleteDevice)
+const securityController = new SecurityController()
+
+securityRouter.get('/devices', securityController.getDevices.bind(securityController))
+securityRouter.delete('/devices', securityController.terminateOtherDevices.bind(securityController))
+securityRouter.delete('/devices/:deviceId', deviceId, errorsMiddleware, securityController.deleteDevice.bind(securityController))

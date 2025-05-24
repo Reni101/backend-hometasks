@@ -4,7 +4,7 @@ import {ErrorType} from "../common/types/errors.types";
 import {bcryptService} from "../adapters/bcrypt.service";
 import {User} from "../entity/user.entity";
 
-export const usersService = {
+class UserService {
     async createUser(dto: InputUserBody) {
 
         const existingUser = await usersRepository.findUniqueUser(dto);
@@ -25,10 +25,12 @@ export const usersService = {
 
         return usersRepository.createUser(newUser);
 
-    },
+    }
 
     async deleteUser(id: string) {
         const result = await usersRepository.deleteUser(id)
         return result.deletedCount === 1
-    },
+    }
 }
+
+export const usersService = new UserService();

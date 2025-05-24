@@ -3,8 +3,7 @@ import {userCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {User} from "../../entity/user.entity";
 
-
-export const usersQueryRepository = {
+class UsersQueryRepository {
     async getUsers(query: UserQueriesType) {
 
         const filter: any = {}
@@ -36,18 +35,19 @@ export const usersQueryRepository = {
             totalCount,
             pagesCount: Math.ceil(totalCount / query.pageSize)
         };
-    },
+    }
 
     async findUser(id: string) {
         const user = await userCollection.findOne({_id: new ObjectId(id)})
         return user ? this._userMap(user) : undefined
 
-    },
+    }
+
     async findMeUser(id: string) {
         const user = await userCollection.findOne({_id: new ObjectId(id)})
         return user ? this._userMeMap(user) : undefined
 
-    },
+    }
 
     _userMap(user: WithId<User>) {
         return {
@@ -57,7 +57,8 @@ export const usersQueryRepository = {
             createdAt: user.createdAt.toISOString(),
 
         }
-    },
+    }
+
     _userMeMap(user: WithId<User>) {
         return {
             userId: user._id,
@@ -66,3 +67,5 @@ export const usersQueryRepository = {
         }
     }
 }
+
+export const usersQueryRepository = new UsersQueryRepository()

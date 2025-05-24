@@ -13,4 +13,4 @@ class RateLimitRepository {
     }
 }
 
-export const rateLimitRepository = new RateLimitRepository();
+export const rateLimitRepository = new RateLimitRepository()
