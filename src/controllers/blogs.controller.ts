@@ -56,7 +56,7 @@ class BLogsController {
 
     async deleteBlog(req: Request<{ id: string }>, res: Response,) {
         const isDeleted = await blogsService.deleteBlog(req.params.id)
-        isDeleted ? res.status(204).end() : res.status(404).end()
+        isDeleted ? res.status(HttpStatuses.NoContent).end() : res.status(404).end()
         return
     }
 
@@ -65,12 +65,12 @@ class BLogsController {
         const query = postQueries(req)
         const blog = await this.blogsQueryRepository.findBlog(blogId)
         if (!blog) {
-            res.status(404).end()
+            res.status(HttpStatuses.NotFound).end()
             return
         }
 
         const result = await postsQueryRepository.getPosts(query, blogId)
-        result ? res.status(200).json(result).end() : res.status(404).end()
+        result ? res.status(HttpStatuses.Success).json(result).end() : res.status(404).end()
         return
     }
 

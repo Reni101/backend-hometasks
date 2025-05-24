@@ -6,19 +6,26 @@ import {InputCommentBody} from "../common/types/input/comments.types";
 import {ResultStatus} from "../common/result/resultCode";
 import {Result} from "../common/result/result.types";
 import {Comment} from "../entity/comment.entity";
+import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
 
 
 class CommentsService {
     async createComment(dto: { content: string, postId: string, userId: string }) {
+        const post = await postsQueryRepository.findPost(dto.postId)
+        if (!post) return null
+
         const user = await usersQueryRepository.findUser(dto.userId);
 
         if (!user) return
 
         const commentatorInfo = {userId: user?.id.toString(), userLogin: user.login,}
         const postId = new ObjectId(dto.postId)
+
         const newComment = new Comment(dto.content, commentatorInfo, postId)
 
-        return commentsRepository.createComment(newComment)
+        const result = await commentsRepository.createComment(newComment)
+        return commentsQueryRepository.findComment(result.insertedId.toString())
+
     }
 
     async updateComment(dto: InputCommentBody, commentId: string, userId: string): Promise<Result> {

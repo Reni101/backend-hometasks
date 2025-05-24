@@ -17,20 +17,12 @@ import {commentQueries} from "../helpers/commentQueries";
 import {commentsQueryRepository} from "../repositories/comments/comments.query.repository";
 import {authBearerMiddleware} from "../middleware/auth.bearer.middleware";
 import {commentsService} from "../services/comments.service";
-import {BlogsRepository} from "../repositories/blogs/blogs.repository";
 import {HttpStatuses} from "../common/types/httpStatuses";
 
 export const postRouter = Router()
 
 
 class PostsService {
-
-    private blogsRepository: BlogsRepository;
-
-    constructor() {
-        this.blogsRepository = new BlogsRepository();
-    }
-
     async getAllPosts(req: ReqWithQuery<InputPostsQueryType>, res: Response) {
         const query = postQueries(req)
         const posts = await postsQueryRepository.getPosts(query);
@@ -76,22 +68,10 @@ class PostsService {
     }
 
     async createCommentByPostId(req: ReqWithParAndBody<{ postId: string }, { content: string }>, res: Response) {
-        const post = await postsQueryRepository.findPost(req.params.postId)
-        if (!post) {
-            res.status(404).end()
-            return
-        }
-
-        const payload = {postId: post.id.toString(), content: req.body.content, userId: req.userId!}
-        const result = await commentsService.createComment(payload)
-        if (result) {
-            const newComment = await commentsQueryRepository.findComment(result.insertedId.toString())
-            newComment ? res.status(201).json(newComment).end() : res.status(404).end()
-            return
-        }
-        res.status(404).end()
+        const dto = {postId: req.params.postId, content: req.body.content, userId: req.userId!}
+        const newComment = await commentsService.createComment(dto)
+        newComment ? res.status(HttpStatuses.Created).json(newComment).end() : res.status(HttpStatuses.NotFound).end()
         return
-
 
     }
 }

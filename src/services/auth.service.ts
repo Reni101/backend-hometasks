@@ -9,6 +9,7 @@ import {randomUUID} from "crypto";
 import {add} from "date-fns";
 import {sessionsRepository} from "../repositories/sessions/sessions.repository";
 import {Session} from "../entity/session.entity";
+import {ObjectId} from "mongodb";
 
 class AuthService {
     async checkCredentials(dto: loginInputBody, ip: string, userAgent: string) {
@@ -141,28 +142,15 @@ class AuthService {
         }
     }
 
-    async refreshToken(refreshToken: string) {
-        const payload = await jwtService.decodeToken(refreshToken)
+    async refreshToken(dto: { userId: string, deviceId: string, sessionId: ObjectId }) {
+        const {userId, sessionId, deviceId} = dto
 
-        if (!payload) return
-
-        const session = await sessionsRepository.findSessionByIat(payload.iat!, payload.deviceId!)
-
-        if (!session) return
-
-        const currentTime = Math.floor(Date.now() / 1000)
-
-        if (currentTime > (session.exp)) {
-            await sessionsRepository.deleteSession(session._id)
-            return
-        }
-        const {userId, deviceId} = payload
         const newAccessToken = await jwtService.createToken({userId, expiresIn: '10s'})
         const newRefreshToken = await jwtService.createToken({userId, expiresIn: '20s', deviceId})
 
         const newToken = await jwtService.decodeToken(newRefreshToken)
 
-        await sessionsRepository.updateSession({id: session._id, iat: newToken?.iat!, exp: newToken?.exp!})
+        await sessionsRepository.updateSession({id: sessionId, iat: newToken?.iat!, exp: newToken?.exp!})
 
         return {
             accessToken: newAccessToken,
@@ -170,20 +158,27 @@ class AuthService {
         }
     }
 
-    async logout(refreshToken: string) {
-        const token = await jwtService.decodeToken(refreshToken)
-        const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.deviceId!)
-        if (!session) return
+    async logout(sessionId: ObjectId) {
+        await sessionsRepository.deleteSession(sessionId)
+        return true
+
+    }
+
+    async checkAuthorisation(refreshToken?: string) {
+        if (!refreshToken) return null
+
+        const token = await jwtService.decodeToken(refreshToken);
+        if (!token) return null
+
+        const session = await sessionsRepository.findSessionByIat(token.iat!, token.deviceId!)
+        if (!session) return null
 
         const currentTime = Math.floor(Date.now() / 1000)
         if (currentTime > (session.exp!)) {
             await sessionsRepository.deleteSession(session._id)
-            return
+            return null
         }
-
-        await sessionsRepository.deleteSession(session._id)
-        return true
-
+        return session
     }
 }
 

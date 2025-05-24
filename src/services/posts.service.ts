@@ -16,7 +16,6 @@ class PostService {
 
     }
 
-
     async createPost(dto: InputPostBody) {
 
         const blog = await this.blogsRepository.findBlog(dto.blogId)

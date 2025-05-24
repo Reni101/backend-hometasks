@@ -76,11 +76,14 @@ class AuthController {
 
     async refreshToken(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken as string | undefined
-        if (!refreshToken) {
+
+        const session = await authService.checkAuthorisation(refreshToken)
+        if (!session) {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
-        const result = await authService.refreshToken(refreshToken)
+        const dto = {userId: session.user_id.toString(), deviceId: session.device_id, sessionId: session._id}
+        const result = await authService.refreshToken(dto)
 
         if (result) {
             res.cookie('refreshToken', result.refreshToken, {httpOnly: true, secure: true})
@@ -98,12 +101,13 @@ class AuthController {
     async logOut(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken as string | undefined
 
-        if (!refreshToken) {
+        const session = await authService.checkAuthorisation(refreshToken)
+        if (!session) {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
 
-        const result = await authService.logout(refreshToken)
+        const result = await authService.logout(session._id)
 
         if (result) {
             res.clearCookie('refreshToken', {path: '/'});
@@ -115,6 +119,8 @@ class AuthController {
         }
 
     }
+
+
 }
 
 const authController = new AuthController()
