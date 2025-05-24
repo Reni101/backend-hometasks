@@ -15,7 +15,7 @@ export const commentsService = {
 
         const commentatorInfo = {userId: user?.id.toString(), userLogin: user.login,}
         const postId = new ObjectId(dto.postId)
-        const newComment = new Comment(dto.content, commentatorInfo, postId);
+        const newComment = new Comment(dto.content, commentatorInfo, postId)
 
         return commentsRepository.createComment(newComment)
     },
