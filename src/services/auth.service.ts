@@ -10,7 +10,7 @@ import {add} from "date-fns";
 import {sessionsRepository} from "../repositories/sessions/sessions.repository";
 import {Session} from "../entity/session.entity";
 
-export const authService = {
+class AuthService {
     async checkCredentials(dto: loginInputBody, ip: string, userAgent: string) {
         const user = await usersRepository.findByLoginOrEmail(dto.loginOrEmail)
         if (!user) return
@@ -39,7 +39,8 @@ export const authService = {
             return {accessToken, refreshToken}
         }
         return isCompare;
-    },
+    }
+
     async registration(dto: RegInputBody): Promise<Result> {
         const user = await usersRepository.findUniqueUser({email: dto.email, login: dto.login})
         if (user) {
@@ -71,7 +72,8 @@ export const authService = {
             data: null,
             extensions: [],
         }
-    },
+    }
+
     async confirmation(code: string): Promise<Result> {
         const user = await usersRepository.findUserByConfirmationCode(code)
         if (!user) {
@@ -98,7 +100,8 @@ export const authService = {
             data: null,
             extensions: [],
         }
-    },
+    }
+
     async emailResending(email: string): Promise<Result> {
         const user = await usersRepository.findUserByEmail(email)
 
@@ -136,7 +139,7 @@ export const authService = {
             data: null,
             extensions: [],
         }
-    },
+    }
 
     async refreshToken(refreshToken: string) {
         const payload = await jwtService.decodeToken(refreshToken)
@@ -165,7 +168,8 @@ export const authService = {
             accessToken: newAccessToken,
             refreshToken: newRefreshToken,
         }
-    },
+    }
+
     async logout(refreshToken: string) {
         const token = await jwtService.decodeToken(refreshToken)
         const session = await sessionsRepository.findSessionByIat(token?.iat!, token?.deviceId!)
@@ -180,5 +184,7 @@ export const authService = {
         await sessionsRepository.deleteSession(session._id)
         return true
 
-    },
+    }
 }
+
+export const authService = new AuthService()

@@ -2,13 +2,15 @@ import {sessionsCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {Session} from "../../entity/session.entity";
 
-export const sessionsQueryRepository = {
+
+class SessionsQueryRepository {
     async getDevices(userId: string) {
         const devices = await sessionsCollection.find({user_id: new ObjectId(userId)})
             .toArray();
         return devices.map(this._sessionsMap);
 
-    },
+    }
+
     _sessionsMap(session: WithId<Session>) {
         return {
             ip: session.ip,
@@ -18,3 +20,5 @@ export const sessionsQueryRepository = {
         }
     }
 }
+
+export const sessionsQueryRepository = new SessionsQueryRepository();

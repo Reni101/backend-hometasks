@@ -14,7 +14,7 @@ import {rateLimitMiddleware} from "../middleware/rateLimit.middleware";
 
 export const authRouter = Router()
 
-const authController = {
+class AuthController {
     async login(req: ReqWithBody<loginInputBody>, res: Response) {
         const ip = req.socket.remoteAddress ?? '';
         const userAgent = req.headers['user-agent'] ?? '';
@@ -28,7 +28,8 @@ const authController = {
         res.status(401).end()
 
         return
-    },
+    }
+
     async me(req: Request, res: Response) {
         const id = req.userId;
         if (id) {
@@ -39,7 +40,8 @@ const authController = {
 
         res.status(401).end()
         return
-    },
+    }
+
     async registration(req: ReqWithBody<RegInputBody>, res: Response) {
         const result = await authService.registration(req.body)
         if (result.status === ResultStatus.BadRequest) {
@@ -48,7 +50,8 @@ const authController = {
         }
         res.status(HttpStatuses.NoContent).end()
         return
-    },
+    }
+
     async confirmation(req: ReqWithBody<{ code: string }>, res: Response) {
         const result = await authService.confirmation(req.body.code)
 
@@ -60,7 +63,7 @@ const authController = {
 
         res.status(HttpStatuses.NoContent).end()
         return
-    },
+    }
 
     async emailResending(req: ReqWithBody<{ email: string }>, res: Response) {
         const result = await authService.emailResending(req.body.email)
@@ -69,7 +72,8 @@ const authController = {
         }
         res.status(HttpStatuses.NoContent).end()
         return
-    },
+    }
+
     async refreshToken(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken as string | undefined
         if (!refreshToken) {
@@ -89,7 +93,8 @@ const authController = {
         }
 
 
-    },
+    }
+
     async logOut(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken as string | undefined
 
@@ -109,13 +114,15 @@ const authController = {
             return
         }
 
-    },
+    }
 }
 
-authRouter.post('/login', rateLimitMiddleware, loginBodyValidation, errorsMiddleware, authController.login)
-authRouter.get('/me', authBearerMiddleware, errorsMiddleware, authController.me)
-authRouter.post('/registration', rateLimitMiddleware, userBodyValidation, errorsMiddleware, authController.registration)
-authRouter.post('/registration-confirmation', rateLimitMiddleware, code, errorsMiddleware, authController.confirmation)
-authRouter.post('/registration-email-resending', rateLimitMiddleware, email, errorsMiddleware, authController.emailResending)
+const authController = new AuthController()
+
+authRouter.post('/login', rateLimitMiddleware, loginBodyValidation, errorsMiddleware, authController.login.bind(authController))
+authRouter.get('/me', authBearerMiddleware, errorsMiddleware, authController.me.bind(authController))
+authRouter.post('/registration', rateLimitMiddleware, userBodyValidation, errorsMiddleware, authController.registration.bind(authController))
+authRouter.post('/registration-confirmation', rateLimitMiddleware, code, errorsMiddleware, authController.confirmation.bind(authController))
+authRouter.post('/registration-email-resending', rateLimitMiddleware, email, errorsMiddleware, authController.emailResending.bind(authController))
 authRouter.post('/refresh-token', authController.refreshToken)
 authRouter.post('/logout', authController.logOut)
