@@ -10,14 +10,6 @@ export type PostDbType = {
     createdAt: Date,
 }
 
-export type BlogDbType = {
-    name: string,
-    description: string,
-    websiteUrl: string,
-    createdAt: Date,
-    isMembership: boolean,
-}
-
 export interface IUserDB extends User {
 }
 

@@ -1,11 +1,8 @@
 export class RateLimit {
-    ip: string
-    URL: string
     date: Date
 
-    constructor(dto: { URL: string, ip: string }) {
-        this.ip = dto.ip
-        this.URL = dto.URL
+    constructor(public ip: string,
+                public url: string) {
         this.date = new Date()
     }
 }

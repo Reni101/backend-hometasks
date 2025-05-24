@@ -1,16 +1,12 @@
 import {blogsRepository} from "../repositories/blogs/blogs.repository";
 import {InputBlogBody} from "../common/types/input/blogs.types";
-import {BlogDbType} from "../db/types";
+import {Blog} from "../entity/blog.entity";
 
 export const blogsService = {
     async createBlog(dto: InputBlogBody) {
-        const newBlog: BlogDbType = {
-            name: dto.name,
-            description: dto.description,
-            websiteUrl: dto.websiteUrl,
-            createdAt: new Date(),
-            isMembership: false
-        }
+
+        const newBlog = new Blog(dto.name, dto.description, dto.websiteUrl)
+
         return blogsRepository.createBlog(newBlog)
     },
 

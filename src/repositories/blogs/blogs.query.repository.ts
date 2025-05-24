@@ -1,7 +1,8 @@
 import {BlogQueriesType} from "../../common/types/query.types";
 import {blogCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
-import {BlogDbType} from "../../db/types";
+import {Blog} from "../../entity/blog.entity";
+
 
 export const blogsQueryRepository = {
     async getBlogs(query: BlogQueriesType) {
@@ -32,7 +33,7 @@ export const blogsQueryRepository = {
 
     },
 
-    _blogMap(blog: WithId<BlogDbType>) {
+    _blogMap(blog: WithId<Blog>) {
         return {
             name: blog.name,
             description: blog.description,

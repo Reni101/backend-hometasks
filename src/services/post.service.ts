@@ -1,23 +1,24 @@
 import {ObjectId} from "mongodb";
-import {BlogDbType, PostDbType} from "../db/types";
+import {PostDbType} from "../db/types";
 import {postsRepository} from "../repositories/posts/posts.repository";
 import {InputPostBody} from "../common/types/input/posts.type";
 import {blogsQueryRepository} from "../repositories/blogs/blogs.query.repository";
 import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
+import {Blog} from "../entity/blog.entity";
 
 
 export const postsService = {
-    async createPost(dto: InputPostBody,blog:BlogDbType) {
-            const newPost: PostDbType = {
-                title: dto.title,
-                blogId: new ObjectId(dto.blogId),
-                content: dto.blogId,
-                shortDescription: dto.shortDescription,
-                blogName: blog.name,
-                createdAt: new Date()
-            }
+    async createPost(dto: InputPostBody, blog: Blog) {
+        const newPost: PostDbType = {
+            title: dto.title,
+            blogId: new ObjectId(dto.blogId),
+            content: dto.blogId,
+            shortDescription: dto.shortDescription,
+            blogName: blog.name,
+            createdAt: new Date()
+        }
 
-            return postsRepository.createPost(newPost)
+        return postsRepository.createPost(newPost)
     },
 
     async updatePost(dto: InputPostBody, postId: string) {

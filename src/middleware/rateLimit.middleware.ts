@@ -6,7 +6,7 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
     const url = req.originalUrl;
     const ip = req.socket.remoteAddress ?? '';
 
-    const rateLimit = new RateLimit({ip, URL: url})
+    const rateLimit = new RateLimit(ip, url)
     await rateLimitRepository.addRequest(rateLimit)
 
     const requestsCount = await rateLimitRepository.getRequests(req.originalUrl, ip);

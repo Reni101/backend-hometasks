@@ -3,9 +3,6 @@ import {add} from "date-fns";
 
 
 export class User {
-    login: string;
-    email: string;
-    passwordHash: string;
     createdAt: Date;
     emailConfirmation: {
         confirmationCode: string;
@@ -13,10 +10,9 @@ export class User {
         isConfirmed: boolean;
     }
 
-    constructor(login: string, email: string, hash: string) {
-        this.login = login
-        this.email = email
-        this.passwordHash = hash
+    constructor(public login: string,
+                public email: string,
+                public passwordHash: string) {
         this.createdAt = new Date()
         this.emailConfirmation = {
             expirationDate: add(new Date(), {
