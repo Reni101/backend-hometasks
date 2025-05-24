@@ -7,12 +7,11 @@ class SecurityService {
         const sessions = await sessionsRepository.getAllSessionsByUserId(dto.userId);
         const sessionForDelete = sessions.filter(el => el.device_id !== dto.deviceId).map(el => el._id);
         const result = await sessionsRepository.deleteOtherSession(sessionForDelete);
-        return result.deletedCount > 1;
+        return result.deletedCount > 0;
     }
 
     async terminateDevice(dto: { deviceId: string, userId: string, iat: number }): Promise<Result> {
         const session = await sessionsRepository.findSessionDeviceId(dto.deviceId);
-        debugger
         if (!session) {
             return {
                 status: ResultStatus.NotFound,
@@ -49,10 +48,6 @@ class SecurityService {
             errorMessage: 'NotFound',
             extensions: [],
         }
-
-        // const sessionForDelete = sessions.filter(el => el.device_id !== dto.deviceId).map(el => el._id);
-        // const result = await sessionsRepository.deleteOtherSession(sessionForDelete);
-        // return result.deletedCount > 1;
     }
 }
 

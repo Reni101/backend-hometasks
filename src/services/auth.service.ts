@@ -159,9 +159,8 @@ class AuthService {
     }
 
     async logout(sessionId: ObjectId) {
-        await sessionsRepository.deleteSession(sessionId)
-        return true
-
+        const result = await sessionsRepository.deleteSession(sessionId)
+        return result.deletedCount > 0
     }
 
     async checkAuthorisation(refreshToken?: string) {

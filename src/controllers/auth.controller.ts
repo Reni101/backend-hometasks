@@ -94,8 +94,6 @@ class AuthController {
             res.status(HttpStatuses.Unauthorized).end()
             return
         }
-
-
     }
 
     async logOut(req: Request, res: Response) {
