@@ -38,7 +38,7 @@ const postsController = {
     async createPost(req: ReqWithBody<InputPostBody>, res: Response) {
         const blog = await blogsRepository.findBlog(req.body.blogId)
         if (blog) {
-            const result = await postsService.createPost(req.body, blog)
+            const result = await postsService.createPost(req.body, blog.name)
             const newPost = await postsQueryRepository.findPost(result.insertedId.toString())
             newPost && res.status(201).json(newPost).end()
             return
@@ -79,7 +79,7 @@ const postsController = {
 
         const payload = {postId: post.id.toString(), content: req.body.content, userId: req.userId!}
         const result = await commentsService.createComment(payload)
-        if(result){
+        if (result) {
             const newComment = await commentsQueryRepository.findComment(result.insertedId.toString())
             newComment ? res.status(201).json(newComment).end() : res.status(404).end()
             return

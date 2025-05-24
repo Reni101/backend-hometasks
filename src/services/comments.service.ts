@@ -1,4 +1,3 @@
-import {CommentsDbType} from "../db/types";
 import {ObjectId} from "mongodb";
 import {usersQueryRepository} from "../repositories/users/users.query.repository";
 import {commentsRepository} from "../repositories/comments/comments.repository";
@@ -6,23 +5,18 @@ import {commentsQueryRepository} from "../repositories/comments/comments.query.r
 import {InputCommentBody} from "../common/types/input/comments.types";
 import {ResultStatus} from "../common/result/resultCode";
 import {Result} from "../common/result/result.types";
+import {Comment} from "../entity/comment.entity";
 
 export const commentsService = {
     async createComment(dto: { content: string, postId: string, userId: string }) {
         const user = await usersQueryRepository.findUser(dto.userId);
 
-        if (!user) {
-            return
-        }
-        const newComment: CommentsDbType = {
-            content: dto.content,
-            postId: new ObjectId(dto.postId),
-            createdAt: new Date(),
-            commentatorInfo: {
-                userId: user?.id.toString(),
-                userLogin: user.login,
-            }
-        }
+        if (!user) return
+
+        const commentatorInfo = {userId: user?.id.toString(), userLogin: user.login,}
+        const postId = new ObjectId(dto.postId)
+        const newComment = new Comment(dto.content, commentatorInfo, postId);
+
         return commentsRepository.createComment(newComment)
     },
     async updateComment(dto: InputCommentBody, commentId: string, userId: string): Promise<Result> {

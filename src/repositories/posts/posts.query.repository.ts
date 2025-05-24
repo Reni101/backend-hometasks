@@ -1,7 +1,7 @@
 import {postCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {PostQueriesType} from "../../common/types/query.types";
-import {PostDbType} from "../../db/types";
+import {Post} from "../../entity/post.entity";
 
 export const postsQueryRepository = {
 
@@ -33,7 +33,7 @@ export const postsQueryRepository = {
         return post ? this._postMap(post) : undefined
     },
 
-    _postMap(post: WithId<PostDbType>) {
+    _postMap(post: WithId<Post>) {
         return {
             title: post.title,
             shortDescription: post.shortDescription,

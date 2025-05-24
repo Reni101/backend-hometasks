@@ -1,17 +1,19 @@
 import {Collection, Db, MongoClient} from "mongodb";
 import {SETTINGS} from "../settings";
-import {CommentsDbType, IUserDB, PostDbType} from "./types";
 import {Session} from "../entity/session.entity";
 import {RateLimit} from "../entity/rateLimit.entity";
 import {Blog} from "../entity/blog.entity";
+import {User} from "../entity/user.entity";
+import {Post} from "../entity/post.entity";
+import {Comment} from "../entity/comment.entity";
 
 const client: MongoClient = new MongoClient(SETTINGS.MONGO_URL);
 export const db: Db = client.db(SETTINGS.DB_NAME);
 
 export const blogCollection: Collection<Blog> = db.collection<Blog>('blogs')
-export const postCollection: Collection<PostDbType> = db.collection<PostDbType>('posts')
-export const userCollection: Collection<IUserDB> = db.collection<IUserDB>('users')
-export const commentsCollection: Collection<CommentsDbType> = db.collection<CommentsDbType>('comments')
+export const postCollection: Collection<Post> = db.collection<Post>('posts')
+export const userCollection: Collection<User> = db.collection<User>('users')
+export const commentsCollection: Collection<Comment> = db.collection<Comment>('comments')
 export const sessionsCollection: Collection<Session> = db.collection<Session>('sessions')
 export const rateLimitsCollection: Collection<RateLimit> = db.collection<RateLimit>('rateLimit')
 

@@ -1,7 +1,7 @@
 import {commentsCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {CommentQueriesType} from "../../common/types/query.types";
-import {CommentsDbType} from "../../db/types";
+import {Comment} from "../../entity/comment.entity";
 
 export const commentsQueryRepository = {
     async getComments(query: CommentQueriesType, postId?: string) {
@@ -32,11 +32,11 @@ export const commentsQueryRepository = {
         return post ? this._commentMap(post) : undefined
     },
 
-    _commentMap(comment: WithId<CommentsDbType>) {
+    _commentMap(comment: WithId<Comment>) {
         return {
-            id:comment._id,
-            content:comment.content,
-            commentatorInfo:comment.commentatorInfo,
+            id: comment._id,
+            content: comment.content,
+            commentatorInfo: comment.commentatorInfo,
             createdAt: comment.createdAt.toISOString(),
         }
     }
