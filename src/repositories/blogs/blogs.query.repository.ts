@@ -4,7 +4,7 @@ import {ObjectId, WithId} from "mongodb";
 import {Blog} from "../../entity/blog.entity";
 
 
-class BlogsQueryRepository {
+export class BlogsQueryRepository {
     async getBlogs(query: BlogQueriesType) {
         const filter: any = {}
 

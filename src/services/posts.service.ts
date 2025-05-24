@@ -4,12 +4,28 @@ import {InputPostBody} from "../common/types/input/posts.type";
 import {blogsQueryRepository} from "../repositories/blogs/blogs.query.repository";
 import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
 import {Post} from "../entity/post.entity";
+import {InputPostByBlogBody} from "../common/types/input/blogs.types";
+import {BlogsRepository} from "../repositories/blogs/blogs.repository";
 
 
 class PostService {
-    async createPost(dto: InputPostBody, blogName: string) {
-        const newPost = new Post(dto.title, dto.shortDescription, dto.content, new ObjectId(dto.blogId), blogName)
-        return postsRepository.createPost(newPost)
+    private blogsRepository: BlogsRepository
+
+    constructor() {
+        this.blogsRepository = new BlogsRepository();
+
+    }
+
+
+    async createPost(dto: InputPostBody) {
+
+        const blog = await this.blogsRepository.findBlog(dto.blogId)
+        if (!blog) return null
+        const newPost = new Post(dto.title, dto.shortDescription, dto.content, new ObjectId(dto.blogId), blog.name)
+        const result = await postsRepository.createPost(newPost)
+
+        return postsQueryRepository.findPost(result.insertedId.toString())
+
     }
 
     async updatePost(dto: InputPostBody, postId: string) {
@@ -26,6 +42,15 @@ class PostService {
         const result = await postsRepository.deletePost(id)
         return result.deletedCount === 1
     }
+
+    async createPostByBlogId(dto: InputPostByBlogBody & { blogId: string }) {
+        const blog = await this.blogsRepository.findBlog(dto.blogId)
+        if (!blog) return null
+        const newPost = new Post(dto.title, dto.shortDescription, dto.content, new ObjectId(dto.blogId), blog.name)
+        const result = await postsRepository.createPost(newPost)
+        return await postsQueryRepository.findPost(result.insertedId.toString())
+    }
+
 }
 
 export const postsService = new PostService()

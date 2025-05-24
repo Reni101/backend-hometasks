@@ -17,12 +17,20 @@ import {commentQueries} from "../helpers/commentQueries";
 import {commentsQueryRepository} from "../repositories/comments/comments.query.repository";
 import {authBearerMiddleware} from "../middleware/auth.bearer.middleware";
 import {commentsService} from "../services/comments.service";
-import {blogsRepository} from "../repositories/blogs/blogs.repository";
+import {BlogsRepository} from "../repositories/blogs/blogs.repository";
+import {HttpStatuses} from "../common/types/httpStatuses";
 
 export const postRouter = Router()
 
 
 class PostsService {
+
+    private blogsRepository: BlogsRepository;
+
+    constructor() {
+        this.blogsRepository = new BlogsRepository();
+    }
+
     async getAllPosts(req: ReqWithQuery<InputPostsQueryType>, res: Response) {
         const query = postQueries(req)
         const posts = await postsQueryRepository.getPosts(query);
@@ -38,15 +46,8 @@ class PostsService {
 
 
     async createPost(req: ReqWithBody<InputPostBody>, res: Response) {
-        const blog = await blogsRepository.findBlog(req.body.blogId)
-        if (blog) {
-            const result = await postsService.createPost(req.body, blog.name)
-            const newPost = await postsQueryRepository.findPost(result.insertedId.toString())
-            newPost && res.status(201).json(newPost).end()
-            return
-        }
-
-        res.status(404).end()
+        const newPost = await postsService.createPost(req.body)
+        newPost ? res.status(HttpStatuses.Created).json(newPost).end() : res.status(HttpStatuses.NotFound).end()
         return
     }
 
