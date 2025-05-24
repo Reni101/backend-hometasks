@@ -10,7 +10,7 @@ import {errorsMiddleware} from "../middleware/errorsMiddleware";
 import {blogsService} from "../services/blogs.service";
 import {blogQueries} from "../helpers/blogQueries";
 import {InputBlogsQueryType, InputPostsQueryType} from "../common/types/query.types";
-import {postsService} from "../services/post.service";
+import {postsService} from "../services/posts.service";
 import {postQueries} from "../helpers/postQueries";
 import {postBodyValidation, postQueryValidation} from "../middleware/validations/posts.input.validation-middleware";
 import {blogsQueryRepository} from "../repositories/blogs/blogs.query.repository";

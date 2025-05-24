@@ -4,7 +4,7 @@ import {ObjectId, WithId} from "mongodb";
 import {Blog} from "../../entity/blog.entity";
 
 
-export const blogsQueryRepository = {
+class BlogsQueryRepository {
     async getBlogs(query: BlogQueriesType) {
         const filter: any = {}
 
@@ -26,12 +26,13 @@ export const blogsQueryRepository = {
             totalCount,
             pagesCount: Math.ceil(totalCount / query.pageSize)
         };
-    },
+    }
+
     async findBlog(id: string) {
         const blog = await blogCollection.findOne({_id: new ObjectId(id)})
         return blog ? this._blogMap(blog) : undefined
 
-    },
+    }
 
     _blogMap(blog: WithId<Blog>) {
         return {
@@ -45,3 +46,5 @@ export const blogsQueryRepository = {
     }
 
 }
+
+export const blogsQueryRepository = new BlogsQueryRepository();

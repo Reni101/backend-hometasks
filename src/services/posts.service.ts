@@ -6,11 +6,11 @@ import {postsQueryRepository} from "../repositories/posts/posts.query.repository
 import {Post} from "../entity/post.entity";
 
 
-export const postsService = {
+class PostService {
     async createPost(dto: InputPostBody, blogName: string) {
         const newPost = new Post(dto.title, dto.shortDescription, dto.content, new ObjectId(dto.blogId), blogName)
         return postsRepository.createPost(newPost)
-    },
+    }
 
     async updatePost(dto: InputPostBody, postId: string) {
         const blog = await blogsQueryRepository.findBlog(dto.blogId)
@@ -20,10 +20,12 @@ export const postsService = {
             return result.modifiedCount === 1
         }
         return false
-    },
+    }
+
     async deletePost(id: string) {
         const result = await postsRepository.deletePost(id)
         return result.deletedCount === 1
-    },
-
+    }
 }
+
+export const postsService = new PostService()

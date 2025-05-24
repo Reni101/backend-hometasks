@@ -3,7 +3,7 @@ import {ObjectId, WithId} from "mongodb";
 import {PostQueriesType} from "../../common/types/query.types";
 import {Post} from "../../entity/post.entity";
 
-export const postsQueryRepository = {
+class PostsQueryRepository {
 
     async getPosts(query: PostQueriesType, blogId?: string) {
         const filter: any = {}
@@ -26,12 +26,12 @@ export const postsQueryRepository = {
             items: posts.map(this._postMap),
         }
 
-    },
+    }
 
     async findPost(id: string) {
         const post = await postCollection.findOne({_id: new ObjectId(id)})
         return post ? this._postMap(post) : undefined
-    },
+    }
 
     _postMap(post: WithId<Post>) {
         return {
@@ -45,3 +45,5 @@ export const postsQueryRepository = {
         }
     }
 }
+
+export const postsQueryRepository = new PostsQueryRepository()
