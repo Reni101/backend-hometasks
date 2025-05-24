@@ -3,7 +3,8 @@ import {ObjectId, WithId} from "mongodb";
 import {CommentQueriesType} from "../../common/types/query.types";
 import {Comment} from "../../entity/comment.entity";
 
-export const commentsQueryRepository = {
+
+class CommentQueryRepository {
     async getComments(query: CommentQueriesType, postId?: string) {
         const filter: any = {}
         if (postId) {
@@ -25,12 +26,12 @@ export const commentsQueryRepository = {
             items: posts.map(this._commentMap),
         }
 
-    },
+    }
 
     async findComment(id: string) {
         const post = await commentsCollection.findOne({_id: new ObjectId(id)})
         return post ? this._commentMap(post) : undefined
-    },
+    }
 
     _commentMap(comment: WithId<Comment>) {
         return {
@@ -41,3 +42,5 @@ export const commentsQueryRepository = {
         }
     }
 }
+
+export const commentsQueryRepository = new CommentQueryRepository()

@@ -11,12 +11,13 @@ import {HttpStatuses} from "../common/types/httpStatuses";
 
 export const commentsRouter = Router()
 
-export const commentsController = {
+
+class CommentsController {
     async getCommentById(req: ReqWithParams<{ id: string }>, res: Response) {
         const comment = await commentsQueryRepository.findComment(req.params.id)
         comment ? res.status(200).json(comment).end() : res.status(404).end()
         return
-    },
+    }
 
     async updateComment(req: ReqWithParAndBody<{ id: string }, InputCommentBody>, res: Response,) {
         const result = await commentsService.updateComment(req.body, req.params.id, req.userId!
@@ -31,7 +32,7 @@ export const commentsController = {
         }
         res.status(HttpStatuses.NotFound).end();
         return
-    },
+    }
 
     async deleteComment(req: Request<{ id: string }>, res: Response,) {
         const result = await commentsService.deleteComment(req.params.id, req.userId!)
@@ -47,8 +48,11 @@ export const commentsController = {
         res.status(HttpStatuses.NotFound).end();
         return
 
-    },
+    }
 }
+
+const commentsController = new CommentsController()
+
 commentsRouter.get('/:id', commentsController.getCommentById)
 commentsRouter.put('/:id', authBearerMiddleware, postContent, errorsMiddleware, commentsController.updateComment)
 commentsRouter.delete('/:id', authBearerMiddleware, errorsMiddleware, commentsController.deleteComment)

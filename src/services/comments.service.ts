@@ -7,7 +7,8 @@ import {ResultStatus} from "../common/result/resultCode";
 import {Result} from "../common/result/result.types";
 import {Comment} from "../entity/comment.entity";
 
-export const commentsService = {
+
+class CommentsService {
     async createComment(dto: { content: string, postId: string, userId: string }) {
         const user = await usersQueryRepository.findUser(dto.userId);
 
@@ -18,7 +19,8 @@ export const commentsService = {
         const newComment = new Comment(dto.content, commentatorInfo, postId)
 
         return commentsRepository.createComment(newComment)
-    },
+    }
+
     async updateComment(dto: InputCommentBody, commentId: string, userId: string): Promise<Result> {
         const comment = await commentsQueryRepository.findComment(commentId)
         if (comment) {
@@ -49,7 +51,8 @@ export const commentsService = {
             errorMessage: 'NotFound',
             extensions: [],
         }
-    },
+    }
+
     async deleteComment(commentId: string, userId: string): Promise<Result> {
 
         const comment = await commentsQueryRepository.findComment(commentId)
@@ -81,3 +84,5 @@ export const commentsService = {
         }
     }
 }
+
+export const commentsService = new CommentsService()
