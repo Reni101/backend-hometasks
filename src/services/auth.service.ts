@@ -1,5 +1,4 @@
 import {loginInputBody, RegInputBody} from "../common/types/input/auth.types";
-import {usersRepository} from "../repositories/users/users.repository";
 import {jwtService} from "../adapters/jwt.service";
 import {bcryptService} from "../adapters/bcrypt.service";
 import {Result} from "../common/result/result.types";
@@ -10,10 +9,19 @@ import {add} from "date-fns";
 import {sessionsRepository} from "../repositories/sessions/sessions.repository";
 import {Session} from "../entity/session.entity";
 import {ObjectId} from "mongodb";
+import {inject, injectable} from "inversify";
+import {UsersRepository} from "../repositories/users/users.repository";
 
-class AuthService {
+@injectable()
+export class AuthService {
+
+    constructor(
+        @inject(UsersRepository) private usersRepository: UsersRepository,
+    ) {
+    }
+
     async checkCredentials(dto: loginInputBody, ip: string, userAgent: string) {
-        const user = await usersRepository.findByLoginOrEmail(dto.loginOrEmail)
+        const user = await this.usersRepository.findByLoginOrEmail(dto.loginOrEmail)
         if (!user) return
         const isCompare = await bcryptService.checkPassword(dto.password, user.passwordHash)
 
@@ -43,7 +51,7 @@ class AuthService {
     }
 
     async registration(dto: RegInputBody): Promise<Result> {
-        const user = await usersRepository.findUniqueUser({email: dto.email, login: dto.login})
+        const user = await this.usersRepository.findUniqueUser({email: dto.email, login: dto.login})
         if (user) {
 
             let field = ''
@@ -61,7 +69,7 @@ class AuthService {
         const passwordHash = await bcryptService.generateHash(dto.password)
         const newUser = new User(dto.login, dto.email, passwordHash)
 
-        await usersRepository.createUser(newUser)
+        await this.usersRepository.createUser(newUser)
         try {
             // nodemailerService.sendEmail(newUser.email, newUser.emailConfirmation.confirmationCode, 'Registration')
         } catch (e: unknown) {
@@ -76,7 +84,7 @@ class AuthService {
     }
 
     async confirmation(code: string): Promise<Result> {
-        const user = await usersRepository.findUserByConfirmationCode(code)
+        const user = await this.usersRepository.findUserByConfirmationCode(code)
         if (!user) {
             return {
                 status: ResultStatus.BadRequest,
@@ -94,7 +102,7 @@ class AuthService {
             }
         }
 
-        await usersRepository.confirmEmail(user._id.toString())
+        await this.usersRepository.confirmEmail(user._id.toString())
 
         return {
             status: ResultStatus.Success,
@@ -104,7 +112,7 @@ class AuthService {
     }
 
     async emailResending(email: string): Promise<Result> {
-        const user = await usersRepository.findUserByEmail(email)
+        const user = await this.usersRepository.findUserByEmail(email)
 
         if (!user) {
             return {
@@ -128,7 +136,7 @@ class AuthService {
             days: 1
         }).toISOString()
 
-        await usersRepository.updateEmailConfirmation(user._id.toString(), newCode, newDate)
+        await this.usersRepository.updateEmailConfirmation(user._id.toString(), newCode, newDate)
 
         try {
             // await nodemailerService.sendEmail(user.email, newCode, "New code")
@@ -180,5 +188,3 @@ class AuthService {
         return session
     }
 }
-
-export const authService = new AuthService()

@@ -1,9 +1,10 @@
 import {userCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {User} from "../../entity/user.entity";
+import {injectable} from "inversify";
 
-
-class UsersRepository {
+@injectable()
+export class UsersRepository {
     async createUser(newUser: User) {
         return userCollection.insertOne(newUser);
     }
@@ -46,5 +47,3 @@ class UsersRepository {
         return userCollection.deleteOne({_id: new ObjectId(id)})
     }
 }
-
-export const usersRepository = new UsersRepository()

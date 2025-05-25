@@ -12,6 +12,13 @@ import {CommentQueryRepository} from "./repositories/comments/comments.query.rep
 import {CommentRepository} from "./repositories/comments/comments.repository";
 import {CommentsService} from "./services/comments.service";
 import {CommentsController} from "./controllers/comments.controller";
+import {UsersQueryRepository} from "./repositories/users/users.query.repository";
+import {UsersController} from "./controllers/users.controller";
+import {AuthController} from "./controllers/auth.controller";
+import {UsersRepository} from "./repositories/users/users.repository";
+import {AuthService} from "./services/auth.service";
+import {UserService} from "./services/users.service";
+import {SecurityController} from "./controllers/security.controller";
 
 
 export const container = new Container()
@@ -33,7 +40,24 @@ container.bind(CommentQueryRepository).to(CommentQueryRepository);
 container.bind(CommentRepository).to(CommentRepository);
 
 
+container.bind(UsersController).to(UsersController);
+container.bind(UserService).to(UserService);
+container.bind(UsersQueryRepository).to(UsersQueryRepository);
+container.bind(UsersRepository).to(UsersRepository);
+
+
+container.bind(AuthController).to(AuthController);
+container.bind(AuthService).to(AuthService);
+
+
+container.bind(SecurityController).to(SecurityController);
+
+
+
 
 export const postsController = container.get(PostsController);
 export const blogsController = container.get(BLogsController)
 export const commentsController = container.get(CommentsController)
+export const usersController = container.get(UsersController)
+export const authController = container.get(AuthController)
+export const securityController = container.get(SecurityController)

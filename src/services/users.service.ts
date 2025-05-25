@@ -1,13 +1,21 @@
 import {InputUserBody} from "../common/types/input/users.type";
-import {usersRepository} from "../repositories/users/users.repository";
 import {ErrorType} from "../common/types/errors.types";
 import {bcryptService} from "../adapters/bcrypt.service";
 import {User} from "../entity/user.entity";
+import {inject, injectable} from "inversify";
+import {UsersRepository} from "../repositories/users/users.repository";
 
-class UserService {
+@injectable()
+export class UserService {
+    constructor(
+        @inject(UsersRepository) private usersRepository: UsersRepository,
+    ) {
+
+    }
+
     async createUser(dto: InputUserBody) {
 
-        const existingUser = await usersRepository.findUniqueUser(dto);
+        const existingUser = await this.usersRepository.findUniqueUser(dto);
         if (existingUser) {
             const errorsMessages: ErrorType[] = []
             if (existingUser.login === dto.login) {
@@ -23,14 +31,12 @@ class UserService {
 
         const newUser = new User(dto.login, dto.email, passwordHash)
 
-        return usersRepository.createUser(newUser);
+        return this.usersRepository.createUser(newUser);
 
     }
 
     async deleteUser(id: string) {
-        const result = await usersRepository.deleteUser(id)
+        const result = await this.usersRepository.deleteUser(id)
         return result.deletedCount === 1
     }
 }
-
-export const usersService = new UserService();

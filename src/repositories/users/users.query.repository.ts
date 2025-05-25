@@ -2,8 +2,10 @@ import {UserQueriesType} from "../../common/types/query.types";
 import {userCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {User} from "../../entity/user.entity";
+import {injectable} from "inversify";
 
-class UsersQueryRepository {
+@injectable()
+export class UsersQueryRepository {
     async getUsers(query: UserQueriesType) {
 
         const filter: any = {}
@@ -67,5 +69,3 @@ class UsersQueryRepository {
         }
     }
 }
-
-export const usersQueryRepository = new UsersQueryRepository()

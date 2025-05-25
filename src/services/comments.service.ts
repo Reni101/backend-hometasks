@@ -1,5 +1,4 @@
 import {ObjectId} from "mongodb";
-import {usersQueryRepository} from "../repositories/users/users.query.repository";
 import {InputCommentBody} from "../common/types/input/comments.types";
 import {ResultStatus} from "../common/result/resultCode";
 import {Result} from "../common/result/result.types";
@@ -8,6 +7,7 @@ import {PostsQueryRepository} from "../repositories/posts/posts.query.repository
 import {inject, injectable} from "inversify";
 import {CommentRepository} from "../repositories/comments/comments.repository";
 import {CommentQueryRepository} from "../repositories/comments/comments.query.repository";
+import {UsersQueryRepository} from "../repositories/users/users.query.repository";
 
 @injectable()
 export class CommentsService {
@@ -15,6 +15,7 @@ export class CommentsService {
     constructor(@inject(CommentRepository) private commentsRepository: CommentRepository,
                 @inject(PostsQueryRepository) private postsQueryRepository: PostsQueryRepository,
                 @inject(CommentQueryRepository) private commentsQueryRepository: CommentQueryRepository,
+                @inject(UsersQueryRepository) private usersQueryRepository: UsersQueryRepository,
     ) {
 
     }
@@ -23,7 +24,7 @@ export class CommentsService {
         const post = await this.postsQueryRepository.findPost(dto.postId)
         if (!post) return null
 
-        const user = await usersQueryRepository.findUser(dto.userId);
+        const user = await this.usersQueryRepository.findUser(dto.userId);
 
         if (!user) return
 

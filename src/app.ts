@@ -1,15 +1,14 @@
 import express from 'express'
 import cors from 'cors'
 import {SETTINGS} from "./settings";
-
 import {testRouter} from "./controllers/test.controller";
-import {usersRouter} from "./controllers/users.controller";
-import {authRouter} from "./controllers/auth.controller";
 import cookieParser from 'cookie-parser';
-import {securityRouter} from "./controllers/security.controller";
 import {postRouter} from "./routers/postsRouter";
 import {blogsRouter} from "./routers/blogsRouter";
 import {commentsRouter} from "./routers/commentsRouter";
+import {usersRouter} from "./routers/UsersRouter";
+import {authRouter} from "./routers/authRouter";
+import {securityRouter} from "./routers/securityRouter";
 
 
 export const app = express()

@@ -1,20 +1,26 @@
-import {Request, Response, Router} from "express";
+import {Request, Response} from "express";
 import {sessionsQueryRepository} from "../repositories/sessions/sessions.query.repository";
 import {HttpStatuses} from "../common/types/httpStatuses";
 import {securityService} from "../services/security.service";
-import {deviceId} from "../middleware/validations/devices.input.validation-middleware";
-import {errorsMiddleware} from "../middleware/errorsMiddleware";
 import {ReqWithParams} from "../common/types/requests";
 import {ResultStatus} from "../common/result/resultCode";
-import {authService} from "../services/auth.service";
+import {inject, injectable} from "inversify";
+import {AuthService} from "../services/auth.service";
 
-export const securityRouter = Router()
 
-class SecurityController {
+@injectable()
+export class SecurityController {
+
+    constructor(
+        @inject(AuthService) private authService: AuthService,
+    ) {
+
+    }
+
     async getDevices(req: Request, res: Response,) {
         const refreshToken = req.cookies.refreshToken as string | undefined
 
-        const session = await authService.checkAuthorisation(refreshToken)
+        const session = await this.authService.checkAuthorisation(refreshToken)
         if (!session) {
             res.status(HttpStatuses.Unauthorized).end()
             return
@@ -29,7 +35,7 @@ class SecurityController {
     async terminateOtherDevices(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken as string | undefined
 
-        const session = await authService.checkAuthorisation(refreshToken)
+        const session = await this.authService.checkAuthorisation(refreshToken)
         if (!session) {
             res.status(HttpStatuses.Unauthorized).end()
             return
@@ -44,7 +50,7 @@ class SecurityController {
     async deleteDevice(req: ReqWithParams<{ deviceId: string }>, res: Response) {
         const refreshToken = req.cookies.refreshToken as string | undefined
 
-        const session = await authService.checkAuthorisation(refreshToken)
+        const session = await this.authService.checkAuthorisation(refreshToken)
         if (!session) {
             res.status(HttpStatuses.Unauthorized).end()
             return
@@ -70,8 +76,4 @@ class SecurityController {
     }
 }
 
-const securityController = new SecurityController()
 
-securityRouter.get('/devices', securityController.getDevices.bind(securityController))
-securityRouter.delete('/devices', securityController.terminateOtherDevices.bind(securityController))
-securityRouter.delete('/devices/:deviceId', deviceId, errorsMiddleware, securityController.deleteDevice.bind(securityController))
