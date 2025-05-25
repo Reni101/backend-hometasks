@@ -2,8 +2,9 @@ import {BlogQueriesType} from "../../common/types/query.types";
 import {blogCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {Blog} from "../../entity/blog.entity";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class BlogsQueryRepository {
     async getBlogs(query: BlogQueriesType) {
         const filter: any = {}
@@ -46,5 +47,3 @@ export class BlogsQueryRepository {
     }
 
 }
-
-export const blogsQueryRepository = new BlogsQueryRepository();

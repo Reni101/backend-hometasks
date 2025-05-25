@@ -2,8 +2,10 @@ import {InputBlogBody} from "../../common/types/input/blogs.types";
 import {blogCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {Blog} from "../../entity/blog.entity";
+import {injectable} from "inversify";
 
 
+@injectable()
 export class BlogsRepository {
     async createBlog(newBlog: Blog) {
         return blogCollection.insertOne(newBlog);

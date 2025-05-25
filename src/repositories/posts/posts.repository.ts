@@ -2,8 +2,10 @@ import {InputPostBody} from "../../common/types/input/posts.type";
 import {postCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {Post} from "../../entity/post.entity";
+import {injectable} from "inversify";
 
-class PostsRepository {
+@injectable()
+export class PostsRepository {
     async createPost(newPost: Post) {
         return postCollection.insertOne(newPost);
     }
@@ -23,5 +25,3 @@ class PostsRepository {
         return postCollection.deleteOne({_id: new ObjectId(id)})
     }
 }
-
-export const postsRepository = new PostsRepository()

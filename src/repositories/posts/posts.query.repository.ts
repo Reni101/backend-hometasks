@@ -2,8 +2,10 @@ import {postCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {PostQueriesType} from "../../common/types/query.types";
 import {Post} from "../../entity/post.entity";
+import {injectable} from "inversify";
 
-class PostsQueryRepository {
+@injectable()
+export class PostsQueryRepository {
 
     async getPosts(query: PostQueriesType, blogId?: string) {
         const filter: any = {}

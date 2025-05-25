@@ -1,30 +1,23 @@
-import {Request, Response, Router} from "express";
+import {Request, Response} from "express";
 import {InputBlogBody, InputPostByBlogBody} from "../common/types/input/blogs.types";
-import {
-    blogBodyValidation,
-    blogIdParam,
-    blogQueryValidation
-} from "../middleware/validations/blogs.input.validation-middleware";
-import {authBasicMiddleware} from "../middleware/auth.basic.middleware";
-import {errorsMiddleware} from "../middleware/errorsMiddleware";
-import {blogsService} from "../services/blogs.service";
+import {BlogService} from "../services/blogs.service";
 import {blogQueries} from "../helpers/blogQueries";
 import {InputBlogsQueryType, InputPostsQueryType} from "../common/types/query.types";
-import {postsService} from "../services/posts.service";
 import {postQueries} from "../helpers/postQueries";
-import {postBodyValidation, postQueryValidation} from "../middleware/validations/posts.input.validation-middleware";
 import {BlogsQueryRepository} from "../repositories/blogs/blogs.query.repository";
 import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
 import {ReqWithBody, ReqWithParams, ReqWithParAndBody, ReqWithQuery} from "../common/types/requests";
 import {HttpStatuses} from "../common/types/httpStatuses";
+import {inject, injectable} from "inversify";
+import {PostService} from "../services/posts.service";
 
-export const blogsRouter = Router()
 
-class BLogsController {
-    private blogsQueryRepository: BlogsQueryRepository
-
-    constructor() {
-        this.blogsQueryRepository = new BlogsQueryRepository();
+@injectable()
+export class BLogsController {
+    constructor(@inject(BlogsQueryRepository) private blogsQueryRepository: BlogsQueryRepository,
+                @inject(BlogService) private blogsService: BlogService,
+                @inject(PostService) private postsService: PostService,
+    ) {
     }
 
     async getAllBlogs(req: ReqWithQuery<InputBlogsQueryType>, res: Response,) {
@@ -41,21 +34,21 @@ class BLogsController {
     }
 
     async createBlog(req: ReqWithBody<InputBlogBody>, res: Response,) {
-        const result = await blogsService.createBlog(req.body)
+        const result = await this.blogsService.createBlog(req.body)
         const newBlog = await this.blogsQueryRepository.findBlog(result.insertedId.toString())
         res.status(201).json(newBlog).end()
         return
     }
 
     async updateBlog(req: ReqWithParAndBody<{ id: string }, InputBlogBody>, res: Response,) {
-        const isUpdated = await blogsService.updateBlog(req.body, req.params.id)
+        const isUpdated = await this.blogsService.updateBlog(req.body, req.params.id)
         isUpdated ? res.status(204).end() : res.status(404).end();
         return
     }
 
 
     async deleteBlog(req: Request<{ id: string }>, res: Response,) {
-        const isDeleted = await blogsService.deleteBlog(req.params.id)
+        const isDeleted = await this.blogsService.deleteBlog(req.params.id)
         isDeleted ? res.status(HttpStatuses.NoContent).end() : res.status(404).end()
         return
     }
@@ -76,19 +69,10 @@ class BLogsController {
 
     async createPostByBlogId(req: ReqWithParAndBody<{ blogId: string }, InputPostByBlogBody>, res: Response,) {
         const dto = {...req.body, blogId: req.params.blogId}
-        const newPost = await postsService.createPostByBlogId(dto)
+        const newPost = await this.postsService.createPostByBlogId(dto)
         newPost ? res.status(HttpStatuses.Created).json(newPost).end() : res.status(HttpStatuses.NoContent).end()
         return
     }
 }
 
-const blogsController = new BLogsController()
 
-
-blogsRouter.get('/', blogQueryValidation, errorsMiddleware, blogsController.getAllBlogs.bind(blogsController))
-blogsRouter.get('/:id', blogsController.getBlogById.bind(blogsController))
-blogsRouter.post('/', authBasicMiddleware, blogBodyValidation, errorsMiddleware, blogsController.createBlog.bind(blogsController))
-blogsRouter.put('/:id', authBasicMiddleware, blogBodyValidation, errorsMiddleware, blogsController.updateBlog.bind(blogsController))
-blogsRouter.delete('/:id', authBasicMiddleware, blogsController.deleteBlog.bind(blogsController))
-blogsRouter.get('/:blogId/posts', blogIdParam, postQueryValidation, errorsMiddleware, blogsController.getPostsByBlogId.bind(blogsController))
-blogsRouter.post('/:blogId/posts', blogIdParam, authBasicMiddleware, postBodyValidation, errorsMiddleware, blogsController.createPostByBlogId.bind(blogsController))

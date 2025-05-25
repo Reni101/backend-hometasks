@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2016",
+    "target": "ES6",
     "module": "commonjs",
     "outDir": "./dist",
     "allowSyntheticDefaultImports": true,
@@ -9,13 +9,17 @@
     "strict": true,
     "noImplicitReturns": true,
     "skipLibCheck": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": [
-    "src/**/*",
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
     "**/*.test.ts"
   ],
-  "files": ["src/common/types/index.d.ts"]
+  "files": [
+    "src/common/types/index.d.ts"
+  ]
 }

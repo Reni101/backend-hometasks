@@ -1,13 +1,12 @@
 import {BlogsRepository} from "../repositories/blogs/blogs.repository";
 import {InputBlogBody} from "../common/types/input/blogs.types";
 import {Blog} from "../entity/blog.entity";
+import {inject, injectable} from "inversify";
 
-class BlogService {
-
-    private blogsRepository: BlogsRepository;
-
-    constructor() {
-        this.blogsRepository = new BlogsRepository();
+@injectable()
+export class BlogService {
+    constructor(@inject(BlogsRepository) private blogsRepository: BlogsRepository,
+    ) {
     }
 
     async createBlog(dto: InputBlogBody) {
@@ -25,5 +24,3 @@ class BlogService {
         return result.deletedCount === 1
     }
 }
-
-export const blogsService = new BlogService();

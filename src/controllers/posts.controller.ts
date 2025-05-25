@@ -1,28 +1,23 @@
-import {Response, Router} from "express";
+import {inject, injectable} from "inversify";
+import {Response} from "express";
 import {InputPostBody} from "../common/types/input/posts.type";
-import {authBasicMiddleware} from "../middleware/auth.basic.middleware";
-import {errorsMiddleware} from "../middleware/errorsMiddleware";
-import {
-    commentsQueryValidation,
-    postBodyValidation,
-    postContent,
-    postQueryValidation
-} from "../middleware/validations/posts.input.validation-middleware";
 import {InputPostsQueryType} from "../common/types/query.types";
 import {postQueries} from "../helpers/postQueries";
-import {postsService} from "../services/posts.service";
 import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
 import {ReqWithBody, ReqWithParams, ReqWithParAndBody, ReqWithQuery} from "../common/types/requests";
 import {commentQueries} from "../helpers/commentQueries";
 import {commentsQueryRepository} from "../repositories/comments/comments.query.repository";
-import {authBearerMiddleware} from "../middleware/auth.bearer.middleware";
 import {commentsService} from "../services/comments.service";
 import {HttpStatuses} from "../common/types/httpStatuses";
+import {PostService} from "../services/posts.service";
 
-export const postRouter = Router()
 
+@injectable()
+export class PostsController {
+    constructor(@inject(PostService) private postsService: PostService,
+    ) {
+    }
 
-class PostsService {
     async getAllPosts(req: ReqWithQuery<InputPostsQueryType>, res: Response) {
         const query = postQueries(req)
         const posts = await postsQueryRepository.getPosts(query);
@@ -36,21 +31,20 @@ class PostsService {
         return
     }
 
-
     async createPost(req: ReqWithBody<InputPostBody>, res: Response) {
-        const newPost = await postsService.createPost(req.body)
+        const newPost = await this.postsService.createPost(req.body)
         newPost ? res.status(HttpStatuses.Created).json(newPost).end() : res.status(HttpStatuses.NotFound).end()
         return
     }
 
     async updatePost(req: ReqWithParAndBody<{ id: string }, InputPostBody>, res: Response,) {
-        const isUpdated = await postsService.updatePost(req.body, req.params.id)
+        const isUpdated = await this.postsService.updatePost(req.body, req.params.id)
         isUpdated ? res.status(204).end() : res.status(404).end();
         return
     }
 
     async deletePost(req: ReqWithParams<{ id: string }>, res: Response,) {
-        const isDeleted = await postsService.deletePost(req.params.id)
+        const isDeleted = await this.postsService.deletePost(req.params.id)
         isDeleted ? res.status(204).end() : res.status(404).end()
         return
     }
@@ -75,13 +69,3 @@ class PostsService {
 
     }
 }
-
-const postsController = new PostsService()
-
-postRouter.get('/', postQueryValidation, errorsMiddleware, postsController.getAllPosts.bind(postsController))
-postRouter.get('/:id', postsController.getPostById)
-postRouter.post('/', authBasicMiddleware, postBodyValidation, errorsMiddleware, postsController.createPost.bind(postsController))
-postRouter.put('/:id', authBasicMiddleware, postBodyValidation, errorsMiddleware, postsController.updatePost.bind(postsController))
-postRouter.delete('/:id', authBasicMiddleware, postsController.deletePost.bind(postsController))
-postRouter.get('/:postId/comments', commentsQueryValidation, errorsMiddleware, postsController.getCommentsByPostId.bind(postsController))
-postRouter.post('/:postId/comments', authBearerMiddleware, postContent, errorsMiddleware, postsController.createCommentByPostId.bind(postsController))
