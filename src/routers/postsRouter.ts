@@ -11,8 +11,6 @@ import {authBearerMiddleware} from "../middleware/auth.bearer.middleware";
 import {postsController} from "../composition-root";
 
 export const postRouter = Router()
-
-
 postRouter.get('/', postQueryValidation, errorsMiddleware, postsController.getAllPosts.bind(postsController))
 postRouter.get('/:id', postsController.getPostById)
 postRouter.post('/', authBasicMiddleware, postBodyValidation, errorsMiddleware, postsController.createPost.bind(postsController))

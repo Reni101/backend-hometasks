@@ -1,26 +1,31 @@
 import {ReqWithParams, ReqWithParAndBody} from "../common/types/requests";
-import {Request, Response, Router} from "express";
-import {commentsQueryRepository} from "../repositories/comments/comments.query.repository";
-import {authBearerMiddleware} from "../middleware/auth.bearer.middleware";
-import {errorsMiddleware} from "../middleware/errorsMiddleware";
+import {Request, Response} from "express";
 import {InputCommentBody} from "../common/types/input/comments.types";
-import {postContent} from "../middleware/validations/posts.input.validation-middleware";
-import {commentsService} from "../services/comments.service";
 import {ResultStatus} from "../common/result/resultCode";
 import {HttpStatuses} from "../common/types/httpStatuses";
+import {inject, injectable} from "inversify";
+import {CommentQueryRepository} from "../repositories/comments/comments.query.repository";
+import {CommentsService} from "../services/comments.service";
 
-export const commentsRouter = Router()
+
+@injectable()
+export class CommentsController {
+
+    constructor(@inject(CommentsService) private commentsService: CommentsService,
+                @inject(CommentQueryRepository) private commentsQueryRepository: CommentQueryRepository,
+    ) {
+
+    }
 
 
-class CommentsController {
     async getCommentById(req: ReqWithParams<{ id: string }>, res: Response) {
-        const comment = await commentsQueryRepository.findComment(req.params.id)
+        const comment = await this.commentsQueryRepository.findComment(req.params.id)
         comment ? res.status(200).json(comment).end() : res.status(404).end()
         return
     }
 
     async updateComment(req: ReqWithParAndBody<{ id: string }, InputCommentBody>, res: Response,) {
-        const result = await commentsService.updateComment(req.body, req.params.id, req.userId!
+        const result = await this.commentsService.updateComment(req.body, req.params.id, req.userId!
         )
         if (result.status === ResultStatus.Forbidden) {
             res.status(HttpStatuses.Forbidden).end()
@@ -35,7 +40,7 @@ class CommentsController {
     }
 
     async deleteComment(req: Request<{ id: string }>, res: Response,) {
-        const result = await commentsService.deleteComment(req.params.id, req.userId!)
+        const result = await this.commentsService.deleteComment(req.params.id, req.userId!)
 
         if (result.status === ResultStatus.Forbidden) {
             res.status(HttpStatuses.Forbidden).end()
@@ -50,9 +55,3 @@ class CommentsController {
 
     }
 }
-
-const commentsController = new CommentsController()
-
-commentsRouter.get('/:id', commentsController.getCommentById.bind(commentsController))
-commentsRouter.put('/:id', authBearerMiddleware, postContent, errorsMiddleware, commentsController.updateComment.bind(commentsController))
-commentsRouter.delete('/:id', authBearerMiddleware, errorsMiddleware, commentsController.deleteComment.bind(commentsController))

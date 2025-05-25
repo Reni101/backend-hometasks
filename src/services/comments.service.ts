@@ -1,17 +1,26 @@
 import {ObjectId} from "mongodb";
 import {usersQueryRepository} from "../repositories/users/users.query.repository";
-import {commentsRepository} from "../repositories/comments/comments.repository";
-import {commentsQueryRepository} from "../repositories/comments/comments.query.repository";
 import {InputCommentBody} from "../common/types/input/comments.types";
 import {ResultStatus} from "../common/result/resultCode";
 import {Result} from "../common/result/result.types";
 import {Comment} from "../entity/comment.entity";
-import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
+import {PostsQueryRepository} from "../repositories/posts/posts.query.repository";
+import {inject, injectable} from "inversify";
+import {CommentRepository} from "../repositories/comments/comments.repository";
+import {CommentQueryRepository} from "../repositories/comments/comments.query.repository";
 
+@injectable()
+export class CommentsService {
 
-class CommentsService {
+    constructor(@inject(CommentRepository) private commentsRepository: CommentRepository,
+                @inject(PostsQueryRepository) private postsQueryRepository: PostsQueryRepository,
+                @inject(CommentQueryRepository) private commentsQueryRepository: CommentQueryRepository,
+    ) {
+
+    }
+
     async createComment(dto: { content: string, postId: string, userId: string }) {
-        const post = await postsQueryRepository.findPost(dto.postId)
+        const post = await this.postsQueryRepository.findPost(dto.postId)
         if (!post) return null
 
         const user = await usersQueryRepository.findUser(dto.userId);
@@ -23,13 +32,13 @@ class CommentsService {
 
         const newComment = new Comment(dto.content, commentatorInfo, postId)
 
-        const result = await commentsRepository.createComment(newComment)
-        return commentsQueryRepository.findComment(result.insertedId.toString())
+        const result = await this.commentsRepository.createComment(newComment)
+        return this.commentsQueryRepository.findComment(result.insertedId.toString())
 
     }
 
     async updateComment(dto: InputCommentBody, commentId: string, userId: string): Promise<Result> {
-        const comment = await commentsQueryRepository.findComment(commentId)
+        const comment = await this.commentsQueryRepository.findComment(commentId)
         if (comment) {
             if (comment.commentatorInfo.userId !== userId) {
                 return {
@@ -42,7 +51,7 @@ class CommentsService {
         }
 
 
-        const result = await commentsRepository.updateComment(dto, commentId)
+        const result = await this.commentsRepository.updateComment(dto, commentId)
 
         if (result.modifiedCount === 1) {
             return {
@@ -62,7 +71,7 @@ class CommentsService {
 
     async deleteComment(commentId: string, userId: string): Promise<Result> {
 
-        const comment = await commentsQueryRepository.findComment(commentId)
+        const comment = await this.commentsQueryRepository.findComment(commentId)
         if (comment) {
             if (comment.commentatorInfo.userId !== userId) {
                 return {
@@ -73,7 +82,7 @@ class CommentsService {
                 }
             }
         }
-        const result = await commentsRepository.deleteComment(commentId)
+        const result = await this.commentsRepository.deleteComment(commentId)
         if (result.deletedCount === 1) {
             return {
                 status: ResultStatus.Success,
@@ -91,5 +100,3 @@ class CommentsService {
         }
     }
 }
-
-export const commentsService = new CommentsService()

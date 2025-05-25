@@ -2,9 +2,10 @@ import {commentsCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {InputCommentBody} from "../../common/types/input/comments.types";
 import {Comment} from "../../entity/comment.entity";
+import {injectable} from "inversify";
 
-
-class CommentRepository {
+@injectable()
+export class CommentRepository {
     async createComment(newComment: Comment) {
         return commentsCollection.insertOne(newComment);
     }
@@ -20,5 +21,3 @@ class CommentRepository {
 
     }
 }
-
-export const commentsRepository = new CommentRepository()

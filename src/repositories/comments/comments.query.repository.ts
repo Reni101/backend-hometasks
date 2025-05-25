@@ -2,9 +2,10 @@ import {commentsCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {CommentQueriesType} from "../../common/types/query.types";
 import {Comment} from "../../entity/comment.entity";
+import {injectable} from "inversify";
 
-
-class CommentQueryRepository {
+@injectable()
+export class CommentQueryRepository {
     async getComments(query: CommentQueriesType, postId?: string) {
         const filter: any = {}
         if (postId) {
@@ -42,5 +43,3 @@ class CommentQueryRepository {
         }
     }
 }
-
-export const commentsQueryRepository = new CommentQueryRepository()

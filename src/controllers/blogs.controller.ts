@@ -5,11 +5,11 @@ import {blogQueries} from "../helpers/blogQueries";
 import {InputBlogsQueryType, InputPostsQueryType} from "../common/types/query.types";
 import {postQueries} from "../helpers/postQueries";
 import {BlogsQueryRepository} from "../repositories/blogs/blogs.query.repository";
-import {postsQueryRepository} from "../repositories/posts/posts.query.repository";
 import {ReqWithBody, ReqWithParams, ReqWithParAndBody, ReqWithQuery} from "../common/types/requests";
 import {HttpStatuses} from "../common/types/httpStatuses";
 import {inject, injectable} from "inversify";
 import {PostService} from "../services/posts.service";
+import {PostsQueryRepository} from "../repositories/posts/posts.query.repository";
 
 
 @injectable()
@@ -17,6 +17,7 @@ export class BLogsController {
     constructor(@inject(BlogsQueryRepository) private blogsQueryRepository: BlogsQueryRepository,
                 @inject(BlogService) private blogsService: BlogService,
                 @inject(PostService) private postsService: PostService,
+                @inject(PostsQueryRepository) private postsQueryRepository: PostsQueryRepository,
     ) {
     }
 
@@ -62,7 +63,7 @@ export class BLogsController {
             return
         }
 
-        const result = await postsQueryRepository.getPosts(query, blogId)
+        const result = await this.postsQueryRepository.getPosts(query, blogId)
         result ? res.status(HttpStatuses.Success).json(result).end() : res.status(404).end()
         return
     }

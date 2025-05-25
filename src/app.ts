@@ -5,11 +5,11 @@ import {SETTINGS} from "./settings";
 import {testRouter} from "./controllers/test.controller";
 import {usersRouter} from "./controllers/users.controller";
 import {authRouter} from "./controllers/auth.controller";
-import {commentsRouter} from "./controllers/comments.controller";
 import cookieParser from 'cookie-parser';
 import {securityRouter} from "./controllers/security.controller";
 import {postRouter} from "./routers/postsRouter";
 import {blogsRouter} from "./routers/blogsRouter";
+import {commentsRouter} from "./routers/commentsRouter";
 
 
 export const app = express()

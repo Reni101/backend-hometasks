@@ -47,5 +47,3 @@ export class PostsQueryRepository {
         }
     }
 }
-
-export const postsQueryRepository = new PostsQueryRepository()
