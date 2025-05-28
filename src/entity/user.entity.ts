@@ -10,9 +10,11 @@ export class User {
         isConfirmed: boolean;
     }
 
+    recoveryCode: string
+
     constructor(public login: string,
                 public email: string,
-                public passwordHash: string) {
+                public passwordHash: string,) {
         this.createdAt = new Date()
         this.emailConfirmation = {
             expirationDate: add(new Date(), {
@@ -21,6 +23,7 @@ export class User {
             confirmationCode: randomUUID(),
             isConfirmed: false
         }
-    }
+        this.recoveryCode = ''
 
+    }
 }

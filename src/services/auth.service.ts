@@ -11,6 +11,7 @@ import {Session} from "../entity/session.entity";
 import {ObjectId} from "mongodb";
 import {inject, injectable} from "inversify";
 import {UsersRepository} from "../repositories/users/users.repository";
+import {nodemailerService} from "../adapters/nodemailer.service";
 
 @injectable()
 export class AuthService {
@@ -70,8 +71,14 @@ export class AuthService {
         const newUser = new User(dto.login, dto.email, passwordHash)
 
         await this.usersRepository.createUser(newUser)
+
+        const html = `<h1>Thank for your registration</h1>
+        <p>To finish registration please follow the link below:
+        <a href='https://somesite.com/confirm-email?code=${newUser.emailConfirmation.confirmationCode}'>complete registration</a>
+        </p>`
+
         try {
-            // nodemailerService.sendEmail(newUser.email, newUser.emailConfirmation.confirmationCode, 'Registration')
+            nodemailerService.sendEmail(html, newUser.email, 'Registration')
         } catch (e: unknown) {
             console.error('Send email error', e)
         }
@@ -138,8 +145,13 @@ export class AuthService {
 
         await this.usersRepository.updateEmailConfirmation(user._id.toString(), newCode, newDate)
 
+        const html = `<h1>Thank for your registration</h1>
+        <p>To finish registration please follow the link below:
+        <a href='https://somesite.com/confirm-email?code=${newCode}'>complete registration</a>
+        </p>`
+
         try {
-            // await nodemailerService.sendEmail(user.email, newCode, "New code")
+            nodemailerService.sendEmail(html, user.email, "New code")
         } catch (e: unknown) {
             console.error('Send email error', e)
         }
@@ -187,4 +199,59 @@ export class AuthService {
         }
         return session
     }
+
+    async passwordRecovery(email: string): Promise<Result> {
+        const user = await this.usersRepository.findUserByEmail(email)
+
+        if (!user) {
+            return {
+                status: ResultStatus.BadRequest,
+                errorMessage: 'Bad Request',
+                data: null,
+                extensions: [{message: 'email does not exist', field: 'email'}],
+            }
+        }
+        const code = randomUUID()
+
+        await this.usersRepository.updateRecoveryCode(user._id, code)
+
+        const html = `<h1>Password recovery</h1>
+        <p>To finish password recovery please follow the link below:
+          <a href='https://somesite.com/password-recovery?recoveryCode=${code}'>recovery password</a>
+        </p>`
+
+        try {
+            nodemailerService.sendEmail(html, email, 'Password recovery')
+        } catch (e: unknown) {
+            console.error('Send email error', e)
+        }
+
+
+        return {
+            status: ResultStatus.Success,
+            data: null,
+            extensions: [],
+        }
+
+    }
+
+    async newPassword(dto: { newPassword: string, recoveryCode: string }): Promise<Result> {
+        const user = await this.usersRepository.findByRecoveryCode(dto.recoveryCode)
+        if (!user) {
+            return {
+                status: ResultStatus.BadRequest,
+                errorMessage: 'Bad Request',
+                data: null,
+                extensions: [{message: 'recoveryCode does not exist', field: 'recoveryCode'}],
+            }
+        }
+        const passwordHash = await bcryptService.generateHash(dto.newPassword)
+        await this.usersRepository.updatePassword(user._id, passwordHash)
+        return {
+            status: ResultStatus.Success,
+            data: null,
+            extensions: [],
+        }
+    }
+
 }

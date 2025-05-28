@@ -46,4 +46,21 @@ export class UsersRepository {
     async deleteUser(id: string) {
         return userCollection.deleteOne({_id: new ObjectId(id)})
     }
+
+    async updateRecoveryCode(userId: ObjectId, recoveryCode: string,) {
+        return userCollection.updateOne({_id: userId},
+            {$set: {recoveryCode: recoveryCode,}});
+    }
+
+    async findByRecoveryCode(recoveryCode: string,) {
+        return userCollection.findOne({recoveryCode});
+    }
+
+    async updatePassword(userId: ObjectId, passwordHash: string) {
+        return userCollection.updateOne({_id: userId}, {
+            $set: {
+                passwordHash: passwordHash, recoveryCode: ''
+            }
+        });
+    }
 }

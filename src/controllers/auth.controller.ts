@@ -16,6 +16,7 @@ export class AuthController {
     ) {
 
     }
+
     async login(req: ReqWithBody<loginInputBody>, res: Response) {
         const ip = req.socket.remoteAddress ?? '';
         const userAgent = req.headers['user-agent'] ?? '';
@@ -69,7 +70,8 @@ export class AuthController {
     async emailResending(req: ReqWithBody<{ email: string }>, res: Response) {
         const result = await this.authService.emailResending(req.body.email)
         if (result.status === ResultStatus.BadRequest) {
-            res.status(HttpStatuses.BadRequest).json({errorsMessages: result.extensions})
+            res.status(HttpStatuses.BadRequest).json({errorsMessages: result.extensions}).end()
+            return
         }
         res.status(HttpStatuses.NoContent).end()
         return
@@ -117,6 +119,30 @@ export class AuthController {
             return
         }
 
+    }
+
+    async passwordRecovery(req: ReqWithBody<{ email: string }>, res: Response) {
+        const result = await this.authService.passwordRecovery(req.body.email)
+
+        // Even if current email is not registered (for prevent user's email detection)
+        if (result.status === ResultStatus.BadRequest) {
+            res.status(HttpStatuses.NoContent).end()
+            return
+        }
+
+        res.status(HttpStatuses.NoContent).end()
+        return
+    }
+
+    async newPassword(req: ReqWithBody<{ newPassword: string, recoveryCode: string }>, res: Response) {
+        const result = await this.authService.newPassword(req.body)
+        if (result.status === ResultStatus.BadRequest) {
+            res.status(HttpStatuses.NoContent).end()
+            return
+        }
+
+        res.status(HttpStatuses.NoContent).end()
+        return
     }
 
 }
