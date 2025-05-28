@@ -10,7 +10,7 @@ export const rateLimitMiddleware = async (req: Request, res: Response, next: Nex
     await rateLimitRepository.addRequest(rateLimit)
 
     const requestsCount = await rateLimitRepository.getRequests(req.originalUrl, ip);
-    if (requestsCount >= 5) {
+    if (requestsCount > 5) {
         res.status(429).end()
         return
     }

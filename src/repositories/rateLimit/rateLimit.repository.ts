@@ -9,7 +9,7 @@ class RateLimitRepository {
 
     async getRequests(url: string, ip: string) {
         const tenSecondsAgo = new Date(Date.now() - 10000);
-        return rateLimitsCollection.countDocuments({date: {$gt: tenSecondsAgo}, URL: url, ip});
+        return rateLimitsCollection.countDocuments({date: {$gt: tenSecondsAgo}, url: url, ip});
     }
 }
 
