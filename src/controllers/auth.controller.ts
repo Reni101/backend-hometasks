@@ -137,7 +137,7 @@ export class AuthController {
     async newPassword(req: ReqWithBody<{ newPassword: string, recoveryCode: string }>, res: Response) {
         const result = await this.authService.newPassword(req.body)
         if (result.status === ResultStatus.BadRequest) {
-            res.status(HttpStatuses.NoContent).end()
+            res.status(HttpStatuses.BadRequest).json({errorsMessages: result.extensions})
             return
         }
 
