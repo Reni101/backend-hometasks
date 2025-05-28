@@ -6,9 +6,9 @@ import cookieParser from 'cookie-parser';
 import {postRouter} from "./routers/postsRouter";
 import {blogsRouter} from "./routers/blogsRouter";
 import {commentsRouter} from "./routers/commentsRouter";
-import {usersRouter} from "./routers/usersRouter";
 import {authRouter} from "./routers/authRouter";
 import {securityRouter} from "./routers/securityRouter";
+import {usersRouter} from "./routers/UsersRouter";
 
 
 export const app = express()

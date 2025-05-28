@@ -202,7 +202,6 @@ export class AuthService {
 
     async passwordRecovery(email: string): Promise<Result> {
         const user = await this.usersRepository.findUserByEmail(email)
-
         if (!user) {
             return {
                 status: ResultStatus.BadRequest,
