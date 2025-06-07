@@ -24,14 +24,15 @@ const mongoURI = process.env.mongoURI || `mongodb://0.0.0.0:27017`
 
 export const connectToDB = async () => {
     try {
-        // await client.connect()
-        // await db.command({ping: 1})
+        await client.connect()
+        await db.command({ping: 1})
         await mongoose.connect(`${mongoURI}/${SETTINGS.DB_NAME}`)
         console.log('connected to db')
         return true
     } catch (e) {
         console.log(e)
         await client.close()
+        await mongoose.disconnect()
         return false
     }
 }
