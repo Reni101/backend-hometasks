@@ -1,5 +1,4 @@
 export class Blog {
-
     createdAt: Date
     isMembership: boolean
 

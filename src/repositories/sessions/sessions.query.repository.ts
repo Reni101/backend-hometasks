@@ -1,9 +1,10 @@
 import {sessionsCollection} from "../../db/mongo-db";
 import {ObjectId, WithId} from "mongodb";
 import {Session} from "../../entity/session.entity";
+import {injectable} from "inversify";
 
-
-class SessionsQueryRepository {
+@injectable()
+export class SessionsQueryRepository {
     async getDevices(userId: string) {
         const devices = await sessionsCollection.find({user_id: new ObjectId(userId)})
             .toArray();
@@ -20,5 +21,3 @@ class SessionsQueryRepository {
         }
     }
 }
-
-export const sessionsQueryRepository = new SessionsQueryRepository()

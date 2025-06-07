@@ -6,18 +6,19 @@ import {User} from "../entity/user.entity";
 import {ResultStatus} from "../common/result/resultCode";
 import {randomUUID} from "crypto";
 import {add} from "date-fns";
-import {sessionsRepository} from "../repositories/sessions/sessions.repository";
 import {Session} from "../entity/session.entity";
 import {ObjectId} from "mongodb";
 import {inject, injectable} from "inversify";
 import {UsersRepository} from "../repositories/users/users.repository";
 import {nodemailerService} from "../adapters/nodemailer.service";
+import {SessionsRepository} from "../repositories/sessions/sessions.repository";
 
 @injectable()
 export class AuthService {
 
     constructor(
         @inject(UsersRepository) private usersRepository: UsersRepository,
+        @inject(SessionsRepository) private sessionsRepository: SessionsRepository,
     ) {
     }
 
@@ -44,7 +45,7 @@ export class AuthService {
                     device_name: userAgent,
                     ip
                 })
-                await sessionsRepository.addSession(session)
+                await this.sessionsRepository.addSession(session)
             }
             return {accessToken, refreshToken}
         }
@@ -170,7 +171,7 @@ export class AuthService {
 
         const newToken = await jwtService.decodeToken(newRefreshToken)
 
-        await sessionsRepository.updateSession({id: sessionId, iat: newToken?.iat!, exp: newToken?.exp!})
+        await this.sessionsRepository.updateSession({id: sessionId, iat: newToken?.iat!, exp: newToken?.exp!})
 
         return {
             accessToken: newAccessToken,
@@ -179,7 +180,7 @@ export class AuthService {
     }
 
     async logout(sessionId: ObjectId) {
-        const result = await sessionsRepository.deleteSession(sessionId)
+        const result = await this.sessionsRepository.deleteSession(sessionId)
         return result.deletedCount > 0
     }
 
@@ -189,12 +190,12 @@ export class AuthService {
         const token = await jwtService.decodeToken(refreshToken);
         if (!token) return null
 
-        const session = await sessionsRepository.findSessionByIat(token.iat!, token.deviceId!)
+        const session = await this.sessionsRepository.findSessionByIat(token.iat!, token.deviceId!)
         if (!session) return null
 
         const currentTime = Math.floor(Date.now() / 1000)
         if (currentTime > (session.exp!)) {
-            await sessionsRepository.deleteSession(session._id)
+            await this.sessionsRepository.deleteSession(session._id)
             return null
         }
         return session

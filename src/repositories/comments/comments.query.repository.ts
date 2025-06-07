@@ -7,7 +7,7 @@ import {injectable} from "inversify";
 @injectable()
 export class CommentQueryRepository {
     async getComments(query: CommentQueriesType, postId?: string) {
-        const filter: any = {}
+        const filter: { postId?: ObjectId } = {}
         if (postId) {
             filter.postId = new ObjectId(postId);
         }
@@ -40,6 +40,11 @@ export class CommentQueryRepository {
             content: comment.content,
             commentatorInfo: comment.commentatorInfo,
             createdAt: comment.createdAt.toISOString(),
+            likesInfo: {
+                likesCount: comment.likesInfo.likesCount,
+                dislikesCount: comment.likesInfo.dislikesCount,
+                myStatus:'None'
+            }
         }
     }
 }

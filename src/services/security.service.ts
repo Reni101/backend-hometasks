@@ -1,17 +1,24 @@
-import {sessionsRepository} from "../repositories/sessions/sessions.repository";
 import {Result} from "../common/result/result.types";
 import {ResultStatus} from "../common/result/resultCode";
+import {inject, injectable} from "inversify";
+import {SessionsRepository} from "../repositories/sessions/sessions.repository";
 
-class SecurityService {
+@injectable()
+export class SecurityService {
+    constructor(
+        @inject(SessionsRepository) private sessionsRepository: SessionsRepository,
+    ) {
+    }
+
     async terminateOtherDevices(dto: { deviceId: string, userId: string }) {
-        const sessions = await sessionsRepository.getAllSessionsByUserId(dto.userId);
+        const sessions = await this.sessionsRepository.getAllSessionsByUserId(dto.userId);
         const sessionForDelete = sessions.filter(el => el.device_id !== dto.deviceId).map(el => el._id);
-        const result = await sessionsRepository.deleteOtherSession(sessionForDelete);
+        const result = await this.sessionsRepository.deleteOtherSession(sessionForDelete);
         return result.deletedCount > 0;
     }
 
     async terminateDevice(dto: { deviceId: string, userId: string, iat: number }): Promise<Result> {
-        const session = await sessionsRepository.findSessionDeviceId(dto.deviceId);
+        const session = await this.sessionsRepository.findSessionDeviceId(dto.deviceId);
         if (!session) {
             return {
                 status: ResultStatus.NotFound,
@@ -30,7 +37,7 @@ class SecurityService {
             }
         }
 
-        const result = await sessionsRepository.deleteSession(session._id)
+        const result = await this.sessionsRepository.deleteSession(session._id)
 
 
         if (result?.deletedCount > 0) {
@@ -50,5 +57,3 @@ class SecurityService {
         }
     }
 }
-
-export const securityService = new SecurityService()

@@ -1,9 +1,10 @@
 import {sessionsCollection} from "../../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {Session} from "../../entity/session.entity";
+import {injectable} from "inversify";
 
-
-class SessionsRepository {
+@injectable()
+export class SessionsRepository {
     async addSession(newSession: Session) {
         return sessionsCollection.insertOne(newSession);
     }
@@ -34,5 +35,3 @@ class SessionsRepository {
         return sessionsCollection.deleteMany({_id: {$in: ids}})
     }
 }
-
-export const sessionsRepository = new SessionsRepository()

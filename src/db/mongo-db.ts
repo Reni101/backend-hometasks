@@ -6,6 +6,8 @@ import {Blog} from "../entity/blog.entity";
 import {User} from "../entity/user.entity";
 import {Post} from "../entity/post.entity";
 import {Comment} from "../entity/comment.entity";
+import mongoose from 'mongoose'
+
 
 const client: MongoClient = new MongoClient(SETTINGS.MONGO_URL);
 export const db: Db = client.db(SETTINGS.DB_NAME);
@@ -18,10 +20,13 @@ export const sessionsCollection: Collection<Session> = db.collection<Session>('s
 export const rateLimitsCollection: Collection<RateLimit> = db.collection<RateLimit>('rateLimit')
 
 
+const mongoURI = process.env.mongoURI || `mongodb://0.0.0.0:27017/${SETTINGS.DB_NAME}`
+
 export const connectToDB = async () => {
     try {
-        await client.connect()
-        await db.command({ping: 1})
+        // await client.connect()
+        // await db.command({ping: 1})
+        await mongoose.connect(mongoURI)
         console.log('connected to db')
         return true
     } catch (e) {

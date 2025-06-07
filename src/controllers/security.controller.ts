@@ -1,11 +1,11 @@
 import {Request, Response} from "express";
-import {sessionsQueryRepository} from "../repositories/sessions/sessions.query.repository";
 import {HttpStatuses} from "../common/types/httpStatuses";
-import {securityService} from "../services/security.service";
 import {ReqWithParams} from "../common/types/requests";
 import {ResultStatus} from "../common/result/resultCode";
 import {inject, injectable} from "inversify";
 import {AuthService} from "../services/auth.service";
+import {SecurityService} from "../services/security.service";
+import {SessionsQueryRepository} from "../repositories/sessions/sessions.query.repository";
 
 
 @injectable()
@@ -13,6 +13,8 @@ export class SecurityController {
 
     constructor(
         @inject(AuthService) private authService: AuthService,
+        @inject(SecurityService) private securityService: SecurityService,
+        @inject(SessionsQueryRepository) private sessionsQueryRepository: SessionsQueryRepository,
     ) {
 
     }
@@ -26,7 +28,7 @@ export class SecurityController {
             return
         }
 
-        const devices = await sessionsQueryRepository.getDevices(session.user_id.toString())
+        const devices = await this.sessionsQueryRepository.getDevices(session.user_id.toString())
 
         res.status(HttpStatuses.Success).json(devices).end()
         return
@@ -42,7 +44,7 @@ export class SecurityController {
         }
 
         const dto = {userId: session.user_id.toString(), deviceId: session.device_id}
-        await securityService.terminateOtherDevices(dto)
+        await this.securityService.terminateOtherDevices(dto)
         res.status(HttpStatuses.NoContent).end()
         return
     }
@@ -57,7 +59,7 @@ export class SecurityController {
         }
         const dto = {deviceId: req.params.deviceId, userId: session.user_id.toString(), iat: session.iat}
 
-        const result = await securityService.terminateDevice(dto)
+        const result = await this.securityService.terminateDevice(dto)
 
         if (result.status === ResultStatus.Forbidden) {
             res.status(HttpStatuses.Forbidden).end()

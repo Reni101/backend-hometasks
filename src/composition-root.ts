@@ -19,6 +19,10 @@ import {UsersRepository} from "./repositories/users/users.repository";
 import {AuthService} from "./services/auth.service";
 import {UserService} from "./services/users.service";
 import {SecurityController} from "./controllers/security.controller";
+import {ReactionsCommentRepository} from "./repositories/reactions/reactionsCommentRepository";
+import {SessionsRepository} from "./repositories/sessions/sessions.repository";
+import {SecurityService} from "./services/security.service";
+import {SessionsQueryRepository} from "./repositories/sessions/sessions.query.repository";
 
 
 export const container = new Container()
@@ -38,6 +42,7 @@ container.bind(CommentsController).to(CommentsController);
 container.bind(CommentsService).to(CommentsService);
 container.bind(CommentQueryRepository).to(CommentQueryRepository);
 container.bind(CommentRepository).to(CommentRepository);
+container.bind(ReactionsCommentRepository).to(ReactionsCommentRepository);
 
 
 container.bind(UsersController).to(UsersController);
@@ -51,6 +56,9 @@ container.bind(AuthService).to(AuthService);
 
 
 container.bind(SecurityController).to(SecurityController);
+container.bind(SecurityService).to(SecurityService);
+container.bind(SessionsRepository).to(SessionsRepository);
+container.bind(SessionsQueryRepository).to(SessionsQueryRepository);
 
 
 

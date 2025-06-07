@@ -60,8 +60,23 @@ export class PostsController {
             return
         }
         const result = await this.commentsQueryRepository.getComments(query, req.params.postId)
-        result ? res.status(200).json(result).end() : res.status(404).end()
-        return
+        if (!req.userId) {
+            result ? res.status(200).json(result).end() : res.status(404).end()
+            return
+        } else {
+            const commentsId = result.items.map(item => item.id.toString())
+            const reactions = await this.commentsService.reactionStatusToComments({userId: req.userId, commentsId})
+
+            result.items.forEach((item, index) => {
+                //@ts-ignore
+                const status = reactions[item.content.toString()] ? reactions[item.content.toString()] : 'None'
+                result.items[index].likesInfo.myStatus = status
+            })
+            result ? res.status(200).json(result).end() : res.status(404).end()
+            return
+        }
+
+
     }
 
     async createCommentByPostId(req: ReqWithParAndBody<{ postId: string }, { content: string }>, res: Response) {
