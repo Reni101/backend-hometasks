@@ -131,7 +131,12 @@ export class CommentsService {
 
         if (!reaction) {
             //нет реакции приходит статус like/dislike => создаём новую реакцию => обновляем счётчики в комментарии
-            const reaction = new reactionCommentModel({commentId:dto.commentId,userId:dto.userId,status:dto.likeStatus,createdAt:new Date()})
+            const reaction = new reactionCommentModel({
+                commentId: dto.commentId,
+                userId: dto.userId,
+                status: dto.likeStatus,
+                createdAt: new Date()
+            })
             await this.reactionsRepository.createReaction(reaction)
 
 
@@ -159,14 +164,21 @@ export class CommentsService {
                     likesCount: comment.likesInfo.likesCount,
                     dislikesCount: comment.likesInfo.dislikesCount
                 }
+
                 if (reaction.status === 'Like') {
+
                     likesInfo.likesCount = comment.likesInfo.likesCount - 1
                 } else {
                     likesInfo.dislikesCount = comment.likesInfo.dislikesCount - 1
                 }
                 await this.commentsRepository.updateLikesInfo(likesInfo, comment._id)
                 await this.reactionsRepository.deleteReaction(reaction?._id)
-
+                return {
+                    status: ResultStatus.Success,
+                    data: null,
+                    errorMessage: '204',
+                    extensions: [],
+                }
             }
             // есть реакция и приходит like/dislike отличающийся от того что в бд => меняем статус в реакции, обновляем счётчики
             if (dto?.likeStatus !== reaction?.status) {
@@ -218,7 +230,7 @@ export class CommentsService {
 
     async reactionStatusToComments(dto: { commentsId: string[], userId: string }) {
         const reactions = await this.reactionsRepository.findReactions(dto)
-        const reactionsStatus:Record<string, string> = {}
+        const reactionsStatus: Record<string, string> = {}
         reactions.forEach((reaction) => {
             reactionsStatus[reaction.commentId] = reaction.status
         })
