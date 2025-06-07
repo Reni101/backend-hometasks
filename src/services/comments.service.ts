@@ -131,7 +131,7 @@ export class CommentsService {
 
         if (!reaction) {
             //нет реакции приходит статус like/dislike => создаём новую реакцию => обновляем счётчики в комментарии
-            const reaction = new reactionCommentModel(dto)
+            const reaction = new reactionCommentModel({commentId:dto.commentId,userId:dto.userId,status:dto.likeStatus,createdAt:new Date()})
             await this.reactionsRepository.createReaction(reaction)
 
 

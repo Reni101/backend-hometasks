@@ -68,7 +68,6 @@ export class CommentsController {
     }
 
     async like(req: ReqWithParAndBody<{ commentId: string }, { likeStatus: likeStatus }>, res: Response,) {
-
         const dto = {commentId: req.params.commentId, userId: req?.userId!, likeStatus: req.body.likeStatus}
         const result = await this.commentsService.like(dto)
 
