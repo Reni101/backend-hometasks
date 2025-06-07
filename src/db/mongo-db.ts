@@ -20,13 +20,11 @@ export const sessionsCollection: Collection<Session> = db.collection<Session>('s
 export const rateLimitsCollection: Collection<RateLimit> = db.collection<RateLimit>('rateLimit')
 
 
-const mongoURI = process.env.mongoURI || `mongodb://0.0.0.0:27017`
-
 export const connectToDB = async () => {
     try {
         await client.connect()
         await db.command({ping: 1})
-        await mongoose.connect(`${mongoURI}/${SETTINGS.DB_NAME}`)
+        await mongoose.connect(`${SETTINGS.MONGO_URL}/${SETTINGS.DB_NAME}`)
         console.log('connected to db')
         return true
     } catch (e) {
