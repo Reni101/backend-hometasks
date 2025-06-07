@@ -147,7 +147,7 @@ export class CommentsService {
             if (reaction.status === 'Like') {
                 likesInfo.likesCount = comment.likesInfo.likesCount + 1
             } else {
-                likesInfo.likesCount = comment.likesInfo.dislikesCount + 1
+                likesInfo.dislikesCount = comment.likesInfo.dislikesCount + 1
             }
             await this.commentsRepository.updateLikesInfo(likesInfo, comment._id)
 
