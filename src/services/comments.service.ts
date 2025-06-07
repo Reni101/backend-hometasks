@@ -218,9 +218,8 @@ export class CommentsService {
 
     async reactionStatusToComments(dto: { commentsId: string[], userId: string }) {
         const reactions = await this.reactionsRepository.findReactions(dto)
-        const reactionsStatus = {}
+        const reactionsStatus:Record<string, string> = {}
         reactions.forEach((reaction) => {
-            //@ts-ignore
             reactionsStatus[reaction.commentId] = reaction.status
         })
         return reactionsStatus

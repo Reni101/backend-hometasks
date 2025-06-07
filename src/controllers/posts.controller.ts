@@ -67,9 +67,10 @@ export class PostsController {
             const commentsId = result.items.map(item => item.id.toString())
             const reactions = await this.commentsService.reactionStatusToComments({userId: req.userId, commentsId})
 
-            result.items.forEach((item, index) => {
-                //@ts-ignore
-                const status = reactions[item.content.toString()] ? reactions[item.content.toString()] : 'None'
+            result.items.forEach((comment, index) => {
+                comment.id.toString()
+
+                const status = reactions[comment.id.toString()] ? reactions[comment.id.toString()] : 'None'
                 result.items[index].likesInfo.myStatus = status
             })
             result ? res.status(200).json(result).end() : res.status(404).end()
