@@ -70,8 +70,7 @@ export class PostsController {
             result.items.forEach((comment, index) => {
                 comment.id.toString()
 
-                const status = reactions[comment.id.toString()] ? reactions[comment.id.toString()] : 'None'
-                result.items[index].likesInfo.myStatus = status
+                result.items[index].likesInfo.myStatus =  reactions[comment.id.toString()] ? reactions[comment.id.toString()] : 'None'
             })
             result ? res.status(200).json(result).end() : res.status(404).end()
             return
