@@ -8,7 +8,7 @@ import {inject, injectable} from "inversify";
 import {CommentRepository} from "../repositories/comments/comments.repository";
 import {CommentQueryRepository} from "../repositories/comments/comments.query.repository";
 import {UsersQueryRepository} from "../repositories/users/users.query.repository";
-import {likeStatus, reactionCommentModel} from "../db/reactionShema";
+import {likeStatus, reactionCommentModel} from "../db/reactionCommentSchema";
 import {ReactionsCommentRepository} from "../repositories/reactions/reactionsCommentRepository";
 
 @injectable()

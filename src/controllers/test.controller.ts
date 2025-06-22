@@ -7,7 +7,8 @@ import {
     commentsCollection,
     rateLimitsCollection
 } from "../db/mongo-db";
-import {reactionCommentModel} from "../db/reactionShema";
+import {reactionCommentModel} from "../db/reactionCommentSchema";
+import {reactionPostModel} from "../db/reactionPostSchema";
 
 export const testRouter = Router()
 
@@ -22,6 +23,7 @@ export const testController = {
         sessionsCollection.drop()
         rateLimitsCollection.drop()
         reactionCommentModel.collection.drop()
+        reactionPostModel.collection.drop()
         res.status(204).end()
 
     },

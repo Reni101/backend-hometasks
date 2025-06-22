@@ -7,13 +7,21 @@ import {BlogsQueryRepository} from "../repositories/blogs/blogs.query.repository
 import {BlogsRepository} from "../repositories/blogs/blogs.repository";
 import {PostsRepository} from "../repositories/posts/posts.repository";
 import {PostsQueryRepository} from "../repositories/posts/posts.query.repository";
+import {likeStatus} from "../db/reactionCommentSchema";
+import {Result} from "../common/result/result.types";
+import {ResultStatus} from "../common/result/resultCode";
+import {ReactionPostRepository} from "../repositories/reactions/reactionsPostRepository";
+import {reactionPostModel} from "../db/reactionPostSchema";
+import {UsersRepository} from "../repositories/users/users.repository";
 
 @injectable()
 export class PostService {
     constructor(@inject(BlogsQueryRepository) private blogsQueryRepository: BlogsQueryRepository,
                 @inject(BlogsRepository) private blogsRepository: BlogsRepository,
                 @inject(PostsQueryRepository) private postsQueryRepository: PostsQueryRepository,
-                @inject(PostsRepository) private postsRepository: PostsRepository
+                @inject(PostsRepository) private postsRepository: PostsRepository,
+                @inject(ReactionPostRepository) private reactionPostRepository: ReactionPostRepository,
+                @inject(UsersRepository) private usersRepository: UsersRepository
     ) {
     }
 
@@ -52,4 +60,123 @@ export class PostService {
         return await this.postsQueryRepository.findPost(result.insertedId.toString())
     }
 
+    async reactionToggle(dto: { postId: string, userId: string, likeStatus: likeStatus }): Promise<Result> {
+        const post = await this.postsRepository.findById(dto.postId)
+        if (!post) {
+            return {
+                status: ResultStatus.NotFound,
+                data: null,
+                errorMessage: '404',
+                extensions: [],
+            }
+        }
+
+        const reaction = await this.reactionPostRepository.findByUserIdAndPostId({
+            postId: dto.postId,
+            userId: dto.postId
+        })
+
+        if (!reaction && dto.likeStatus === 'None') {
+            // нет реакции и приходит статус 'None'=> ошибка 400 поле likeStatus +
+            return {
+                status: ResultStatus.BadRequest,
+                data: null,
+                errorMessage: '400',
+                extensions: [{field: 'likeStatus', message: 'no changes'}],
+            }
+        }
+
+        if (!reaction) {
+            //нет реакции приходит статус like/dislike => создаём новую реакцию => обновляем счётчики в посте
+            const user = await this.usersRepository.findById(dto.userId)
+
+            const reaction = new reactionPostModel({
+                postId: dto.postId,
+                userId: dto.postId,
+                status: dto.likeStatus,
+                createdAt: new Date(),
+                login: user?.login,
+            })
+
+            await this.reactionPostRepository.createReaction(reaction)
+
+            const likesInfo = {
+                likesCount: post.extendedLikesInfo.likesCount,
+                dislikesCount: post.extendedLikesInfo.dislikesCount
+            }
+
+            if (reaction.status === 'Like') {
+                likesInfo.likesCount = post.extendedLikesInfo.likesCount + 1
+            } else {
+                likesInfo.dislikesCount = post.extendedLikesInfo.dislikesCount + 1
+            }
+            await this.postsRepository.updateLikesInfo(likesInfo, post._id)
+
+            return {
+                status: ResultStatus.Success,
+                data: null,
+                errorMessage: '204',
+                extensions: [],
+            }
+
+
+        } else {
+
+            if (dto?.likeStatus === 'None') {
+                // есть реакция и приходит "None" => удаляем реакцию, и в зависимости какой был статус в реакции обновляем счётчики
+                const likesInfo = {
+                    likesCount: post.extendedLikesInfo.likesCount,
+                    dislikesCount: post.extendedLikesInfo.dislikesCount
+                }
+
+                if (reaction.status === 'Like') {
+
+                    likesInfo.likesCount = post.extendedLikesInfo.likesCount - 1
+                } else {
+                    likesInfo.dislikesCount = post.extendedLikesInfo.dislikesCount - 1
+                }
+                await this.postsRepository.updateLikesInfo(likesInfo, post._id)
+                await this.reactionPostRepository.deleteReaction(reaction?._id)
+                return {
+                    status: ResultStatus.Success,
+                    data: null,
+                    errorMessage: '204',
+                    extensions: [],
+                }
+            }
+
+            if (dto?.likeStatus !== reaction?.status) {
+                await this.reactionPostRepository.updateReaction({status: dto.likeStatus, reactionId: reaction._id})
+                const likesInfo = {
+                    likesCount: post.extendedLikesInfo.likesCount,
+                    dislikesCount: post.extendedLikesInfo.dislikesCount
+                }
+
+                if (dto.likeStatus === 'Like') {
+                    likesInfo.likesCount = post.extendedLikesInfo.likesCount + 1
+                    likesInfo.dislikesCount = post.extendedLikesInfo.dislikesCount - 1
+                } else {
+                    likesInfo.likesCount = post.extendedLikesInfo.likesCount - 1
+                    likesInfo.dislikesCount = post.extendedLikesInfo.dislikesCount + 1
+                }
+                await this.postsRepository.updateLikesInfo(likesInfo, post._id)
+                return {
+                    status: ResultStatus.Success,
+                    data: null,
+                    errorMessage: '204',
+                    extensions: [],
+                }
+            } else {
+                // есть реакция и приходит like/dislike не отличающийся от того что в бд => ошибка 400 поле likeStatus
+                return {
+                    status: ResultStatus.Success,
+                    data: null,
+                    errorMessage: '204',
+                    extensions: [],
+                }
+            }
+        }
+
+
+    }
 }

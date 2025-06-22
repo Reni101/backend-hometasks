@@ -23,6 +23,7 @@ import {ReactionsCommentRepository} from "./repositories/reactions/reactionsComm
 import {SessionsRepository} from "./repositories/sessions/sessions.repository";
 import {SecurityService} from "./services/security.service";
 import {SessionsQueryRepository} from "./repositories/sessions/sessions.query.repository";
+import {ReactionPostRepository} from "./repositories/reactions/reactionsPostRepository";
 
 
 export const container = new Container()
@@ -36,6 +37,7 @@ container.bind(PostsController).to(PostsController);
 container.bind(PostService).to(PostService);
 container.bind(PostsRepository).to(PostsRepository);
 container.bind(PostsQueryRepository).to(PostsQueryRepository);
+container.bind(ReactionPostRepository).to(ReactionPostRepository);
 
 
 container.bind(CommentsController).to(CommentsController);

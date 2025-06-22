@@ -36,7 +36,7 @@ export class CommentQueryRepository {
 
     _commentMap(comment: WithId<Comment>) {
         return {
-            id: comment._id,
+            id: comment._id.toString(),
             content: comment.content,
             commentatorInfo: comment.commentatorInfo,
             createdAt: comment.createdAt.toISOString(),

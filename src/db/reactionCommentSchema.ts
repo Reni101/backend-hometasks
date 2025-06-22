@@ -13,12 +13,11 @@ export type ReactionCommentType = {
     status: likeStatus
     userId: string,
     commentId: string
-
 }
 
 
 export const reactionsCommentSchema = new mongoose.Schema<ReactionCommentType>({
-    createdAt: {type: Date, required: true},
+    createdAt: {type: Date, required: true, default: Date.now},
     status: {type: String, enum: likeStatusEnum, required: true},
     userId: {type: String, required: true},
     commentId: {type: String, required: true},

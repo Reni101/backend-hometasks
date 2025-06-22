@@ -10,6 +10,7 @@ import {PostService} from "../services/posts.service";
 import {PostsQueryRepository} from "../repositories/posts/posts.query.repository";
 import {CommentQueryRepository} from "../repositories/comments/comments.query.repository";
 import {CommentsService} from "../services/comments.service";
+import {ResultStatus} from "../common/result/resultCode";
 
 @injectable()
 export class PostsController {
@@ -24,14 +25,44 @@ export class PostsController {
     async getAllPosts(req: ReqWithQuery<InputPostsQueryType>, res: Response) {
         const query = postQueries(req)
         const posts = await this.postsQueryRepository.getPosts(query);
+
+        if (!req.userId) {
+            res.status(200).json(posts).end()
+            return
+        }
+        const postsId = posts.items.map(item => item.id)
+
+
         res.status(200).json(posts).end()
         return
     }
 
     async getPostById(req: ReqWithParams<{ id: string }>, res: Response) {
         const blog = await this.postsQueryRepository.findPost(req.params.id)
-        blog ? res.status(200).json(blog).end() : res.status(404).end()
+
+        if (!blog) {
+            res.status(404).end()
+            return
+        }
+
+        if (blog && !req.userId) {
+            res.status(200).json(blog).end()
+            return
+        }
+        //TODO доделать myStatus и newestLikes
+
+        // const reactionStatus = await this.postsService.reactionStatusToComment({
+        //     postId: comment.id.toString(),
+        //     userId: req.userId
+        // })
+
+//        blog.extendedLikesInfo.myStatus = 'None'
+
+        res.status(200).json(blog).end()
+
         return
+
+
     }
 
     async createPost(req: ReqWithBody<InputPostBody>, res: Response) {
@@ -64,13 +95,12 @@ export class PostsController {
             result ? res.status(200).json(result).end() : res.status(404).end()
             return
         } else {
-            const commentsId = result.items.map(item => item.id.toString())
+            const commentsId = result.items.map(item => item.id)
             const reactions = await this.commentsService.reactionStatusToComments({userId: req.userId, commentsId})
 
             result.items.forEach((comment, index) => {
                 comment.id.toString()
-
-                result.items[index].likesInfo.myStatus =  reactions[comment.id.toString()] ? reactions[comment.id.toString()] : 'None'
+                result.items[index].likesInfo.myStatus = reactions[comment.id] ? reactions[comment.id] : 'None'
             })
             result ? res.status(200).json(result).end() : res.status(404).end()
             return
@@ -85,6 +115,24 @@ export class PostsController {
         newComment ? res.status(HttpStatuses.Created).json(newComment).end() : res.status(HttpStatuses.NotFound).end()
         return
 
+    }
+
+
+    async reaction(req: ReqWithParams<{ postId: string }>, res: Response) {
+        const dto = {postId: req.params.postId, userId: req?.userId!, likeStatus: req.body.likeStatus}
+        const result = await this.postsService.reactionToggle(dto)
+
+        if (result.status === ResultStatus.BadRequest) {
+            res.status(HttpStatuses.BadRequest).json({errorsMessages: result}).end()
+            return
+        }
+        if (result.status === ResultStatus.NotFound) {
+            res.status(HttpStatuses.NotFound).end()
+            return
+        }
+
+        res.status(HttpStatuses.NoContent).end();
+        return
     }
 }
 

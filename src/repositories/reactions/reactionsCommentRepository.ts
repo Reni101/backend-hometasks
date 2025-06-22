@@ -1,5 +1,5 @@
 import {injectable} from "inversify";
-import {likeStatus, reactionCommentModel, ReactionCommentType} from "../../db/reactionShema";
+import {likeStatus, reactionCommentModel, ReactionCommentType} from "../../db/reactionCommentSchema";
 import {ObjectId} from "mongodb";
 
 @injectable()

@@ -24,4 +24,17 @@ export class PostsRepository {
     async deletePost(id: string) {
         return postCollection.deleteOne({_id: new ObjectId(id)})
     }
+
+    async findById(id: string) {
+        return postCollection.findOne({_id: new ObjectId(id)})
+    }
+
+    async updateLikesInfo(dto: { likesCount: number, dislikesCount: number, }, postId: ObjectId) {
+        return postCollection.updateOne({_id: postId}, {
+            $set: {
+                'extendedLikesInfo.likesCount': dto.likesCount,
+                'extendedLikesInfo.dislikesCount': dto.dislikesCount
+            },
+        })
+    }
 }

@@ -13,6 +13,11 @@ export class UsersRepository {
         return userCollection.findOne({$or: [{login: dto.login}, {email: dto.email}]});
     }
 
+    async findById(id: string) {
+        return userCollection.findOne({_id: new ObjectId(id)}
+        )
+    }
+
     async findByLoginOrEmail(loginOrEmail: string,) {
         return userCollection.findOne({
             $or: [{email: loginOrEmail}, {login: loginOrEmail}],

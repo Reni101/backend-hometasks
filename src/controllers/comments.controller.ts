@@ -6,7 +6,7 @@ import {HttpStatuses} from "../common/types/httpStatuses";
 import {inject, injectable} from "inversify";
 import {CommentQueryRepository} from "../repositories/comments/comments.query.repository";
 import {CommentsService} from "../services/comments.service";
-import {likeStatus} from "../db/reactionShema";
+import {likeStatus} from "../db/reactionCommentSchema";
 
 
 @injectable()
