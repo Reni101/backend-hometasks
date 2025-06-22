@@ -10,6 +10,7 @@ import {CommentQueryRepository} from "../repositories/comments/comments.query.re
 import {UsersQueryRepository} from "../repositories/users/users.query.repository";
 import {likeStatus, reactionCommentModel} from "../db/reactionCommentSchema";
 import {ReactionsCommentRepository} from "../repositories/reactions/reactionsCommentRepository";
+import {recountLikesHelper} from "../helpers/recountLikesHelper";
 
 @injectable()
 export class CommentsService {
@@ -119,6 +120,7 @@ export class CommentsService {
             commentId: dto.commentId,
             userId: dto.userId,
         })
+
         if (!reaction && dto.likeStatus === 'None') {
             // нет реакции и приходит статус 'None'=> ошибка 400 поле likeStatus +
             return {
@@ -139,16 +141,11 @@ export class CommentsService {
             })
             await this.reactionsRepository.createReaction(reaction)
 
+            const likesInfo =
+                reaction.status === 'Like' ?
+                    recountLikesHelper(comment.likesInfo, 'addLike') :
+                    recountLikesHelper(comment.likesInfo, 'addDislike')
 
-            const likesInfo = {
-                likesCount: comment.likesInfo.likesCount,
-                dislikesCount: comment.likesInfo.dislikesCount
-            }
-            if (reaction.status === 'Like') {
-                likesInfo.likesCount = comment.likesInfo.likesCount + 1
-            } else {
-                likesInfo.dislikesCount = comment.likesInfo.dislikesCount + 1
-            }
             await this.commentsRepository.updateLikesInfo(likesInfo, comment._id)
 
             return {
@@ -160,17 +157,12 @@ export class CommentsService {
         } else {
             if (dto?.likeStatus === 'None') {
                 // есть реакция и приходит "None" => удаляем реакцию, и в зависимости какой был статус в реакции обновляем счётчики
-                const likesInfo = {
-                    likesCount: comment.likesInfo.likesCount,
-                    dislikesCount: comment.likesInfo.dislikesCount
-                }
 
-                if (reaction.status === 'Like') {
+                const likesInfo = reaction.status === 'Like' ?
+                    recountLikesHelper(comment.likesInfo, 'removeLike') :
+                    recountLikesHelper(comment.likesInfo, 'removeDislike')
 
-                    likesInfo.likesCount = comment.likesInfo.likesCount - 1
-                } else {
-                    likesInfo.dislikesCount = comment.likesInfo.dislikesCount - 1
-                }
+
                 await this.commentsRepository.updateLikesInfo(likesInfo, comment._id)
                 await this.reactionsRepository.deleteReaction(reaction?._id)
                 return {
@@ -183,18 +175,12 @@ export class CommentsService {
             // есть реакция и приходит like/dislike отличающийся от того что в бд => меняем статус в реакции, обновляем счётчики
             if (dto?.likeStatus !== reaction?.status) {
                 await this.reactionsRepository.updateReaction({status: dto.likeStatus, reactionId: reaction._id})
-                const likesInfo = {
-                    likesCount: comment.likesInfo.likesCount,
-                    dislikesCount: comment.likesInfo.dislikesCount
-                }
 
-                if (dto.likeStatus === 'Like') {
-                    likesInfo.likesCount = comment.likesInfo.likesCount + 1
-                    likesInfo.dislikesCount = comment.likesInfo.dislikesCount - 1
-                } else {
-                    likesInfo.likesCount = comment.likesInfo.likesCount - 1
-                    likesInfo.dislikesCount = comment.likesInfo.dislikesCount + 1
-                }
+
+                const likesInfo = dto.likeStatus === 'Like' ?
+                    recountLikesHelper(comment.likesInfo, 'toggleLike') :
+                    recountLikesHelper(comment.likesInfo, 'toggleDislike')
+
                 await this.commentsRepository.updateLikesInfo(likesInfo, comment._id)
                 return {
                     status: ResultStatus.Success,

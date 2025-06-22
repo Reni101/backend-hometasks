@@ -13,6 +13,7 @@ import {ResultStatus} from "../common/result/resultCode";
 import {ReactionPostRepository} from "../repositories/reactions/reactionsPostRepository";
 import {reactionPostModel} from "../db/reactionPostSchema";
 import {UsersRepository} from "../repositories/users/users.repository";
+import {recountLikesHelper} from "../helpers/recountLikesHelper";
 
 @injectable()
 export class PostService {
@@ -73,7 +74,7 @@ export class PostService {
 
         const reaction = await this.reactionPostRepository.findByUserIdAndPostId({
             postId: dto.postId,
-            userId: dto.postId
+            userId: dto.userId
         })
 
         if (!reaction && dto.likeStatus === 'None') {
@@ -100,16 +101,12 @@ export class PostService {
 
             await this.reactionPostRepository.createReaction(reaction)
 
-            const likesInfo = {
-                likesCount: post.extendedLikesInfo.likesCount,
-                dislikesCount: post.extendedLikesInfo.dislikesCount
-            }
 
-            if (reaction.status === 'Like') {
-                likesInfo.likesCount = post.extendedLikesInfo.likesCount + 1
-            } else {
-                likesInfo.dislikesCount = post.extendedLikesInfo.dislikesCount + 1
-            }
+            const likesInfo =
+                reaction.status === 'Like' ?
+                    recountLikesHelper(post.extendedLikesInfo, 'addLike') :
+                    recountLikesHelper(post.extendedLikesInfo, 'addDislike')
+
             await this.postsRepository.updateLikesInfo(likesInfo, post._id)
 
             return {
@@ -122,19 +119,14 @@ export class PostService {
 
         } else {
 
-            if (dto?.likeStatus === 'None') {
+            if (dto.likeStatus === 'None') {
                 // есть реакция и приходит "None" => удаляем реакцию, и в зависимости какой был статус в реакции обновляем счётчики
-                const likesInfo = {
-                    likesCount: post.extendedLikesInfo.likesCount,
-                    dislikesCount: post.extendedLikesInfo.dislikesCount
-                }
 
-                if (reaction.status === 'Like') {
+                const likesInfo = reaction.status === 'Like' ?
+                    recountLikesHelper(post.extendedLikesInfo, 'removeLike') :
+                    recountLikesHelper(post.extendedLikesInfo, 'removeDislike')
 
-                    likesInfo.likesCount = post.extendedLikesInfo.likesCount - 1
-                } else {
-                    likesInfo.dislikesCount = post.extendedLikesInfo.dislikesCount - 1
-                }
+
                 await this.postsRepository.updateLikesInfo(likesInfo, post._id)
                 await this.reactionPostRepository.deleteReaction(reaction?._id)
                 return {
@@ -147,18 +139,11 @@ export class PostService {
 
             if (dto?.likeStatus !== reaction?.status) {
                 await this.reactionPostRepository.updateReaction({status: dto.likeStatus, reactionId: reaction._id})
-                const likesInfo = {
-                    likesCount: post.extendedLikesInfo.likesCount,
-                    dislikesCount: post.extendedLikesInfo.dislikesCount
-                }
 
-                if (dto.likeStatus === 'Like') {
-                    likesInfo.likesCount = post.extendedLikesInfo.likesCount + 1
-                    likesInfo.dislikesCount = post.extendedLikesInfo.dislikesCount - 1
-                } else {
-                    likesInfo.likesCount = post.extendedLikesInfo.likesCount - 1
-                    likesInfo.dislikesCount = post.extendedLikesInfo.dislikesCount + 1
-                }
+                const likesInfo = dto.likeStatus === 'Like' ?
+                    recountLikesHelper(post.extendedLikesInfo, 'toggleLike') :
+                    recountLikesHelper(post.extendedLikesInfo, 'toggleDislike')
+
                 await this.postsRepository.updateLikesInfo(likesInfo, post._id)
                 return {
                     status: ResultStatus.Success,

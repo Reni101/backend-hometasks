@@ -47,6 +47,8 @@ export class PostsController {
             return
         }
 
+        post.extendedLikesInfo.newestLikes = await this.reactionsPostQueryRepository.findNewReactions(post.id)
+
         if (post && !req.userId) {
             res.status(200).json(post).end()
             return
@@ -56,7 +58,7 @@ export class PostsController {
             userId: req.userId!
         })
 
-        post.extendedLikesInfo.newestLikes = await this.reactionsPostQueryRepository.findNewReactions(post.id)
+
         res.status(200).json(post).end()
 
         return
