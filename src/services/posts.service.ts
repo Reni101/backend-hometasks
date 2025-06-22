@@ -92,7 +92,7 @@ export class PostService {
 
             const reaction = new reactionPostModel({
                 postId: dto.postId,
-                userId: dto.postId,
+                userId: dto.userId,
                 status: dto.likeStatus,
                 createdAt: new Date(),
                 login: user?.login,
@@ -177,6 +177,13 @@ export class PostService {
             }
         }
 
+    }
+
+    async reactionStatusToPost(dto: { postId: string, userId: string }): Promise<likeStatus> {
+        const reaction = await this.reactionPostRepository.findByUserIdAndPostId(dto)
+        if (reaction?.status === 'Like') return 'Like'
+        if (reaction?.status === 'Dislike') return 'Dislike'
+        return 'None'
 
     }
 }

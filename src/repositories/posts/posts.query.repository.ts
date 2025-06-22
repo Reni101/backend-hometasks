@@ -48,7 +48,7 @@ export class PostsQueryRepository {
                 likesCount: post.extendedLikesInfo.likesCount,
                 dislikesCount: post.extendedLikesInfo.dislikesCount,
                 myStatus: 'None',
-                newestLikes: []
+                newestLikes: post.extendedLikesInfo.newestLikes,
             }
         }
     }

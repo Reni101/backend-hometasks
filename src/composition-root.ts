@@ -24,6 +24,7 @@ import {SessionsRepository} from "./repositories/sessions/sessions.repository";
 import {SecurityService} from "./services/security.service";
 import {SessionsQueryRepository} from "./repositories/sessions/sessions.query.repository";
 import {ReactionPostRepository} from "./repositories/reactions/reactionsPostRepository";
+import {ReactionsPostQueryRepository} from "./repositories/reactions/reactionsPostQueryRepository";
 
 
 export const container = new Container()
@@ -38,6 +39,7 @@ container.bind(PostService).to(PostService);
 container.bind(PostsRepository).to(PostsRepository);
 container.bind(PostsQueryRepository).to(PostsQueryRepository);
 container.bind(ReactionPostRepository).to(ReactionPostRepository);
+container.bind(ReactionsPostQueryRepository).to(ReactionsPostQueryRepository);
 
 
 container.bind(CommentsController).to(CommentsController);
@@ -61,8 +63,6 @@ container.bind(SecurityController).to(SecurityController);
 container.bind(SecurityService).to(SecurityService);
 container.bind(SessionsRepository).to(SessionsRepository);
 container.bind(SessionsQueryRepository).to(SessionsQueryRepository);
-
-
 
 
 export const postsController = container.get(PostsController);

@@ -11,6 +11,7 @@ import {PostsQueryRepository} from "../repositories/posts/posts.query.repository
 import {CommentQueryRepository} from "../repositories/comments/comments.query.repository";
 import {CommentsService} from "../services/comments.service";
 import {ResultStatus} from "../common/result/resultCode";
+import {ReactionsPostQueryRepository} from "../repositories/reactions/reactionsPostQueryRepository";
 
 @injectable()
 export class PostsController {
@@ -19,6 +20,7 @@ export class PostsController {
         @inject(PostsQueryRepository) private postsQueryRepository: PostsQueryRepository,
         @inject(CommentQueryRepository) private commentsQueryRepository: CommentQueryRepository,
         @inject(CommentsService) private commentsService: CommentsService,
+        @inject(ReactionsPostQueryRepository) private reactionsPostQueryRepository: ReactionsPostQueryRepository,
     ) {
     }
 
@@ -38,27 +40,24 @@ export class PostsController {
     }
 
     async getPostById(req: ReqWithParams<{ id: string }>, res: Response) {
-        const blog = await this.postsQueryRepository.findPost(req.params.id)
+        const post = await this.postsQueryRepository.findPost(req.params.id)
 
-        if (!blog) {
+        if (!post) {
             res.status(404).end()
             return
         }
 
-        if (blog && !req.userId) {
-            res.status(200).json(blog).end()
+        if (post && !req.userId) {
+            res.status(200).json(post).end()
             return
         }
-        //TODO доделать myStatus и newestLikes
+        post.extendedLikesInfo.myStatus = await this.postsService.reactionStatusToPost({
+            postId: post.id.toString(),
+            userId: req.userId!
+        })
 
-        // const reactionStatus = await this.postsService.reactionStatusToComment({
-        //     postId: comment.id.toString(),
-        //     userId: req.userId
-        // })
-
-//        blog.extendedLikesInfo.myStatus = 'None'
-
-        res.status(200).json(blog).end()
+        post.extendedLikesInfo.newestLikes = await this.reactionsPostQueryRepository.findNewReactions(post.id)
+        res.status(200).json(post).end()
 
         return
 

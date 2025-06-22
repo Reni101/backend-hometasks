@@ -6,7 +6,7 @@ export class Post {
     extendedLikesInfo: {
         likesCount: number,
         dislikesCount: number,
-        // newestLikes: { addedAt: string, userId: string, login: string, }[]
+        newestLikes: { addedAt: Date, userId: string, login: string, }[]
     }
 
 
@@ -16,6 +16,6 @@ export class Post {
                 public blogId: ObjectId,
                 public blogName: string) {
         this.createdAt = new Date()
-        this.extendedLikesInfo = {likesCount: 0, dislikesCount: 0};
+        this.extendedLikesInfo = {likesCount: 0, dislikesCount: 0, newestLikes: []};
     }
 }
