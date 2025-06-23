@@ -10,6 +10,7 @@ import {HttpStatuses} from "../common/types/httpStatuses";
 import {inject, injectable} from "inversify";
 import {PostService} from "../services/posts.service";
 import {PostsQueryRepository} from "../repositories/posts/posts.query.repository";
+import {ReactionsPostQueryRepository} from "../repositories/reactions/reactionsPostQueryRepository";
 
 
 @injectable()
@@ -18,6 +19,7 @@ export class BLogsController {
                 @inject(BlogService) private blogsService: BlogService,
                 @inject(PostService) private postsService: PostService,
                 @inject(PostsQueryRepository) private postsQueryRepository: PostsQueryRepository,
+                @inject(ReactionsPostQueryRepository) private reactionsPostQueryRepository: ReactionsPostQueryRepository,
     ) {
     }
 
@@ -55,16 +57,33 @@ export class BLogsController {
     }
 
     async getPostsByBlogId(req: ReqWithParAndBody<{ blogId: string }, InputPostsQueryType>, res: Response,) {
-        const {blogId} = req.params
         const query = postQueries(req)
-        const blog = await this.blogsQueryRepository.findBlog(blogId)
+        const blog = await this.blogsQueryRepository.findBlog(req.params.blogId)
         if (!blog) {
             res.status(HttpStatuses.NotFound).end()
             return
         }
 
-        const result = await this.postsQueryRepository.getPosts(query, blogId)
-        result ? res.status(HttpStatuses.Success).json(result).end() : res.status(404).end()
+        const posts = await this.postsQueryRepository.getPosts(query, req.params.blogId)
+        const postsId = posts.items.map(item => item.id.toString())
+
+        for (const post of posts.items) {
+            post.extendedLikesInfo.newestLikes = await this.reactionsPostQueryRepository.findNewReactions(post.id)
+        }
+
+        if (!req.userId) {
+            res.status(200).json(posts).end()
+            return
+        }
+
+        const reactions = await this.postsService.reactionStatusToPosts({userId: req.userId, postsId})
+
+        posts.items.forEach((post, index) => {
+            posts.items[index].extendedLikesInfo.myStatus = reactions[post.id] ? reactions[post.id] : 'None'
+        })
+
+
+        res.status(200).json(posts).end()
         return
     }
 
