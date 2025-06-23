@@ -8,6 +8,7 @@ import {
     blogIdParam,
     blogQueryValidation
 } from "../middleware/validations/blogs.input.validation-middleware";
+import {authBearerPassMiddleware} from "../middleware/auth.bearer.pass.middleware";
 
 export const blogsRouter = Router()
 
@@ -17,6 +18,6 @@ blogsRouter.get('/:id', blogsController.getBlogById.bind(blogsController))
 blogsRouter.post('/', authBasicMiddleware, blogBodyValidation, errorsMiddleware, blogsController.createBlog.bind(blogsController))
 blogsRouter.put('/:id', authBasicMiddleware, blogBodyValidation, errorsMiddleware, blogsController.updateBlog.bind(blogsController))
 blogsRouter.delete('/:id', authBasicMiddleware, blogsController.deleteBlog.bind(blogsController))
-blogsRouter.get('/:blogId/posts', blogIdParam, postQueryValidation, errorsMiddleware, blogsController.getPostsByBlogId.bind(blogsController))
+blogsRouter.get('/:blogId/posts', authBearerPassMiddleware, blogIdParam, postQueryValidation, errorsMiddleware, blogsController.getPostsByBlogId.bind(blogsController))
 blogsRouter.post('/:blogId/posts', blogIdParam, authBasicMiddleware, postBodyValidation, errorsMiddleware, blogsController.createPostByBlogId.bind(blogsController))
 

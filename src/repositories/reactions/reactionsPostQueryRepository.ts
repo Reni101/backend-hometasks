@@ -4,9 +4,9 @@ import {ObjectId, WithId} from "mongodb";
 
 @injectable()
 export class ReactionsPostQueryRepository {
-    async findNewReactions(postId: ObjectId) {
+    async findNewReactions(postId: string) {
         const reactions = await reactionPostModel.find({
-            postId: postId,
+            postId: new ObjectId(postId),
             status: 'Like'
         }).sort({createdAt: -1}).limit(3).exec()
         return reactions.map(this._map);

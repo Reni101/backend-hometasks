@@ -43,7 +43,7 @@ export class PostsQueryRepository {
             blogId: post.blogId,
             blogName: post.blogName,
             createdAt: post.createdAt.toISOString(),
-            id: post._id,
+            id: post._id.toString(),
             extendedLikesInfo: {
                 likesCount: post.extendedLikesInfo.likesCount,
                 dislikesCount: post.extendedLikesInfo.dislikesCount,

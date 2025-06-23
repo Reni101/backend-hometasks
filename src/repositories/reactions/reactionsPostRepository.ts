@@ -21,11 +21,8 @@ export class ReactionPostRepository {
         return reactionPostModel.updateOne({_id: dto.reactionId}, {status: dto.status})
     }
 
-    async findReactions(dto: { userId: string, commentsId: string[] }) {
-        return reactionPostModel.find({commentId: {$in: dto.commentsId}, userId: dto.userId}).exec()
+    async findReactions(dto: { userId: string, postsId: string[] }) {
+        return reactionPostModel.find({postId: {$in: dto.postsId}, userId: dto.userId}).exec()
     }
 
-    async findNewReactions(postId:string) {
-        return reactionPostModel.find({postId: postId}).sort({createdAt: -1}).limit(3).exec()
-    }
 }

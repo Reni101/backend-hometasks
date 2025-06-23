@@ -171,4 +171,14 @@ export class PostService {
         return 'None'
 
     }
+
+    async reactionStatusToPosts(dto: { postsId: string[], userId: string }) {
+        const reactions = await this.reactionPostRepository.findReactions(dto)
+        const reactionsStatus: Record<string, string> = {}
+        reactions.forEach((reaction) => {
+            reactionsStatus[reaction.postId] = reaction.status
+        })
+        return reactionsStatus
+
+    }
 }

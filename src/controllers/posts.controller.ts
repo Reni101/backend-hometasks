@@ -27,13 +27,22 @@ export class PostsController {
     async getAllPosts(req: ReqWithQuery<InputPostsQueryType>, res: Response) {
         const query = postQueries(req)
         const posts = await this.postsQueryRepository.getPosts(query);
+        const postsId = posts.items.map(item => item.id.toString())
+
+        for (const post of posts.items) {
+            post.extendedLikesInfo.newestLikes = await this.reactionsPostQueryRepository.findNewReactions(post.id)
+        }
 
         if (!req.userId) {
             res.status(200).json(posts).end()
             return
         }
-        const postsId = posts.items.map(item => item.id)
 
+        const reactions = await this.postsService.reactionStatusToPosts({userId: req.userId, postsId})
+
+        posts.items.forEach((post, index) => {
+            posts.items[index].extendedLikesInfo.myStatus = reactions[post.id] ? reactions[post.id] : 'None'
+        })
 
         res.status(200).json(posts).end()
         return
@@ -100,7 +109,6 @@ export class PostsController {
             const reactions = await this.commentsService.reactionStatusToComments({userId: req.userId, commentsId})
 
             result.items.forEach((comment, index) => {
-                comment.id.toString()
                 result.items[index].likesInfo.myStatus = reactions[comment.id] ? reactions[comment.id] : 'None'
             })
             result ? res.status(200).json(result).end() : res.status(404).end()
@@ -117,7 +125,6 @@ export class PostsController {
         return
 
     }
-
 
     async reaction(req: ReqWithParams<{ postId: string }>, res: Response) {
         const dto = {postId: req.params.postId, userId: req?.userId!, likeStatus: req.body.likeStatus}
