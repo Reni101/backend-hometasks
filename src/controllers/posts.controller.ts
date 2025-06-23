@@ -39,7 +39,7 @@ export class PostsController {
         }
 
         const reactions = await this.postsService.reactionStatusToPosts({userId: req.userId, postsId})
-
+//TODO исправить
         posts.items.forEach((post, index) => {
             posts.items[index].extendedLikesInfo.myStatus = reactions[post.id] ? reactions[post.id] : 'None'
         })
